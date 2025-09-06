@@ -16,6 +16,7 @@ const ProjectPage = React.lazy(() => import('@/pages/ProjectPage'));
 const EditorPage = React.lazy(() => import('@/pages/EditorPage'));
 const SettingsPage = React.lazy(() => import('@/pages/SettingsPage'));
 const NotFound = React.lazy(() => import('@/pages/NotFound'));
+const PresentationGenerator = React.lazy(() => import('@/components/PresentationGenerator'));
 
 // Error Boundary Component
 const ErrorBoundary: React.FC = () => {
@@ -148,6 +149,14 @@ export const router = createBrowserRouter([
         handle: { 
           title: 'PPT编辑器',
           breadcrumb: '编辑器'
+        }
+      },
+      {
+        path: 'presentation',
+        element: <PresentationGenerator />,
+        handle: { 
+          title: 'AI 演示文稿生成',
+          breadcrumb: 'AI生成'
         }
       },
       {

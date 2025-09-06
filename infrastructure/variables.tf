@@ -129,6 +129,18 @@ variable "api_throttle_burst_limit" {
   default     = 200
 }
 
+variable "api_quota_limit" {
+  description = "API Gateway quota limit (requests per period)"
+  type        = number
+  default     = 10000
+}
+
+variable "api_quota_period" {
+  description = "API Gateway quota period (DAY, WEEK, or MONTH)"
+  type        = string
+  default     = "DAY"
+}
+
 variable "api_keys" {
   description = "List of API keys to create"
   type = list(object({

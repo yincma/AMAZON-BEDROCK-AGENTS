@@ -2,9 +2,9 @@
 
 # Lambda Layer for shared dependencies
 resource "aws_lambda_layer_version" "shared_dependencies" {
-  filename            = "${path.module}/../../../lambdas/layers/python.zip"
+  filename            = "${path.module}/../../../lambdas/layers/dist/ai-ppt-assistant-dependencies.zip"
   layer_name          = "${var.project_name}-shared-deps"
-  compatible_runtimes = ["python3.13"]
+  compatible_runtimes = ["python3.12"]
   compatible_architectures = ["arm64"]
   
   description = "Shared dependencies for all Lambda functions"
@@ -139,7 +139,7 @@ resource "aws_lambda_function" "create_outline" {
   function_name    = "${var.project_name}-create-outline"
   role            = aws_iam_role.lambda_execution_role.arn
   handler         = "create_outline.lambda_handler"
-  runtime         = "python3.13"
+  runtime         = "python3.12"
   architectures   = ["arm64"]
   timeout         = 60
   memory_size     = 1024
@@ -173,7 +173,7 @@ resource "aws_lambda_function" "generate_content" {
   function_name    = "${var.project_name}-generate-content"
   role            = aws_iam_role.lambda_execution_role.arn
   handler         = "generate_content.lambda_handler"
-  runtime         = "python3.13"
+  runtime         = "python3.12"
   architectures   = ["arm64"]
   timeout         = 120
   memory_size     = 2048
@@ -207,7 +207,7 @@ resource "aws_lambda_function" "generate_image" {
   function_name    = "${var.project_name}-generate-image"
   role            = aws_iam_role.lambda_execution_role.arn
   handler         = "generate_image.lambda_handler"
-  runtime         = "python3.13"
+  runtime         = "python3.12"
   architectures   = ["arm64"]
   timeout         = 90
   memory_size     = 1024
@@ -241,7 +241,7 @@ resource "aws_lambda_function" "find_image" {
   function_name    = "${var.project_name}-find-image"
   role            = aws_iam_role.lambda_execution_role.arn
   handler         = "find_image.lambda_handler"
-  runtime         = "python3.13"
+  runtime         = "python3.12"
   architectures   = ["arm64"]
   timeout         = 30
   memory_size     = 512
@@ -274,7 +274,7 @@ resource "aws_lambda_function" "generate_speaker_notes" {
   function_name    = "${var.project_name}-generate-speaker-notes"
   role            = aws_iam_role.lambda_execution_role.arn
   handler         = "generate_speaker_notes.lambda_handler"
-  runtime         = "python3.13"
+  runtime         = "python3.12"
   architectures   = ["arm64"]
   timeout         = 60
   memory_size     = 1024
@@ -308,7 +308,7 @@ resource "aws_lambda_function" "compile_pptx" {
   function_name    = "${var.project_name}-compile-pptx"
   role            = aws_iam_role.lambda_execution_role.arn
   handler         = "compile_pptx.lambda_handler"
-  runtime         = "python3.13"
+  runtime         = "python3.12"
   architectures   = ["arm64"]
   timeout         = 180
   memory_size     = 3008
@@ -343,7 +343,7 @@ resource "aws_lambda_function" "api_generate_presentation" {
   function_name    = "${var.project_name}-api-generate-presentation"
   role            = aws_iam_role.lambda_execution_role.arn
   handler         = "generate_presentation.lambda_handler"
-  runtime         = "python3.13"
+  runtime         = "python3.12"
   architectures   = ["arm64"]
   timeout         = 30
   memory_size     = 512
@@ -379,7 +379,7 @@ resource "aws_lambda_function" "api_presentation_status" {
   function_name    = "${var.project_name}-api-presentation-status"
   role            = aws_iam_role.lambda_execution_role.arn
   handler         = "presentation_status.lambda_handler"
-  runtime         = "python3.13"
+  runtime         = "python3.12"
   architectures   = ["arm64"]
   timeout         = 10
   memory_size     = 256
@@ -411,7 +411,7 @@ resource "aws_lambda_function" "api_presentation_download" {
   function_name    = "${var.project_name}-api-presentation-download"
   role            = aws_iam_role.lambda_execution_role.arn
   handler         = "presentation_download.lambda_handler"
-  runtime         = "python3.13"
+  runtime         = "python3.12"
   architectures   = ["arm64"]
   timeout         = 10
   memory_size     = 256
@@ -445,7 +445,7 @@ resource "aws_lambda_function" "api_modify_slide" {
   function_name    = "${var.project_name}-api-modify-slide"
   role            = aws_iam_role.lambda_execution_role.arn
   handler         = "modify_slide.lambda_handler"
-  runtime         = "python3.13"
+  runtime         = "python3.12"
   architectures   = ["arm64"]
   timeout         = 30
   memory_size     = 512

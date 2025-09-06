@@ -331,13 +331,139 @@ resource "aws_api_gateway_integration" "execute_agent" {
   depends_on = [module.lambda, module.api_gateway]
 }
 
+# ============================================================================
+# Health Check Endpoints (no API key required)
+# ============================================================================
+
+# /health resource
+resource "aws_api_gateway_resource" "health" {
+  rest_api_id = module.api_gateway.rest_api_id
+  parent_id   = module.api_gateway.rest_api_root_resource_id
+  path_part   = "health"
+}
+
+# /health/ready resource
+resource "aws_api_gateway_resource" "health_ready" {
+  rest_api_id = module.api_gateway.rest_api_id
+  parent_id   = aws_api_gateway_resource.health.id
+  path_part   = "ready"
+}
+
+# GET /health method (no API key required)
+resource "aws_api_gateway_method" "health_get" {
+  rest_api_id   = module.api_gateway.rest_api_id
+  resource_id   = aws_api_gateway_resource.health.id
+  http_method   = "GET"
+  authorization = "NONE"
+  api_key_required = false
+}
+
+# GET /health/ready method (no API key required)
+resource "aws_api_gateway_method" "health_ready_get" {
+  rest_api_id   = module.api_gateway.rest_api_id
+  resource_id   = aws_api_gateway_resource.health_ready.id
+  http_method   = "GET"
+  authorization = "NONE"
+  api_key_required = false
+}
+
+# Mock integration for /health
+resource "aws_api_gateway_integration" "health" {
+  rest_api_id = module.api_gateway.rest_api_id
+  resource_id = aws_api_gateway_resource.health.id
+  http_method = aws_api_gateway_method.health_get.http_method
+  type        = "MOCK"
+
+  request_templates = {
+    "application/json" = jsonencode({
+      statusCode = 200
+    })
+  }
+}
+
+# Mock integration for /health/ready
+resource "aws_api_gateway_integration" "health_ready" {
+  rest_api_id = module.api_gateway.rest_api_id
+  resource_id = aws_api_gateway_resource.health_ready.id
+  http_method = aws_api_gateway_method.health_ready_get.http_method
+  type        = "MOCK"
+
+  request_templates = {
+    "application/json" = jsonencode({
+      statusCode = 200
+    })
+  }
+}
+
+# Method response for /health
+resource "aws_api_gateway_method_response" "health_200" {
+  rest_api_id = module.api_gateway.rest_api_id
+  resource_id = aws_api_gateway_resource.health.id
+  http_method = aws_api_gateway_method.health_get.http_method
+  status_code = "200"
+
+  response_models = {
+    "application/json" = "Empty"
+  }
+}
+
+# Method response for /health/ready
+resource "aws_api_gateway_method_response" "health_ready_200" {
+  rest_api_id = module.api_gateway.rest_api_id
+  resource_id = aws_api_gateway_resource.health_ready.id
+  http_method = aws_api_gateway_method.health_ready_get.http_method
+  status_code = "200"
+
+  response_models = {
+    "application/json" = "Empty"
+  }
+}
+
+# Integration response for /health
+resource "aws_api_gateway_integration_response" "health_200" {
+  rest_api_id = module.api_gateway.rest_api_id
+  resource_id = aws_api_gateway_resource.health.id
+  http_method = aws_api_gateway_method.health_get.http_method
+  status_code = aws_api_gateway_method_response.health_200.status_code
+
+  response_templates = {
+    "application/json" = jsonencode({
+      status = "healthy"
+      timestamp = "$context.requestTime"
+    })
+  }
+
+  depends_on = [
+    aws_api_gateway_integration.health
+  ]
+}
+
+# Integration response for /health/ready
+resource "aws_api_gateway_integration_response" "health_ready_200" {
+  rest_api_id = module.api_gateway.rest_api_id
+  resource_id = aws_api_gateway_resource.health_ready.id
+  http_method = aws_api_gateway_method.health_ready_get.http_method
+  status_code = aws_api_gateway_method_response.health_ready_200.status_code
+
+  response_templates = {
+    "application/json" = jsonencode({
+      status = "ready"
+      timestamp = "$context.requestTime"
+    })
+  }
+
+  depends_on = [
+    aws_api_gateway_integration.health_ready
+  ]
+}
+
 # Lambda permissions for API Gateway
 resource "aws_lambda_permission" "generate_presentation_permission" {
   statement_id  = "AllowAPIGatewayInvoke-generate-presentation"
   action        = "lambda:InvokeFunction"
   function_name = module.lambda.function_names["generate_presentation"]
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "${module.api_gateway.rest_api_arn}/*/*"
+  source_arn    = "arn:aws:execute-api:${var.aws_region}:${data.aws_caller_identity.current.account_id}:${module.api_gateway.rest_api_id}/*/*"
 
   depends_on = [module.lambda, module.api_gateway]
 }
@@ -347,7 +473,7 @@ resource "aws_lambda_permission" "presentation_status_permission" {
   action        = "lambda:InvokeFunction"
   function_name = module.lambda.function_names["presentation_status"]
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "${module.api_gateway.rest_api_arn}/*/*"
+  source_arn    = "arn:aws:execute-api:${var.aws_region}:${data.aws_caller_identity.current.account_id}:${module.api_gateway.rest_api_id}/*/*"
 
   depends_on = [module.lambda, module.api_gateway]
 }
@@ -365,6 +491,8 @@ resource "aws_api_gateway_deployment" "integration_deployment" {
       aws_api_gateway_integration.create_session,
       aws_api_gateway_integration.get_session,
       aws_api_gateway_integration.execute_agent,
+      aws_api_gateway_integration.health,
+      aws_api_gateway_integration.health_ready,
     ]))
   }
 
@@ -379,6 +507,8 @@ resource "aws_api_gateway_deployment" "integration_deployment" {
     aws_api_gateway_integration.create_session,
     aws_api_gateway_integration.get_session,
     aws_api_gateway_integration.execute_agent,
+    aws_api_gateway_integration.health,
+    aws_api_gateway_integration.health_ready,
   ]
 }
 
@@ -400,6 +530,46 @@ resource "aws_api_gateway_stage" "main" {
   depends_on = [
     aws_api_gateway_deployment.integration_deployment
   ]
+}
+
+# Create Usage Plan (since module doesn't create it when deployment is disabled)
+resource "aws_api_gateway_usage_plan" "main" {
+  name        = "${var.project_name}-${var.environment}-usage-plan"
+  description = "Usage plan for ${var.project_name} ${var.environment}"
+
+  api_stages {
+    api_id = module.api_gateway.rest_api_id
+    stage  = aws_api_gateway_stage.main.stage_name
+  }
+
+  quota_settings {
+    limit  = var.api_quota_limit
+    period = var.api_quota_period
+  }
+
+  throttle_settings {
+    rate_limit  = var.api_throttle_rate_limit
+    burst_limit = var.api_throttle_burst_limit
+  }
+
+  tags = merge(
+    local.common_tags,
+    {
+      Name        = "${var.project_name}-${var.environment}-usage-plan"
+      Environment = var.environment
+    }
+  )
+
+  depends_on = [
+    aws_api_gateway_stage.main
+  ]
+}
+
+# Associate API Key with Usage Plan
+resource "aws_api_gateway_usage_plan_key" "main" {
+  key_id        = module.api_gateway.api_key_id
+  key_type      = "API_KEY"
+  usage_plan_id = aws_api_gateway_usage_plan.main.id
 }
 
 # ============================================================================

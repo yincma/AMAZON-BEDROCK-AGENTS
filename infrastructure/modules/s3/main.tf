@@ -4,6 +4,9 @@
 resource "aws_s3_bucket" "presentations" {
   bucket = "${var.project_name}-${var.environment}-presentations-${data.aws_caller_identity.current.account_id}"
   
+  # Enable force_destroy to allow bucket deletion even with objects
+  force_destroy = true
+  
   tags = merge(
     var.tags,
     {

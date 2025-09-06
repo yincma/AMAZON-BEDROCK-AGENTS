@@ -1,20 +1,35 @@
 # Essential Lambda Layer Dependencies for AI PPT Assistant
-# Python 3.13 runtime compatible packages
+# Python 3.12 runtime compatible packages
 
 # AWS SDK - Essential for AWS Lambda operations  
-boto3
+boto3==1.35.0
+
+# AWS Lambda Powertools - Essential for Lambda functions
+aws-lambda-powertools==2.38.0
 
 # HTTP requests - Essential for API calls
-requests
+requests==2.32.3
 
 # Date and time utilities - Common dependency
-python-dateutil
+python-dateutil==2.9.0
 
 # Environment variable handling
-python-dotenv
+python-dotenv==1.0.1
 
 # Type hints support - Python compatibility
-typing-extensions
+typing-extensions==4.12.2
 
 # Performance optimization
-cachetools
+cachetools==5.5.0
+
+# PowerPoint generation - Essential for presentation creation
+python-pptx==0.6.23
+
+# Image processing - Essential for image manipulation
+Pillow==10.4.0
+
+# JSON schema validation
+jsonschema==4.23.0
+
+# YAML processing
+PyYAML==6.0.2

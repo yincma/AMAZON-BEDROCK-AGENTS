@@ -48,7 +48,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 {
                     "error": "INVALID_REQUEST",
                     "message": "Task ID is required",
-                    "request_id": context.request_id,
+                    "request_id": context.aws_request_id,
                 },
             )
 
@@ -62,7 +62,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     "error": "NOT_FOUND",
                     "message": "Task not found",
                     "task_id": task_id,
-                    "request_id": context.request_id,
+                    "request_id": context.aws_request_id,
                 },
             )
 
@@ -81,7 +81,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             {
                 "error": "INTERNAL_ERROR",
                 "message": "Failed to retrieve status",
-                "request_id": context.request_id,
+                "request_id": context.aws_request_id,
             },
         )
 

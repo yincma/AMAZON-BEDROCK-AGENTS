@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API 连接测试</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        .config {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .config input {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 AWS API Gateway 连接测试</h1>
+    
+    <div class="config">
+        <h2>配置</h2>
+        <label>API URL:</label>
+        <input type="text" id="apiUrl" value="https://taett6van5.execute-api.us-east-1.amazonaws.com/v1" />
+        <label>API Key:</label>
+        <input type="password" id="apiKey" value="mRStovr0hf9aBwoucts7a4dsZ5aBuPof34SSt2Lx" />
+    </div>
+
+    <div class="test-section">
+        <h2>基础连接测试</h2>
+        <button onclick="testHealth()">测试健康检查</button>
+        <button onclick="testReady()">测试就绪状态</button>
+        <button onclick="testTemplates()">获取模板列表</button>
+        <button onclick="testPresentations()">获取演示文稿列表</button>
+        <div id="basicResult" class="result" style="display:none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>创建演示文稿测试</h2>
+        <div class="form-group">
+            <label>标题:</label>
+            <input type="text" id="title" value="测试演示文稿" />
+        </div>
+        <div class="form-group">
+            <label>主题:</label>
+            <textarea id="topic">这是一个测试演示文稿，用于验证 API 功能是否正常工作。</textarea>
+        </div>
+        <div class="form-group">
+            <label>语言:</label>
+            <select id="language">
+                <option value="zh">中文</option>
+                <option value="en">English</option>
+                <option value="ja">日本語</option>
+                <option value="ko">한국어</option>
+                <option value="es">Español</option>
+                <option value="fr">Français</option>
+                <option value="de">Deutsch</option>
+                <option value="pt">Português</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>幻灯片数量:</label>
+            <input type="number" id="slideCount" value="5" min="1" max="30" />
+        </div>
+        <div class="form-group">
+            <label>风格:</label>
+            <select id="style">
+                <option value="professional">专业</option>
+                <option value="creative">创意</option>
+                <option value="minimalist">简约</option>
+                <option value="technical">技术</option>
+                <option value="academic">学术</option>
+            </select>
+        </div>
+        <button onclick="createPresentation()">创建演示文稿</button>
+        <div id="createResult" class="result" style="display:none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>任务状态查询</h2>
+        <div class="form-group">
+            <label>任务 ID:</label>
+            <input type="text" id="taskId" placeholder="输入任务 ID" />
+        </div>
+        <button onclick="checkTaskStatus()">查询任务状态</button>
+        <div id="taskResult" class="result" style="display:none;"></div>
+    </div>
+
+    <script>
+        const getConfig = () => ({
+            url: document.getElementById('apiUrl').value,
+            key: document.getElementById('apiKey').value
+        });
+
+        const makeRequest = async (method, path, data = null) => {
+            const config = getConfig();
+            const options = {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': config.key
+                }
+            };
+            
+            if (data) {
+                options.body = JSON.stringify(data);
+            }
+            
+            try {
+                const response = await fetch(config.url + path, options);
+                const text = await response.text();
+                let result;
+                
+                try {
+                    result = JSON.parse(text);
+                } catch {
+                    result = text;
+                }
+                
+                return {
+                    ok: response.ok,
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: result
+                };
+            } catch (error) {
+                return {
+                    ok: false,
+                    error: error.message
+                };
+            }
+        };
+
+        const showResult = (elementId, success, message) => {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = 'result ' + (success ? 'success' : 'error');
+            element.textContent = typeof message === 'object' 
+                ? JSON.stringify(message, null, 2) 
+                : message;
+        };
+
+        async function testHealth() {
+            const result = await makeRequest('GET', '/health');
+            showResult('basicResult', result.ok, 
+                result.ok ? `✅ 健康检查成功\n${JSON.stringify(result.data, null, 2)}` 
+                          : `❌ 健康检查失败: ${result.error || result.data}`);
+        }
+
+        async function testReady() {
+            const result = await makeRequest('GET', '/health/ready');
+            showResult('basicResult', result.ok, 
+                result.ok ? `✅ 就绪检查成功\n${JSON.stringify(result.data, null, 2)}` 
+                          : `❌ 就绪检查失败: ${result.error || result.data}`);
+        }
+
+        async function testTemplates() {
+            const result = await makeRequest('GET', '/templates');
+            showResult('basicResult', result.ok, 
+                result.ok ? `✅ 获取模板成功\n${JSON.stringify(result.data, null, 2)}` 
+                          : `❌ 获取模板失败: ${result.status} ${result.statusText}\n${JSON.stringify(result.data, null, 2)}`);
+        }
+
+        async function testPresentations() {
+            const result = await makeRequest('GET', '/presentations');
+            showResult('basicResult', result.ok, 
+                result.ok ? `✅ 获取演示文稿列表成功\n${JSON.stringify(result.data, null, 2)}` 
+                          : `❌ 获取演示文稿列表失败: ${result.status} ${result.statusText}\n${JSON.stringify(result.data, null, 2)}`);
+        }
+
+        async function createPresentation() {
+            const data = {
+                title: document.getElementById('title').value,
+                topic: document.getElementById('topic').value,
+                language: document.getElementById('language').value,
+                slide_count: parseInt(document.getElementById('slideCount').value),
+                style: document.getElementById('style').value
+            };
+            
+            const result = await makeRequest('POST', '/presentations', data);
+            
+            if (result.ok) {
+                showResult('createResult', true, 
+                    `✅ 创建成功！\n${JSON.stringify(result.data, null, 2)}`);
+                
+                // 如果返回了任务 ID，自动填充到任务查询框
+                if (result.data && result.data.task_id) {
+                    document.getElementById('taskId').value = result.data.task_id;
+                }
+            } else {
+                showResult('createResult', false, 
+                    `❌ 创建失败: ${result.status} ${result.statusText}\n${JSON.stringify(result.data, null, 2)}`);
+            }
+        }
+
+        async function checkTaskStatus() {
+            const taskId = document.getElementById('taskId').value;
+            if (!taskId) {
+                showResult('taskResult', false, '请输入任务 ID');
+                return;
+            }
+            
+            const result = await makeRequest('GET', `/tasks/${taskId}`);
+            showResult('taskResult', result.ok, 
+                result.ok ? `✅ 任务状态\n${JSON.stringify(result.data, null, 2)}` 
+                          : `❌ 查询失败: ${result.status} ${result.statusText}\n${JSON.stringify(result.data, null, 2)}`);
+        }
+
+        // 页面加载时自动测试健康状态
+        window.onload = () => {
+            testHealth();
+        };
+    </script>
+</body>
+</html>

@@ -79,7 +79,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     {
                         "error": "INVALID_REQUEST",
                         "message": "Presentation ID and Slide ID are required",
-                        "request_id": context.request_id,
+                        "request_id": context.aws_request_id,
                     },
                 )
 
@@ -94,7 +94,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     {
                         "error": "INVALID_MODIFICATION",
                         "message": validation_error,
-                        "request_id": context.request_id,
+                        "request_id": context.aws_request_id,
                     },
                 )
 
@@ -108,7 +108,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         "error": "NOT_FOUND",
                         "message": "Presentation not found",
                         "presentation_id": presentation_id,
-                        "request_id": context.request_id,
+                        "request_id": context.aws_request_id,
                     },
                 )
 
@@ -120,7 +120,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         "error": "NOT_MODIFIABLE",
                         "message": "Presentation must be completed before modification",
                         "status": presentation.get("status"),
-                        "request_id": context.request_id,
+                        "request_id": context.aws_request_id,
                     },
                 )
 
@@ -134,7 +134,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         {
                             "error": "SLIDE_NOT_FOUND",
                             "message": f"Slide {slide_id} not found. Presentation has {slide_count} slides.",
-                            "request_id": context.request_id,
+                            "request_id": context.aws_request_id,
                         },
                     )
             except ValueError:
@@ -143,7 +143,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     {
                         "error": "INVALID_SLIDE_ID",
                         "message": "Slide ID must be a number",
-                        "request_id": context.request_id,
+                        "request_id": context.aws_request_id,
                     },
                 )
 
@@ -193,7 +193,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 {
                     "error": "INTERNAL_ERROR",
                     "message": "Failed to modify slide",
-                    "request_id": context.request_id,
+                    "request_id": context.aws_request_id,
                 },
             )
 

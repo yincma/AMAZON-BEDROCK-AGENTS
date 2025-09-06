@@ -65,12 +65,12 @@ resource "aws_api_gateway_deployment" "main" {
     aws_api_gateway_method.create_session,
     aws_api_gateway_method.get_session,
     aws_api_gateway_method.execute_agent,
-    aws_api_gateway_method_response.create_presentation_200,
+    aws_api_gateway_method_response.create_presentation_202,
     aws_api_gateway_method_response.get_presentation_200,
     aws_api_gateway_method_response.list_presentations_200,
-    aws_api_gateway_method_response.create_session_200,
+    aws_api_gateway_method_response.create_session_202,
     aws_api_gateway_method_response.get_session_200,
-    aws_api_gateway_method_response.execute_agent_200,
+    aws_api_gateway_method_response.execute_agent_202,
   ]
 }
 
@@ -420,11 +420,11 @@ module "cors_agent_execute" {
 # ============================================================================
 
 # Method responses for proper API Gateway configuration
-resource "aws_api_gateway_method_response" "create_presentation_200" {
+resource "aws_api_gateway_method_response" "create_presentation_202" {
   rest_api_id = aws_api_gateway_rest_api.main.id
   resource_id = aws_api_gateway_resource.presentations.id
   http_method = aws_api_gateway_method.create_presentation.http_method
-  status_code = "200"
+  status_code = "202"
 
   response_parameters = {
     "method.response.header.Access-Control-Allow-Origin"  = true
@@ -471,11 +471,11 @@ resource "aws_api_gateway_method_response" "list_presentations_200" {
   }
 }
 
-resource "aws_api_gateway_method_response" "create_session_200" {
+resource "aws_api_gateway_method_response" "create_session_202" {
   rest_api_id = aws_api_gateway_rest_api.main.id
   resource_id = aws_api_gateway_resource.sessions.id
   http_method = aws_api_gateway_method.create_session.http_method
-  status_code = "200"
+  status_code = "202"
 
   response_parameters = {
     "method.response.header.Access-Control-Allow-Origin"  = true
@@ -505,11 +505,11 @@ resource "aws_api_gateway_method_response" "get_session_200" {
   }
 }
 
-resource "aws_api_gateway_method_response" "execute_agent_200" {
+resource "aws_api_gateway_method_response" "execute_agent_202" {
   rest_api_id = aws_api_gateway_rest_api.main.id
   resource_id = aws_api_gateway_resource.agent_execute.id
   http_method = aws_api_gateway_method.execute_agent.http_method
-  status_code = "200"
+  status_code = "202"
 
   response_parameters = {
     "method.response.header.Access-Control-Allow-Origin"  = true

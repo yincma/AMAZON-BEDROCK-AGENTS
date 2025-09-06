@@ -59,7 +59,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 {
                     "error": "INVALID_REQUEST",
                     "message": validation_error,
-                    "request_id": context.request_id,
+                    "request_id": context.aws_request_id,
                 },
             )
 
@@ -106,7 +106,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             {
                 "error": "INTERNAL_ERROR",
                 "message": "Failed to generate presentation",
-                "request_id": context.request_id,
+                "request_id": context.aws_request_id,
             },
         )
 

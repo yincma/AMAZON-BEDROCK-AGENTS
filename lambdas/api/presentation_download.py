@@ -54,7 +54,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 {
                     "error": "INVALID_REQUEST",
                     "message": "Presentation ID is required",
-                    "request_id": context.request_id,
+                    "request_id": context.aws_request_id,
                 },
             )
 
@@ -70,7 +70,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 {
                     "error": "INVALID_FORMAT",
                     "message": f"Format must be one of: {', '.join(valid_formats)}",
-                    "request_id": context.request_id,
+                    "request_id": context.aws_request_id,
                 },
             )
 
@@ -84,7 +84,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     "error": "NOT_FOUND",
                     "message": "Presentation not found",
                     "presentation_id": presentation_id,
-                    "request_id": context.request_id,
+                    "request_id": context.aws_request_id,
                 },
             )
 
@@ -97,7 +97,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     "message": "Presentation is not ready for download",
                     "status": presentation.get("status", "unknown"),
                     "presentation_id": presentation_id,
-                    "request_id": context.request_id,
+                    "request_id": context.aws_request_id,
                 },
             )
 
@@ -112,7 +112,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     "message": f"Presentation not available in {format_type} format",
                     "available_formats": get_available_formats(presentation),
                     "presentation_id": presentation_id,
-                    "request_id": context.request_id,
+                    "request_id": context.aws_request_id,
                 },
             )
 
@@ -127,7 +127,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     {
                         "error": "URL_GENERATION_FAILED",
                         "message": "Failed to generate download URL",
-                        "request_id": context.request_id,
+                        "request_id": context.aws_request_id,
                     },
                 )
 
@@ -148,7 +148,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 {
                     "error": "URL_GENERATION_FAILED",
                     "message": "Failed to generate download URL",
-                    "request_id": context.request_id,
+                    "request_id": context.aws_request_id,
                 },
             )
 
@@ -195,7 +195,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             {
                 "error": "INTERNAL_ERROR",
                 "message": "Failed to process download request",
-                "request_id": context.request_id,
+                "request_id": context.aws_request_id,
             },
         )
 

@@ -12,7 +12,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Configuration
-PYTHON_VERSION="3.13"
+PYTHON_VERSION="3.12"
 LAYER_NAME="ai-ppt-assistant-dependencies"
 BUILD_DIR="build"
 PACKAGE_DIR="python"
@@ -27,14 +27,14 @@ echo -e "${GREEN}========================================${NC}"
 
 # Function to check Python version
 check_python_version() {
-    if command -v python3.13 &> /dev/null; then
-        PYTHON_CMD="python3.13"
+    if command -v python3.12 &> /dev/null; then
+        PYTHON_CMD="python3.12"
     elif command -v python3 &> /dev/null; then
         PYTHON_CMD="python3"
         # Check if it's actually 3.13
         ACTUAL_VERSION=$($PYTHON_CMD --version 2>&1 | grep -oE '[0-9]+\.[0-9]+')
-        if [[ "$ACTUAL_VERSION" != "3.13" ]]; then
-            echo -e "${YELLOW}Warning: Python version is $ACTUAL_VERSION, not 3.13${NC}"
+        if [[ "$ACTUAL_VERSION" != "3.12" ]]; then
+            echo -e "${YELLOW}Warning: Python version is $ACTUAL_VERSION, not 3.12${NC}"
             echo -e "${YELLOW}Consider using Docker for accurate builds${NC}"
         fi
     else
@@ -84,16 +84,16 @@ build_docker() {
     
     # Create a temporary Dockerfile for ARM64
     cat > Dockerfile.layer <<EOF
-FROM --platform=linux/arm64 public.ecr.aws/lambda/python:3.13-arm64
+FROM --platform=linux/arm64 public.ecr.aws/lambda/python:3.12-arm64
 
 # Copy requirements file
 COPY requirements.txt /tmp/
 
 # Install packages for ARM64 architecture
-RUN pip install -r /tmp/requirements.txt -t /opt/python/lib/python3.13/site-packages/ \\
+RUN pip install -r /tmp/requirements.txt -t /opt/python/lib/python3.12/site-packages/ \\
     --platform linux_aarch64 \\
     --implementation cp \\
-    --python-version 3.13 \\
+    --python-version 3.12 \\
     --only-binary=:all: \\
     --upgrade \\
     --no-cache-dir
@@ -152,7 +152,7 @@ create_layer_info() {
 {
     "name": "${LAYER_NAME}",
     "description": "Shared dependencies for AI PPT Assistant Lambda functions",
-    "compatible_runtimes": ["python3.13"],
+    "compatible_runtimes": ["python3.12"],
     "compatible_architectures": ["${ARCHITECTURE}"],
     "license": "MIT",
     "build_date": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
@@ -207,7 +207,7 @@ main() {
     echo -e "  --layer-name ${LAYER_NAME} \\"
     echo -e "  --description 'Shared dependencies for AI PPT Assistant' \\"
     echo -e "  --zip-file fileb://$OUTPUT_DIR/${LAYER_NAME}.zip \\"
-    echo -e "  --compatible-runtimes python3.13 \\"
+    echo -e "  --compatible-runtimes python3.12 \\"
     echo -e "  --compatible-architectures ${ARCHITECTURE}"
 }
 
