@@ -1,0 +1,21 @@
+{
+  "id": "approval_1756977449128_u7qiqmppx",
+  "title": "AI PPT Assistant - Tasks Document",
+  "filePath": ".spec-workflow/specs/ai-ppt-assistant/tasks.md",
+  "type": "document",
+  "status": "needs-revision",
+  "createdAt": "2025-09-04T09:17:29.128Z",
+  "category": "spec",
+  "categoryName": "ai-ppt-assistant",
+  "response": "Feedback Summary (1 comments):\n\nGeneral Comments:\n1. 用中文进行任务制作\n\n",
+  "annotations": "{\n  \"decision\": \"needs-revision\",\n  \"comments\": [\n    {\n      \"type\": \"general\",\n      \"comment\": \"用中文进行任务制作\",\n      \"timestamp\": \"2025-09-04T09:18:21.025Z\",\n      \"id\": \"comment_1756977501025_9a2orce32\"\n    }\n  ],\n  \"summary\": \"Feedback Summary (1 comments):\\n\\nGeneral Comments:\\n1. 用中文进行任务制作\\n\\n\",\n  \"timestamp\": \"2025-09-04T09:18:22.957Z\"\n}",
+  "respondedAt": "2025-09-04T09:18:22.964Z",
+  "comments": [
+    {
+      "type": "general",
+      "comment": "用中文进行任务制作",
+      "timestamp": "2025-09-04T09:18:21.025Z",
+      "id": "comment_1756977501025_9a2orce32"
+    }
+  ]
+}

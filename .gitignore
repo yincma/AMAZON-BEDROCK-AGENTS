@@ -1,0 +1,45 @@
+# Terraform临时文件
+*.backup
+*.tfplan
+.terraform.lock.hcl.backup
+.terraform/
+terraform.tfstate
+terraform.tfstate.*
+
+# Python缓存
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# IDE文件
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# AWS credentials
+.aws/
+aws-credentials.json
+
+# Logs
+*.log
+logs/
+
+# Environment files
+.env
+.env.local
+.env.prod
+
+# Node modules (if any)
+node_modules/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

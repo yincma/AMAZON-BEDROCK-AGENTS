@@ -1,0 +1,553 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>interfaces.presentation_controller_interface module &mdash; AI PPT Assistant 1.0.0 文档</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=3bd3f67c" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=34088549"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=fd10adb8"></script>
+      <script src="../_static/translations.js?v=beaddf03"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AI PPT Assistant
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">用户指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/installation.html">安装指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/quickstart.html">快速开始</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">架构设计</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/architecture.html">系统架构</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">现有文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../existing/api.html">API文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/api.html#ai-ppt-assistant-api-documentation">AI PPT Assistant API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/deployment.html">部署文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/deployment.html#ai-ppt-assistant-deployment-guide">AI PPT Assistant - Deployment Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/deployment-checklist.html">部署检查清单</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/deployment-checklist.html#ai-ppt-assistant-deployment-checklist">AI PPT Assistant - Deployment Checklist</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/config-migration.html">配置迁移指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/config-migration.html#config">🔧 环境变量到Config文件迁移指南</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AI PPT Assistant</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">interfaces.presentation_controller_interface module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/interfaces.presentation_controller_interface.rst.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-interfaces.presentation_controller_interface">
+<span id="interfaces-presentation-controller-interface-module"></span><h1>interfaces.presentation_controller_interface module<a class="headerlink" href="#module-interfaces.presentation_controller_interface" title="Link to this heading"></a></h1>
+<p>Presentation Controller Interface - Abstract Business Logic Layer
+Defines the contract for presentation compilation and orchestration operations</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IPresentationCompiler">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">interfaces.presentation_controller_interface.</span></span><span class="sig-name descname"><span class="pre">IPresentationCompiler</span></span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IPresentationCompiler"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IPresentationCompiler" title="Link to this definition"></a></dt>
+<dd><p>基类：<a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>Interface for presentation compilation operations</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IPresentationCompiler.compile_presentation">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">compile_presentation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout_manager</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IPresentationCompiler.compile_presentation"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IPresentationCompiler.compile_presentation" title="Link to this definition"></a></dt>
+<dd><p>Main compilation method</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompileResponse</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IPresentationCompiler.validate_compilation_request">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_compilation_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IPresentationCompiler.validate_compilation_request"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IPresentationCompiler.validate_compilation_request" title="Link to this definition"></a></dt>
+<dd><p>Validate compilation request parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IPresentationCompiler.get_compilation_status">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_compilation_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">presentation_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IPresentationCompiler.get_compilation_status"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IPresentationCompiler.get_compilation_status" title="Link to this definition"></a></dt>
+<dd><p>Get current compilation status</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IPresentationCompiler.cancel_compilation">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cancel_compilation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">presentation_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IPresentationCompiler.cancel_compilation"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IPresentationCompiler.cancel_compilation" title="Link to this definition"></a></dt>
+<dd><p>Cancel ongoing compilation</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IPresentationOrchestrator">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">interfaces.presentation_controller_interface.</span></span><span class="sig-name descname"><span class="pre">IPresentationOrchestrator</span></span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IPresentationOrchestrator"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IPresentationOrchestrator" title="Link to this definition"></a></dt>
+<dd><p>基类：<a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>Interface for orchestrating presentation generation workflow</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IPresentationOrchestrator.initialize_compilation">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">initialize_compilation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IPresentationOrchestrator.initialize_compilation"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IPresentationOrchestrator.initialize_compilation" title="Link to this definition"></a></dt>
+<dd><p>Initialize compilation process and return task ID</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IPresentationOrchestrator.setup_resources">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">setup_resources</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">presentation_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IPresentationOrchestrator.setup_resources"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IPresentationOrchestrator.setup_resources" title="Link to this definition"></a></dt>
+<dd><p>Setup required resources for compilation</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IPresentationOrchestrator.coordinate_content_generation">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">coordinate_content_generation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">presentation_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_images</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_charts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IPresentationOrchestrator.coordinate_content_generation"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IPresentationOrchestrator.coordinate_content_generation" title="Link to this definition"></a></dt>
+<dd><p>Coordinate content generation across multiple sources</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IPresentationOrchestrator.finalize_presentation">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">finalize_presentation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">presentation_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IPresentationOrchestrator.finalize_presentation"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IPresentationOrchestrator.finalize_presentation" title="Link to this definition"></a></dt>
+<dd><p>Finalize and deliver the presentation</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompileResponse</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IContentProcessor">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">interfaces.presentation_controller_interface.</span></span><span class="sig-name descname"><span class="pre">IContentProcessor</span></span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IContentProcessor"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IContentProcessor" title="Link to this definition"></a></dt>
+<dd><p>基类：<a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>Interface for processing different types of content</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IContentProcessor.process_slide_content">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">process_slide_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slide_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IContentProcessor.process_slide_content"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IContentProcessor.process_slide_content" title="Link to this definition"></a></dt>
+<dd><p>Process individual slide content</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IContentProcessor.process_speaker_notes">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">process_speaker_notes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">notes_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IContentProcessor.process_speaker_notes"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IContentProcessor.process_speaker_notes" title="Link to this definition"></a></dt>
+<dd><p>Process speaker notes for all slides</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IContentProcessor.process_images">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">process_images</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_requests</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IContentProcessor.process_images"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IContentProcessor.process_images" title="Link to this definition"></a></dt>
+<dd><p>Process and download images for slides</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>]]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IContentProcessor.process_charts">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">process_charts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chart_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IContentProcessor.process_charts"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IContentProcessor.process_charts" title="Link to this definition"></a></dt>
+<dd><p>Process chart data for visualization</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IResourceManager">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">interfaces.presentation_controller_interface.</span></span><span class="sig-name descname"><span class="pre">IResourceManager</span></span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IResourceManager"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IResourceManager" title="Link to this definition"></a></dt>
+<dd><p>基类：<a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>Interface for managing compilation resources</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IResourceManager.acquire_resources">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">acquire_resources</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resource_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IResourceManager.acquire_resources"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IResourceManager.acquire_resources" title="Link to this definition"></a></dt>
+<dd><p>Acquire required resources (templates, images, etc.)</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IResourceManager.release_resources">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">release_resources</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resource_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IResourceManager.release_resources"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IResourceManager.release_resources" title="Link to this definition"></a></dt>
+<dd><p>Release acquired resources</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IResourceManager.cache_resource">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cache_resource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resource_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resource_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ttl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3600</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IResourceManager.cache_resource"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IResourceManager.cache_resource" title="Link to this definition"></a></dt>
+<dd><p>Cache resource for future use</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IResourceManager.get_resource_status">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_resource_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resource_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IResourceManager.get_resource_status"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IResourceManager.get_resource_status" title="Link to this definition"></a></dt>
+<dd><p>Get status of a specific resource</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IQualityController">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">interfaces.presentation_controller_interface.</span></span><span class="sig-name descname"><span class="pre">IQualityController</span></span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IQualityController"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IQualityController" title="Link to this definition"></a></dt>
+<dd><p>基类：<a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>Interface for quality control during compilation</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IQualityController.validate_input_data">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_input_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IQualityController.validate_input_data"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IQualityController.validate_input_data" title="Link to this definition"></a></dt>
+<dd><p>Validate input data and return list of issues</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IQualityController.check_content_quality">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_content_quality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">presentation_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IQualityController.check_content_quality"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IQualityController.check_content_quality" title="Link to this definition"></a></dt>
+<dd><p>Check content quality and accessibility</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IQualityController.verify_output_integrity">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">verify_output_integrity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IQualityController.verify_output_integrity"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IQualityController.verify_output_integrity" title="Link to this definition"></a></dt>
+<dd><p>Verify output file integrity</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IQualityController.generate_quality_report">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generate_quality_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">presentation_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IQualityController.generate_quality_report"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IQualityController.generate_quality_report" title="Link to this definition"></a></dt>
+<dd><p>Generate comprehensive quality report</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IPresentationController">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">interfaces.presentation_controller_interface.</span></span><span class="sig-name descname"><span class="pre">IPresentationController</span></span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IPresentationController"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IPresentationController" title="Link to this definition"></a></dt>
+<dd><p>基类：<a class="reference internal" href="#interfaces.presentation_controller_interface.IPresentationCompiler" title="interfaces.presentation_controller_interface.IPresentationCompiler"><code class="xref py py-class docutils literal notranslate"><span class="pre">IPresentationCompiler</span></code></a>, <a class="reference internal" href="#interfaces.presentation_controller_interface.IPresentationOrchestrator" title="interfaces.presentation_controller_interface.IPresentationOrchestrator"><code class="xref py py-class docutils literal notranslate"><span class="pre">IPresentationOrchestrator</span></code></a>, <a class="reference internal" href="#interfaces.presentation_controller_interface.IContentProcessor" title="interfaces.presentation_controller_interface.IContentProcessor"><code class="xref py py-class docutils literal notranslate"><span class="pre">IContentProcessor</span></code></a>, <a class="reference internal" href="#interfaces.presentation_controller_interface.IResourceManager" title="interfaces.presentation_controller_interface.IResourceManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">IResourceManager</span></code></a>, <a class="reference internal" href="#interfaces.presentation_controller_interface.IQualityController" title="interfaces.presentation_controller_interface.IQualityController"><code class="xref py py-class docutils literal notranslate"><span class="pre">IQualityController</span></code></a></p>
+<p>Complete interface for presentation controller operations</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IPresentationController.set_model">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IPresentationController.set_model"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IPresentationController.set_model" title="Link to this definition"></a></dt>
+<dd><p>Set the model layer dependency</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IPresentationController.set_view">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">view</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IPresentationController.set_view"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IPresentationController.set_view" title="Link to this definition"></a></dt>
+<dd><p>Set the view layer dependency</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IPresentationController.get_performance_metrics">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_performance_metrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IPresentationController.get_performance_metrics"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IPresentationController.get_performance_metrics" title="Link to this definition"></a></dt>
+<dd><p>Get compilation performance metrics</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IPresentationController.cleanup_resources">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cleanup_resources</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IPresentationController.cleanup_resources"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IPresentationController.cleanup_resources" title="Link to this definition"></a></dt>
+<dd><p>Cleanup all acquired resources</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IAsyncCompiler">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">interfaces.presentation_controller_interface.</span></span><span class="sig-name descname"><span class="pre">IAsyncCompiler</span></span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IAsyncCompiler"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IAsyncCompiler" title="Link to this definition"></a></dt>
+<dd><p>基类：<a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>Interface for asynchronous compilation</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IAsyncCompiler.compile_presentation_async">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">compile_presentation_async</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IAsyncCompiler.compile_presentation_async"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IAsyncCompiler.compile_presentation_async" title="Link to this definition"></a></dt>
+<dd><p>Asynchronous compilation method</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompileResponse</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IAsyncCompiler.get_compilation_progress">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_compilation_progress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IAsyncCompiler.get_compilation_progress"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IAsyncCompiler.get_compilation_progress" title="Link to this definition"></a></dt>
+<dd><p>Get progress of async compilation</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IBatchCompiler">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">interfaces.presentation_controller_interface.</span></span><span class="sig-name descname"><span class="pre">IBatchCompiler</span></span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IBatchCompiler"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IBatchCompiler" title="Link to this definition"></a></dt>
+<dd><p>基类：<a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>Interface for batch compilation</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IBatchCompiler.compile_presentations_batch">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">compile_presentations_batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">requests</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IBatchCompiler.compile_presentations_batch"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IBatchCompiler.compile_presentations_batch" title="Link to this definition"></a></dt>
+<dd><p>Compile multiple presentations in batch</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">CompileResponse</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IBatchCompiler.get_batch_status">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_batch_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IBatchCompiler.get_batch_status"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IBatchCompiler.get_batch_status" title="Link to this definition"></a></dt>
+<dd><p>Get status of batch compilation</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IPresentationControllerFactory">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">interfaces.presentation_controller_interface.</span></span><span class="sig-name descname"><span class="pre">IPresentationControllerFactory</span></span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IPresentationControllerFactory"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IPresentationControllerFactory" title="Link to this definition"></a></dt>
+<dd><p>基类：<a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>Factory interface for creating controller instances</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IPresentationControllerFactory.create_compiler">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_compiler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">view</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IPresentationControllerFactory.create_compiler"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IPresentationControllerFactory.create_compiler" title="Link to this definition"></a></dt>
+<dd><p>Create a presentation compiler instance</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#interfaces.presentation_controller_interface.IPresentationCompiler" title="interfaces.presentation_controller_interface.IPresentationCompiler"><code class="xref py py-class docutils literal notranslate"><span class="pre">IPresentationCompiler</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IPresentationControllerFactory.create_orchestrator">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_orchestrator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IPresentationControllerFactory.create_orchestrator"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IPresentationControllerFactory.create_orchestrator" title="Link to this definition"></a></dt>
+<dd><p>Create an orchestrator instance</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#interfaces.presentation_controller_interface.IPresentationOrchestrator" title="interfaces.presentation_controller_interface.IPresentationOrchestrator"><code class="xref py py-class docutils literal notranslate"><span class="pre">IPresentationOrchestrator</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IPresentationControllerFactory.create_quality_controller">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_quality_controller</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IPresentationControllerFactory.create_quality_controller"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IPresentationControllerFactory.create_quality_controller" title="Link to this definition"></a></dt>
+<dd><p>Create a quality controller instance</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#interfaces.presentation_controller_interface.IQualityController" title="interfaces.presentation_controller_interface.IQualityController"><code class="xref py py-class docutils literal notranslate"><span class="pre">IQualityController</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IPresentationControllerFactory.create_async_compiler">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_async_compiler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IPresentationControllerFactory.create_async_compiler"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IPresentationControllerFactory.create_async_compiler" title="Link to this definition"></a></dt>
+<dd><p>Create an async compiler instance</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#interfaces.presentation_controller_interface.IAsyncCompiler" title="interfaces.presentation_controller_interface.IAsyncCompiler"><code class="xref py py-class docutils literal notranslate"><span class="pre">IAsyncCompiler</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_controller_interface.IPresentationControllerFactory.create_batch_compiler">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_batch_compiler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_controller_interface.html#IPresentationControllerFactory.create_batch_compiler"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_controller_interface.IPresentationControllerFactory.create_batch_compiler" title="Link to this definition"></a></dt>
+<dd><p>Create a batch compiler instance</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#interfaces.presentation_controller_interface.IBatchCompiler" title="interfaces.presentation_controller_interface.IBatchCompiler"><code class="xref py py-class docutils literal notranslate"><span class="pre">IBatchCompiler</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, AI PPT Assistant Team。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

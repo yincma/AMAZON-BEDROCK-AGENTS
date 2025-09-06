@@ -1,0 +1,20 @@
+# Essential Lambda Layer Dependencies for AI PPT Assistant
+# Python 3.13 runtime compatible packages
+
+# AWS SDK - Essential for AWS Lambda operations  
+boto3
+
+# HTTP requests - Essential for API calls
+requests
+
+# Date and time utilities - Common dependency
+python-dateutil
+
+# Environment variable handling
+python-dotenv
+
+# Type hints support - Python compatibility
+typing-extensions
+
+# Performance optimization
+cachetools

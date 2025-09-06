@@ -1,0 +1,81 @@
+{
+  "id": "approval_1756976753169_ml62f1zo3",
+  "title": "AI PPT Assistant - Design Document",
+  "filePath": ".spec-workflow/specs/ai-ppt-assistant/design.md",
+  "type": "document",
+  "status": "needs-revision",
+  "createdAt": "2025-09-04T09:05:53.169Z",
+  "category": "spec",
+  "categoryName": "ai-ppt-assistant",
+  "response": "Feedback Summary (6 comments):\n\nGeneral Comments:\n1. lambda使用python 3.13\n\nSpecific Text Comments:\n1. \"实施 Infrastructure as Code (IaC) 使用 CDK\": 使用Terraform而不是CDK\n2. \"/knowledge-base/       # 知识库文档\": 我目前不需要RAG，所以不需要知识库\n3. \"3.5\": 4.0\n4. \"Amazon Titan Image**: AI 图像生成\": 我希望使用Nova生成图像\n5. \"- API Gateway 使用 Cognito 用户池认证\": 我想简化，不想使用Cognito\n",
+  "annotations": "{\n  \"decision\": \"needs-revision\",\n  \"comments\": [\n    {\n      \"type\": \"selection\",\n      \"comment\": \"使用Terraform而不是CDK\",\n      \"timestamp\": \"2025-09-04T09:06:50.132Z\",\n      \"selectedText\": \"实施 Infrastructure as Code (IaC) 使用 CDK\",\n      \"highlightColor\": {\n        \"bg\": \"rgba(255, 235, 59, 0.3)\",\n        \"border\": \"#FFEB3B\",\n        \"name\": \"#ffeb3b\"\n      },\n      \"id\": \"comment_1756976810132_87rwhimcd\"\n    },\n    {\n      \"type\": \"general\",\n      \"comment\": \"lambda使用python 3.13\",\n      \"timestamp\": \"2025-09-04T09:07:31.614Z\",\n      \"id\": \"comment_1756976851614_h3s4qek3y\"\n    },\n    {\n      \"type\": \"selection\",\n      \"comment\": \"我目前不需要RAG，所以不需要知识库\",\n      \"timestamp\": \"2025-09-04T09:08:12.231Z\",\n      \"selectedText\": \"/knowledge-base/       # 知识库文档\",\n      \"highlightColor\": {\n        \"bg\": \"rgba(255, 235, 59, 0.3)\",\n        \"border\": \"#FFEB3B\",\n        \"name\": \"#ffeb3b\"\n      },\n      \"id\": \"comment_1756976892231_s1kg0mypi\"\n    },\n    {\n      \"type\": \"selection\",\n      \"comment\": \"4.0\",\n      \"timestamp\": \"2025-09-04T09:08:39.147Z\",\n      \"selectedText\": \"3.5\",\n      \"highlightColor\": {\n        \"bg\": \"rgba(255, 235, 59, 0.3)\",\n        \"border\": \"#FFEB3B\",\n        \"name\": \"#ffeb3b\"\n      },\n      \"id\": \"comment_1756976919147_739hmw6jf\"\n    },\n    {\n      \"type\": \"selection\",\n      \"comment\": \"我希望使用Nova生成图像\",\n      \"timestamp\": \"2025-09-04T09:09:14.381Z\",\n      \"selectedText\": \"Amazon Titan Image**: AI 图像生成\",\n      \"highlightColor\": {\n        \"bg\": \"rgba(255, 235, 59, 0.3)\",\n        \"border\": \"#FFEB3B\",\n        \"name\": \"#ffeb3b\"\n      },\n      \"id\": \"comment_1756976954381_e5cp1ri95\"\n    },\n    {\n      \"type\": \"selection\",\n      \"comment\": \"我想简化，不想使用Cognito\",\n      \"timestamp\": \"2025-09-04T09:11:18.747Z\",\n      \"selectedText\": \"- API Gateway 使用 Cognito 用户池认证\",\n      \"highlightColor\": {\n        \"bg\": \"rgba(255, 235, 59, 0.3)\",\n        \"border\": \"#FFEB3B\",\n        \"name\": \"#ffeb3b\"\n      },\n      \"id\": \"comment_1756977078747_ku1epeld6\"\n    }\n  ],\n  \"summary\": \"Feedback Summary (6 comments):\\n\\nGeneral Comments:\\n1. lambda使用python 3.13\\n\\nSpecific Text Comments:\\n1. \\\"实施 Infrastructure as Code (IaC) 使用 CDK\\\": 使用Terraform而不是CDK\\n2. \\\"/knowledge-base/       # 知识库文档\\\": 我目前不需要RAG，所以不需要知识库\\n3. \\\"3.5\\\": 4.0\\n4. \\\"Amazon Titan Image**: AI 图像生成\\\": 我希望使用Nova生成图像\\n5. \\\"- API Gateway 使用 Cognito 用户池认证\\\": 我想简化，不想使用Cognito\\n\",\n  \"timestamp\": \"2025-09-04T09:12:08.178Z\"\n}",
+  "respondedAt": "2025-09-04T09:12:08.191Z",
+  "comments": [
+    {
+      "type": "selection",
+      "comment": "使用Terraform而不是CDK",
+      "timestamp": "2025-09-04T09:06:50.132Z",
+      "selectedText": "实施 Infrastructure as Code (IaC) 使用 CDK",
+      "highlightColor": {
+        "bg": "rgba(255, 235, 59, 0.3)",
+        "border": "#FFEB3B",
+        "name": "#ffeb3b"
+      },
+      "id": "comment_1756976810132_87rwhimcd"
+    },
+    {
+      "type": "general",
+      "comment": "lambda使用python 3.13",
+      "timestamp": "2025-09-04T09:07:31.614Z",
+      "id": "comment_1756976851614_h3s4qek3y"
+    },
+    {
+      "type": "selection",
+      "comment": "我目前不需要RAG，所以不需要知识库",
+      "timestamp": "2025-09-04T09:08:12.231Z",
+      "selectedText": "/knowledge-base/       # 知识库文档",
+      "highlightColor": {
+        "bg": "rgba(255, 235, 59, 0.3)",
+        "border": "#FFEB3B",
+        "name": "#ffeb3b"
+      },
+      "id": "comment_1756976892231_s1kg0mypi"
+    },
+    {
+      "type": "selection",
+      "comment": "4.0",
+      "timestamp": "2025-09-04T09:08:39.147Z",
+      "selectedText": "3.5",
+      "highlightColor": {
+        "bg": "rgba(255, 235, 59, 0.3)",
+        "border": "#FFEB3B",
+        "name": "#ffeb3b"
+      },
+      "id": "comment_1756976919147_739hmw6jf"
+    },
+    {
+      "type": "selection",
+      "comment": "我希望使用Nova生成图像",
+      "timestamp": "2025-09-04T09:09:14.381Z",
+      "selectedText": "Amazon Titan Image**: AI 图像生成",
+      "highlightColor": {
+        "bg": "rgba(255, 235, 59, 0.3)",
+        "border": "#FFEB3B",
+        "name": "#ffeb3b"
+      },
+      "id": "comment_1756976954381_e5cp1ri95"
+    },
+    {
+      "type": "selection",
+      "comment": "我想简化，不想使用Cognito",
+      "timestamp": "2025-09-04T09:11:18.747Z",
+      "selectedText": "- API Gateway 使用 Cognito 用户池认证",
+      "highlightColor": {
+        "bg": "rgba(255, 235, 59, 0.3)",
+        "border": "#FFEB3B",
+        "name": "#ffeb3b"
+      },
+      "id": "comment_1756977078747_ku1epeld6"
+    }
+  ]
+}

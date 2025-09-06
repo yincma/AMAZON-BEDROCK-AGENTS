@@ -1,0 +1,889 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>部署文档 &mdash; AI PPT Assistant 1.0.0 文档</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=3bd3f67c" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=34088549"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=fd10adb8"></script>
+      <script src="../_static/translations.js?v=beaddf03"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="部署检查清单" href="deployment-checklist.html" />
+    <link rel="prev" title="API文档" href="api.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AI PPT Assistant
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">用户指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/installation.html">安装指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/quickstart.html">快速开始</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">架构设计</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/architecture.html">系统架构</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">现有文档</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="api.html">API文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html#ai-ppt-assistant-api-documentation">AI PPT Assistant API Documentation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">部署文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#ai-ppt-assistant-deployment-guide">AI PPT Assistant - Deployment Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#table-of-contents">📋 Table of Contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#prerequisites">Prerequisites</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#required-tools">Required Tools</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aws-account-requirements">AWS Account Requirements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#resource-quotas">Resource Quotas</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#environment-setup">Environment Setup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#clone-the-repository">1. Clone the Repository</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#configure-aws-credentials">2. Configure AWS Credentials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-virtual-environment">3. Create Virtual Environment</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration">Configuration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#terraform-variables">1. Terraform Variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#environment-specific-configuration">2. Environment-Specific Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#deployment-steps">Deployment Steps</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#build-lambda-layers">1. Build Lambda Layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#package-lambda-functions">2. Package Lambda Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#initialize-terraform">3. Initialize Terraform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plan-deployment">4. Plan Deployment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#deploy-infrastructure">5. Deploy Infrastructure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-agent-configuration-files">6. Create Agent Configuration Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#deploy-api-keys">7. Deploy API Keys</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#post-deployment-verification">Post-Deployment Verification</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#verify-infrastructure">1. Verify Infrastructure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#run-smoke-tests">2. Run Smoke Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#verify-monitoring">3. Verify Monitoring</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#monitoring-maintenance">Monitoring &amp; Maintenance</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cloudwatch-dashboards">CloudWatch Dashboards</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alarms-configuration">Alarms Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#regular-maintenance-tasks">Regular Maintenance Tasks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#troubleshooting">Troubleshooting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#common-issues-and-solutions">Common Issues and Solutions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#lambda-timeout-errors">1. Lambda Timeout Errors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bedrock-model-access-issues">2. Bedrock Model Access Issues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#api-gateway-429-errors">3. API Gateway 429 Errors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dynamodb-throttling">4. DynamoDB Throttling</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sqs-message-processing-failures">5. SQS Message Processing Failures</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#debug-commands">Debug Commands</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#rollback-procedures">Rollback Procedures</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#quick-rollback">Quick Rollback</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gradual-rollback">Gradual Rollback</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#security-considerations">Security Considerations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#best-practices">Best Practices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#security-checklist">Security Checklist</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#compliance">Compliance</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#support">Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#appendix">Appendix</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#useful-scripts">Useful Scripts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#environment-variables-reference">Environment Variables Reference</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="deployment-checklist.html">部署检查清单</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deployment-checklist.html#ai-ppt-assistant-deployment-checklist">AI PPT Assistant - Deployment Checklist</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config-migration.html">配置迁移指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config-migration.html#config">🔧 环境变量到Config文件迁移指南</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AI PPT Assistant</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">部署文档</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/existing/deployment.md.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>部署文档<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+</section>
+<section id="ai-ppt-assistant-deployment-guide">
+<h1>AI PPT Assistant - Deployment Guide<a class="headerlink" href="#ai-ppt-assistant-deployment-guide" title="Link to this heading"></a></h1>
+<section id="table-of-contents">
+<h2>📋 Table of Contents<a class="headerlink" href="#table-of-contents" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="#prerequisites"><span class="xref myst">Prerequisites</span></a></p></li>
+<li><p><a class="reference internal" href="#environment-setup"><span class="xref myst">Environment Setup</span></a></p></li>
+<li><p><a class="reference internal" href="#configuration"><span class="xref myst">Configuration</span></a></p></li>
+<li><p><a class="reference internal" href="#deployment-steps"><span class="xref myst">Deployment Steps</span></a></p></li>
+<li><p><a class="reference internal" href="#post-deployment-verification"><span class="xref myst">Post-Deployment Verification</span></a></p></li>
+<li><p><a class="reference internal" href="#monitoring--maintenance"><span class="xref myst">Monitoring &amp; Maintenance</span></a></p></li>
+<li><p><a class="reference internal" href="#troubleshooting"><span class="xref myst">Troubleshooting</span></a></p></li>
+<li><p><a class="reference internal" href="#rollback-procedures"><span class="xref myst">Rollback Procedures</span></a></p></li>
+<li><p><a class="reference internal" href="#security-considerations"><span class="xref myst">Security Considerations</span></a></p></li>
+</ul>
+</section>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading"></a></h2>
+<section id="required-tools">
+<h3>Required Tools<a class="headerlink" href="#required-tools" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Tool</p></th>
+<th class="head"><p>Minimum Version</p></th>
+<th class="head"><p>Installation Guide</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>AWS CLI</p></td>
+<td><p>2.x</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">brew</span> <span class="pre">install</span> <span class="pre">awscli</span></code> or <a class="reference external" href="https://aws.amazon.com/cli/">AWS Documentation</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Terraform</p></td>
+<td><p>1.6.0+</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">brew</span> <span class="pre">install</span> <span class="pre">terraform</span></code> or <a class="reference external" href="https://www.terraform.io/downloads">Terraform Downloads</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Python</p></td>
+<td><p>3.13</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">brew</span> <span class="pre">install</span> <span class="pre">python&#64;3.13</span></code> or <a class="reference external" href="https://www.python.org/downloads/">Python Downloads</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Git</p></td>
+<td><p>2.x</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">brew</span> <span class="pre">install</span> <span class="pre">git</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Make</p></td>
+<td><p>3.x</p></td>
+<td><p>Pre-installed on Unix systems</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="aws-account-requirements">
+<h3>AWS Account Requirements<a class="headerlink" href="#aws-account-requirements" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>AWS Account</strong>: Active AWS account with appropriate permissions</p></li>
+<li><p><strong>IAM Permissions</strong>: Administrator access or custom policy with permissions for:</p>
+<ul class="simple">
+<li><p>Lambda</p></li>
+<li><p>API Gateway</p></li>
+<li><p>S3</p></li>
+<li><p>DynamoDB</p></li>
+<li><p>SQS</p></li>
+<li><p>Bedrock</p></li>
+<li><p>IAM (for role creation)</p></li>
+<li><p>CloudWatch</p></li>
+</ul>
+</li>
+<li><p><strong>Bedrock Access</strong>: Ensure Bedrock is enabled in your region with access to:</p>
+<ul class="simple">
+<li><p>Claude 4.0</p></li>
+<li><p>Claude 4.1</p></li>
+<li><p>Amazon Nova Canvas</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="resource-quotas">
+<h3>Resource Quotas<a class="headerlink" href="#resource-quotas" title="Link to this heading"></a></h3>
+<p>Verify the following AWS service quotas in your account:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Service</p></th>
+<th class="head"><p>Resource</p></th>
+<th class="head"><p>Required Quota</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Lambda</p></td>
+<td><p>Concurrent executions</p></td>
+<td><p>100+</p></td>
+</tr>
+<tr class="row-odd"><td><p>Lambda</p></td>
+<td><p>Function and layer storage</p></td>
+<td><p>10 GB</p></td>
+</tr>
+<tr class="row-even"><td><p>API Gateway</p></td>
+<td><p>REST APIs</p></td>
+<td><p>5+</p></td>
+</tr>
+<tr class="row-odd"><td><p>DynamoDB</p></td>
+<td><p>On-demand tables</p></td>
+<td><p>5+</p></td>
+</tr>
+<tr class="row-even"><td><p>S3</p></td>
+<td><p>Buckets</p></td>
+<td><p>5+</p></td>
+</tr>
+<tr class="row-odd"><td><p>SQS</p></td>
+<td><p>Queues</p></td>
+<td><p>5+</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="environment-setup">
+<h2>Environment Setup<a class="headerlink" href="#environment-setup" title="Link to this heading"></a></h2>
+<section id="clone-the-repository">
+<h3>1. Clone the Repository<a class="headerlink" href="#clone-the-repository" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/your-org/ai-ppt-assistant.git
+<span class="nb">cd</span><span class="w"> </span>ai-ppt-assistant
+</pre></div>
+</div>
+</section>
+<section id="configure-aws-credentials">
+<h3>2. Configure AWS Credentials<a class="headerlink" href="#configure-aws-credentials" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Option 1: Using AWS CLI</span>
+aws<span class="w"> </span>configure
+<span class="c1"># Enter your AWS Access Key ID, Secret Access Key, Region (us-east-1), and output format</span>
+
+<span class="c1"># Option 2: Using environment variables</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">AWS_ACCESS_KEY_ID</span><span class="o">=</span><span class="s2">&quot;your-access-key-id&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">AWS_SECRET_ACCESS_KEY</span><span class="o">=</span><span class="s2">&quot;your-secret-access-key&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">AWS_DEFAULT_REGION</span><span class="o">=</span><span class="s2">&quot;us-east-1&quot;</span>
+
+<span class="c1"># Option 3: Using AWS SSO</span>
+aws<span class="w"> </span>sso<span class="w"> </span>login<span class="w"> </span>--profile<span class="w"> </span>your-profile
+<span class="nb">export</span><span class="w"> </span><span class="nv">AWS_PROFILE</span><span class="o">=</span>your-profile
+</pre></div>
+</div>
+</section>
+<section id="create-virtual-environment">
+<h3>3. Create Virtual Environment<a class="headerlink" href="#create-virtual-environment" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3.13<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>venv
+<span class="nb">source</span><span class="w"> </span>venv/bin/activate<span class="w">  </span><span class="c1"># On Windows: venv\Scripts\activate</span>
+pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+</pre></div>
+</div>
+</section>
+</section>
+<section id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading"></a></h2>
+<section id="terraform-variables">
+<h3>1. Terraform Variables<a class="headerlink" href="#terraform-variables" title="Link to this heading"></a></h3>
+<p>Create <code class="docutils literal notranslate"><span class="pre">infrastructure/terraform.tfvars</span></code>:</p>
+<div class="highlight-hcl notranslate"><div class="highlight"><pre><span></span><span class="c1"># Project Configuration</span>
+<span class="na">project_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;ai-ppt-assistant&quot;</span>
+<span class="na">environment</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;production&quot;</span>
+<span class="na">aws_region</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;us-east-1&quot;</span>
+
+<span class="c1"># Lambda Configuration</span>
+<span class="nb">lambda_memory_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">create_outline</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="m">1024</span>
+<span class="w">  </span><span class="na">generate_content</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="m">2048</span>
+<span class="w">  </span><span class="na">generate_image</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="m">1024</span>
+<span class="w">  </span><span class="na">compile_pptx</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="m">3008</span>
+<span class="w">  </span><span class="na">api_endpoints</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="m">512</span>
+<span class="p">}</span>
+
+<span class="nb">lambda_timeout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">create_outline</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="m">60</span>
+<span class="w">  </span><span class="na">generate_content</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="m">120</span>
+<span class="w">  </span><span class="na">generate_image</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="m">90</span>
+<span class="w">  </span><span class="na">compile_pptx</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="m">180</span>
+<span class="w">  </span><span class="na">api_endpoints</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="m">30</span>
+<span class="p">}</span>
+
+<span class="c1"># Bedrock Configuration</span>
+<span class="nb">bedrock_models</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">orchestrator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;anthropic.claude-4-1&quot;</span>
+<span class="w">  </span><span class="na">content</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;anthropic.claude-4-0&quot;</span>
+<span class="w">  </span><span class="na">visual</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;anthropic.claude-4-0&quot;</span>
+<span class="w">  </span><span class="na">compiler</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;anthropic.claude-4-0&quot;</span>
+<span class="p">}</span>
+
+<span class="c1"># S3 Configuration</span>
+<span class="nb">s3_lifecycle_rules</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">transition_to_ia_days</span><span class="w">           </span><span class="o">=</span><span class="w"> </span><span class="m">30</span>
+<span class="w">  </span><span class="na">transition_to_glacier_days</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="m">90</span>
+<span class="w">  </span><span class="na">expiration_days</span><span class="w">                 </span><span class="o">=</span><span class="w"> </span><span class="m">365</span>
+<span class="p">}</span>
+
+<span class="c1"># DynamoDB Configuration</span>
+<span class="na">dynamodb_ttl_days</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">30</span>
+
+<span class="c1"># API Gateway Configuration</span>
+<span class="na">api_throttle_burst_limit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">100</span>
+<span class="na">api_throttle_rate_limit</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="m">50</span>
+
+<span class="c1"># Tags</span>
+<span class="nb">tags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">Project</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;AI PPT Assistant&quot;</span>
+<span class="w">  </span><span class="na">Environment</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;production&quot;</span>
+<span class="w">  </span><span class="na">ManagedBy</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;Terraform&quot;</span>
+<span class="w">  </span><span class="na">Owner</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;your-team&quot;</span>
+<span class="w">  </span><span class="na">CostCenter</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;your-cost-center&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="environment-specific-configuration">
+<h3>2. Environment-Specific Configuration<a class="headerlink" href="#environment-specific-configuration" title="Link to this heading"></a></h3>
+<p>For different environments, create separate variable files:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">terraform.dev.tfvars</span></code> - Development environment</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">terraform.staging.tfvars</span></code> - Staging environment</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">terraform.prod.tfvars</span></code> - Production environment</p></li>
+</ul>
+</section>
+</section>
+<section id="deployment-steps">
+<h2>Deployment Steps<a class="headerlink" href="#deployment-steps" title="Link to this heading"></a></h2>
+<section id="build-lambda-layers">
+<h3>1. Build Lambda Layers<a class="headerlink" href="#build-lambda-layers" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Build Python dependencies layer</span>
+<span class="nb">cd</span><span class="w"> </span>lambdas/layers
+./build.sh
+<span class="nb">cd</span><span class="w"> </span>../..
+</pre></div>
+</div>
+</section>
+<section id="package-lambda-functions">
+<h3>2. Package Lambda Functions<a class="headerlink" href="#package-lambda-functions" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Package all Lambda functions</span>
+make<span class="w"> </span>package-lambdas
+</pre></div>
+</div>
+</section>
+<section id="initialize-terraform">
+<h3>3. Initialize Terraform<a class="headerlink" href="#initialize-terraform" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>infrastructure
+terraform<span class="w"> </span>init
+</pre></div>
+</div>
+</section>
+<section id="plan-deployment">
+<h3>4. Plan Deployment<a class="headerlink" href="#plan-deployment" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Review the deployment plan</span>
+terraform<span class="w"> </span>plan<span class="w"> </span>-var-file<span class="o">=</span><span class="s2">&quot;terraform.tfvars&quot;</span>
+
+<span class="c1"># Save the plan for later execution</span>
+terraform<span class="w"> </span>plan<span class="w"> </span>-var-file<span class="o">=</span><span class="s2">&quot;terraform.tfvars&quot;</span><span class="w"> </span>-out<span class="o">=</span>tfplan
+</pre></div>
+</div>
+</section>
+<section id="deploy-infrastructure">
+<h3>5. Deploy Infrastructure<a class="headerlink" href="#deploy-infrastructure" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Apply the Terraform configuration</span>
+terraform<span class="w"> </span>apply<span class="w"> </span>-var-file<span class="o">=</span><span class="s2">&quot;terraform.tfvars&quot;</span>
+
+<span class="c1"># Or apply the saved plan</span>
+terraform<span class="w"> </span>apply<span class="w"> </span>tfplan
+</pre></div>
+</div>
+</section>
+<section id="create-agent-configuration-files">
+<h3>6. Create Agent Configuration Files<a class="headerlink" href="#create-agent-configuration-files" title="Link to this heading"></a></h3>
+<p>After infrastructure deployment, create agent configuration files:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create agent instruction files</span>
+<span class="k">for</span><span class="w"> </span>agent<span class="w"> </span><span class="k">in</span><span class="w"> </span>orchestrator<span class="w"> </span>content<span class="w"> </span>visual<span class="w"> </span>compiler<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">  </span>aws<span class="w"> </span>s3<span class="w"> </span>cp<span class="w"> </span>agents/<span class="nv">$agent</span>/instructions.txt<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>s3://<span class="si">${</span><span class="nv">PROJECT_NAME</span><span class="si">}</span>-bedrock-agent-configs/<span class="nv">$agent</span>/
+<span class="w">  </span>
+<span class="w">  </span>aws<span class="w"> </span>s3<span class="w"> </span>cp<span class="w"> </span>agents/<span class="nv">$agent</span>/action_groups.json<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>s3://<span class="si">${</span><span class="nv">PROJECT_NAME</span><span class="si">}</span>-bedrock-agent-configs/<span class="nv">$agent</span>/
+<span class="k">done</span>
+</pre></div>
+</div>
+</section>
+<section id="deploy-api-keys">
+<h3>7. Deploy API Keys<a class="headerlink" href="#deploy-api-keys" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create API key for authentication</span>
+aws<span class="w"> </span>apigateway<span class="w"> </span>create-api-key<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--name<span class="w"> </span><span class="s2">&quot;ai-ppt-assistant-key&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--enabled<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--region<span class="w"> </span>us-east-1
+
+<span class="c1"># Associate with usage plan</span>
+aws<span class="w"> </span>apigateway<span class="w"> </span>create-usage-plan-key<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--usage-plan-id<span class="w"> </span>&lt;usage-plan-id&gt;<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--key-id<span class="w"> </span>&lt;api-key-id&gt;<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--key-type<span class="w"> </span>API_KEY
+</pre></div>
+</div>
+</section>
+</section>
+<section id="post-deployment-verification">
+<h2>Post-Deployment Verification<a class="headerlink" href="#post-deployment-verification" title="Link to this heading"></a></h2>
+<section id="verify-infrastructure">
+<h3>1. Verify Infrastructure<a class="headerlink" href="#verify-infrastructure" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check Lambda functions</span>
+aws<span class="w"> </span>lambda<span class="w"> </span>list-functions<span class="w"> </span>--query<span class="w"> </span><span class="s2">&quot;Functions[?starts_with(FunctionName, &#39;ai-ppt-assistant&#39;)]&quot;</span>
+
+<span class="c1"># Check API Gateway</span>
+aws<span class="w"> </span>apigateway<span class="w"> </span>get-rest-apis<span class="w"> </span>--query<span class="w"> </span><span class="s2">&quot;items[?name==&#39;ai-ppt-assistant-api&#39;]&quot;</span>
+
+<span class="c1"># Check DynamoDB tables</span>
+aws<span class="w"> </span>dynamodb<span class="w"> </span>list-tables<span class="w"> </span>--query<span class="w"> </span><span class="s2">&quot;TableNames[?contains(@, &#39;ai-ppt-assistant&#39;)]&quot;</span>
+
+<span class="c1"># Check S3 buckets</span>
+aws<span class="w"> </span>s3<span class="w"> </span>ls<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>ai-ppt-assistant
+
+<span class="c1"># Check Bedrock agents</span>
+aws<span class="w"> </span>bedrock-agent<span class="w"> </span>list-agents<span class="w"> </span>--query<span class="w"> </span><span class="s2">&quot;agentSummaries[?contains(agentName, &#39;ai-ppt-assistant&#39;)]&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="run-smoke-tests">
+<h3>2. Run Smoke Tests<a class="headerlink" href="#run-smoke-tests" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run smoke tests to verify basic functionality</span>
+make<span class="w"> </span>test-smoke
+
+<span class="c1"># Or manually test the API</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>https://api.example.com/presentations/generate<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;x-api-key: your-api-key&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;topic&quot;: &quot;Test Presentation&quot;,</span>
+<span class="s1">    &quot;duration&quot;: 30,</span>
+<span class="s1">    &quot;slide_count&quot;: 5</span>
+<span class="s1">  }&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="verify-monitoring">
+<h3>3. Verify Monitoring<a class="headerlink" href="#verify-monitoring" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check CloudWatch logs</span>
+aws<span class="w"> </span>logs<span class="w"> </span>describe-log-groups<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--query<span class="w"> </span><span class="s2">&quot;logGroups[?contains(logGroupName, &#39;ai-ppt-assistant&#39;)]&quot;</span>
+
+<span class="c1"># Check metrics</span>
+aws<span class="w"> </span>cloudwatch<span class="w"> </span>list-metrics<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--namespace<span class="w"> </span><span class="s2">&quot;AWS/Lambda&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--dimensions<span class="w"> </span><span class="nv">Name</span><span class="o">=</span>FunctionName,Value<span class="o">=</span>ai-ppt-assistant-create-outline
+</pre></div>
+</div>
+</section>
+</section>
+<section id="monitoring-maintenance">
+<h2>Monitoring &amp; Maintenance<a class="headerlink" href="#monitoring-maintenance" title="Link to this heading"></a></h2>
+<section id="cloudwatch-dashboards">
+<h3>CloudWatch Dashboards<a class="headerlink" href="#cloudwatch-dashboards" title="Link to this heading"></a></h3>
+<p>Create CloudWatch dashboards for monitoring:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;widgets&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;metric&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;metrics&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">          </span><span class="p">[</span><span class="s2">&quot;AWS/Lambda&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Invocations&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;stat&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Sum&quot;</span><span class="p">}],</span>
+<span class="w">          </span><span class="p">[</span><span class="s2">&quot;...&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Errors&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;stat&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Sum&quot;</span><span class="p">}],</span>
+<span class="w">          </span><span class="p">[</span><span class="s2">&quot;...&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Duration&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;stat&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Average&quot;</span><span class="p">}],</span>
+<span class="w">          </span><span class="p">[</span><span class="s2">&quot;...&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ConcurrentExecutions&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;stat&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Maximum&quot;</span><span class="p">}]</span>
+<span class="w">        </span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;period&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">300</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;stat&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Average&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;region&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;us-east-1&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Lambda Performance&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="alarms-configuration">
+<h3>Alarms Configuration<a class="headerlink" href="#alarms-configuration" title="Link to this heading"></a></h3>
+<p>Set up CloudWatch alarms:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Lambda error rate alarm</span>
+aws<span class="w"> </span>cloudwatch<span class="w"> </span>put-metric-alarm<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--alarm-name<span class="w"> </span><span class="s2">&quot;ai-ppt-assistant-lambda-errors&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--alarm-description<span class="w"> </span><span class="s2">&quot;Alert when Lambda error rate is high&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--metric-name<span class="w"> </span>Errors<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--namespace<span class="w"> </span>AWS/Lambda<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--statistic<span class="w"> </span>Sum<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--period<span class="w"> </span><span class="m">300</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--threshold<span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--comparison-operator<span class="w"> </span>GreaterThanThreshold<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--evaluation-periods<span class="w"> </span><span class="m">2</span>
+
+<span class="c1"># API Gateway 4xx errors</span>
+aws<span class="w"> </span>cloudwatch<span class="w"> </span>put-metric-alarm<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--alarm-name<span class="w"> </span><span class="s2">&quot;ai-ppt-assistant-api-4xx&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--alarm-description<span class="w"> </span><span class="s2">&quot;Alert on high 4xx error rate&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--metric-name<span class="w"> </span>4XXError<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--namespace<span class="w"> </span>AWS/ApiGateway<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--statistic<span class="w"> </span>Sum<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--period<span class="w"> </span><span class="m">300</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--threshold<span class="w"> </span><span class="m">50</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--comparison-operator<span class="w"> </span>GreaterThanThreshold<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--evaluation-periods<span class="w"> </span><span class="m">1</span>
+</pre></div>
+</div>
+</section>
+<section id="regular-maintenance-tasks">
+<h3>Regular Maintenance Tasks<a class="headerlink" href="#regular-maintenance-tasks" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Task</p></th>
+<th class="head"><p>Frequency</p></th>
+<th class="head"><p>Command/Action</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Check Lambda logs</p></td>
+<td><p>Daily</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">aws</span> <span class="pre">logs</span> <span class="pre">tail</span> <span class="pre">/aws/lambda/ai-ppt-assistant</span> <span class="pre">--follow</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Monitor costs</p></td>
+<td><p>Weekly</p></td>
+<td><p>AWS Cost Explorer</p></td>
+</tr>
+<tr class="row-even"><td><p>Update dependencies</p></td>
+<td><p>Monthly</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pip-audit</span></code> and update requirements.txt</p></td>
+</tr>
+<tr class="row-odd"><td><p>Review security</p></td>
+<td><p>Monthly</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">aws</span> <span class="pre">accessanalyzer</span> <span class="pre">list-findings</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Backup DynamoDB</p></td>
+<td><p>Weekly</p></td>
+<td><p>Enable point-in-time recovery</p></td>
+</tr>
+<tr class="row-odd"><td><p>Clean S3 old files</p></td>
+<td><p>Monthly</p></td>
+<td><p>Review lifecycle policies</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading"></a></h2>
+<section id="common-issues-and-solutions">
+<h3>Common Issues and Solutions<a class="headerlink" href="#common-issues-and-solutions" title="Link to this heading"></a></h3>
+<section id="lambda-timeout-errors">
+<h4>1. Lambda Timeout Errors<a class="headerlink" href="#lambda-timeout-errors" title="Link to this heading"></a></h4>
+<p><strong>Symptom</strong>: Lambda functions timing out
+<strong>Solution</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Increase timeout in terraform.tfvars</span>
+<span class="nv">lambda_timeout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">{</span>
+<span class="w">  </span><span class="nv">compile_pptx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">300</span><span class="w">  </span><span class="c1"># Increase from 180 to 300</span>
+<span class="o">}</span>
+
+<span class="c1"># Reapply configuration</span>
+terraform<span class="w"> </span>apply<span class="w"> </span>-var-file<span class="o">=</span><span class="s2">&quot;terraform.tfvars&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="bedrock-model-access-issues">
+<h4>2. Bedrock Model Access Issues<a class="headerlink" href="#bedrock-model-access-issues" title="Link to this heading"></a></h4>
+<p><strong>Symptom</strong>: “Model not found” or “Access denied” errors
+<strong>Solution</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check model access</span>
+aws<span class="w"> </span>bedrock<span class="w"> </span>list-foundation-models<span class="w"> </span>--region<span class="w"> </span>us-east-1
+
+<span class="c1"># Request model access if needed</span>
+<span class="c1"># Go to AWS Console &gt; Bedrock &gt; Model access</span>
+</pre></div>
+</div>
+</section>
+<section id="api-gateway-429-errors">
+<h4>3. API Gateway 429 Errors<a class="headerlink" href="#api-gateway-429-errors" title="Link to this heading"></a></h4>
+<p><strong>Symptom</strong>: Too many requests errors
+<strong>Solution</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Increase throttle limits</span>
+<span class="nv">api_throttle_burst_limit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">200</span><span class="w">  </span><span class="c1"># Increase from 100</span>
+<span class="nv">api_throttle_rate_limit</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="m">100</span><span class="w">  </span><span class="c1"># Increase from 50</span>
+</pre></div>
+</div>
+</section>
+<section id="dynamodb-throttling">
+<h4>4. DynamoDB Throttling<a class="headerlink" href="#dynamodb-throttling" title="Link to this heading"></a></h4>
+<p><strong>Symptom</strong>: ProvisionedThroughputExceededException
+<strong>Solution</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Switch to on-demand billing mode</span>
+<span class="c1"># Already configured in our setup, but verify:</span>
+aws<span class="w"> </span>dynamodb<span class="w"> </span>describe-table<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--table-name<span class="w"> </span>ai-ppt-assistant-presentations<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--query<span class="w"> </span><span class="s2">&quot;Table.BillingModeSummary&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="sqs-message-processing-failures">
+<h4>5. SQS Message Processing Failures<a class="headerlink" href="#sqs-message-processing-failures" title="Link to this heading"></a></h4>
+<p><strong>Symptom</strong>: Messages ending up in DLQ
+<strong>Solution</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check DLQ for failed messages</span>
+aws<span class="w"> </span>sqs<span class="w"> </span>receive-message<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--queue-url<span class="w"> </span>https://sqs.us-east-1.amazonaws.com/account/ai-ppt-assistant-dlq
+
+<span class="c1"># Redrive messages from DLQ</span>
+aws<span class="w"> </span>sqs<span class="w"> </span>start-message-move-task<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--source-arn<span class="w"> </span>arn:aws:sqs:region:account:ai-ppt-assistant-dlq
+</pre></div>
+</div>
+</section>
+</section>
+<section id="debug-commands">
+<h3>Debug Commands<a class="headerlink" href="#debug-commands" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># View Lambda logs</span>
+aws<span class="w"> </span>logs<span class="w"> </span>tail<span class="w"> </span>/aws/lambda/ai-ppt-assistant-create-outline<span class="w"> </span>--follow
+
+<span class="c1"># Test Lambda function</span>
+aws<span class="w"> </span>lambda<span class="w"> </span>invoke<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--function-name<span class="w"> </span>ai-ppt-assistant-create-outline<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--payload<span class="w"> </span><span class="s1">&#39;{&quot;topic&quot;:&quot;Test&quot;}&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>response.json
+
+<span class="c1"># Check API Gateway logs</span>
+aws<span class="w"> </span>logs<span class="w"> </span>get-log-events<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--log-group-name<span class="w"> </span>API-Gateway-Execution-Logs_&lt;api-id&gt;/prod
+
+<span class="c1"># Monitor SQS queue</span>
+watch<span class="w"> </span>-n<span class="w"> </span><span class="m">5</span><span class="w"> </span><span class="s1">&#39;aws sqs get-queue-attributes \</span>
+<span class="s1">  --queue-url &lt;queue-url&gt; \</span>
+<span class="s1">  --attribute-names All&#39;</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="rollback-procedures">
+<h2>Rollback Procedures<a class="headerlink" href="#rollback-procedures" title="Link to this heading"></a></h2>
+<section id="quick-rollback">
+<h3>Quick Rollback<a class="headerlink" href="#quick-rollback" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Revert to previous Terraform state</span>
+<span class="nb">cd</span><span class="w"> </span>infrastructure
+terraform<span class="w"> </span>plan<span class="w"> </span>-destroy
+terraform<span class="w"> </span>destroy<span class="w"> </span>-auto-approve
+
+<span class="c1"># Restore from backup</span>
+terraform<span class="w"> </span>apply<span class="w"> </span>-var-file<span class="o">=</span><span class="s2">&quot;terraform.tfvars.backup&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="gradual-rollback">
+<h3>Gradual Rollback<a class="headerlink" href="#gradual-rollback" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Disable API Gateway stages</strong></p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>aws<span class="w"> </span>apigateway<span class="w"> </span>update-stage<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--rest-api-id<span class="w"> </span>&lt;api-id&gt;<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--stage-name<span class="w"> </span>prod<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--patch-operations<span class="w"> </span><span class="nv">op</span><span class="o">=</span>replace,path<span class="o">=</span>/*/throttle/rateLimit,value<span class="o">=</span><span class="m">0</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p><strong>Stop Lambda invocations</strong></p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set concurrency to 0</span>
+<span class="k">for</span><span class="w"> </span>func<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">$(</span>aws<span class="w"> </span>lambda<span class="w"> </span>list-functions<span class="w"> </span>--query<span class="w"> </span><span class="s2">&quot;Functions[?starts_with(FunctionName, &#39;ai-ppt-assistant&#39;)].FunctionName&quot;</span><span class="w"> </span>--output<span class="w"> </span>text<span class="k">)</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">  </span>aws<span class="w"> </span>lambda<span class="w"> </span>put-function-concurrency<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--function-name<span class="w"> </span><span class="nv">$func</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--reserved-concurrent-executions<span class="w"> </span><span class="m">0</span>
+<span class="k">done</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p><strong>Restore previous version</strong></p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Deploy previous Lambda versions</span>
+aws<span class="w"> </span>lambda<span class="w"> </span>update-function-code<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--function-name<span class="w"> </span>ai-ppt-assistant-create-outline<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--s3-bucket<span class="w"> </span>deployment-bucket<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--s3-key<span class="w"> </span>lambdas/previous/create_outline.zip
+</pre></div>
+</div>
+</section>
+</section>
+<section id="security-considerations">
+<h2>Security Considerations<a class="headerlink" href="#security-considerations" title="Link to this heading"></a></h2>
+<section id="best-practices">
+<h3>Best Practices<a class="headerlink" href="#best-practices" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>IAM Roles</strong>: Follow least privilege principle</p></li>
+<li><p><strong>Encryption</strong>: Enable encryption at rest for S3, DynamoDB</p></li>
+<li><p><strong>API Keys</strong>: Rotate API keys regularly</p></li>
+<li><p><strong>VPC</strong>: Consider deploying Lambda functions in VPC for additional security</p></li>
+<li><p><strong>Secrets Manager</strong>: Store sensitive configuration in AWS Secrets Manager</p></li>
+</ol>
+</section>
+<section id="security-checklist">
+<h3>Security Checklist<a class="headerlink" href="#security-checklist" title="Link to this heading"></a></h3>
+<ul class="contains-task-list simple">
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Enable S3 bucket encryption</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Enable DynamoDB encryption</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Configure API Gateway request validation</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Enable CloudTrail logging</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Set up AWS WAF for API Gateway</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Enable GuardDuty for threat detection</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Configure VPC endpoints for AWS services</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Implement API rate limiting</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Enable X-Ray tracing for debugging</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Regular security audits with AWS Security Hub</p></li>
+</ul>
+</section>
+<section id="compliance">
+<h3>Compliance<a class="headerlink" href="#compliance" title="Link to this heading"></a></h3>
+<p>Ensure compliance with:</p>
+<ul class="simple">
+<li><p>GDPR (if handling EU data)</p></li>
+<li><p>HIPAA (if handling healthcare data)</p></li>
+<li><p>SOC 2</p></li>
+<li><p>ISO 27001</p></li>
+</ul>
+</section>
+</section>
+<section id="support">
+<h2>Support<a class="headerlink" href="#support" title="Link to this heading"></a></h2>
+<p>For issues or questions:</p>
+<ol class="arabic simple">
+<li><p>Check the <a class="reference internal" href="#troubleshooting"><span class="xref myst">Troubleshooting</span></a> section</p></li>
+<li><p>Review CloudWatch logs</p></li>
+<li><p>Contact the development team</p></li>
+<li><p>Create an issue in the project repository</p></li>
+</ol>
+</section>
+<section id="appendix">
+<h2>Appendix<a class="headerlink" href="#appendix" title="Link to this heading"></a></h2>
+<section id="useful-scripts">
+<h3>Useful Scripts<a class="headerlink" href="#useful-scripts" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Full deployment script</span>
+<span class="c1">#!/bin/bash</span>
+<span class="nb">set</span><span class="w"> </span>-e
+
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Starting deployment...&quot;</span>
+make<span class="w"> </span>clean
+make<span class="w"> </span>build-layers
+make<span class="w"> </span>package-lambdas
+<span class="nb">cd</span><span class="w"> </span>infrastructure
+terraform<span class="w"> </span>init
+terraform<span class="w"> </span>apply<span class="w"> </span>-var-file<span class="o">=</span><span class="s2">&quot;terraform.tfvars&quot;</span><span class="w"> </span>-auto-approve
+<span class="nb">cd</span><span class="w"> </span>..
+make<span class="w"> </span>test-smoke
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Deployment complete!&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="environment-variables-reference">
+<h3>Environment Variables Reference<a class="headerlink" href="#environment-variables-reference" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Variable</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>AWS_REGION</p></td>
+<td><p>AWS region for deployment</p></td>
+<td><p>us-east-1</p></td>
+</tr>
+<tr class="row-odd"><td><p>PROJECT_NAME</p></td>
+<td><p>Project identifier</p></td>
+<td><p>ai-ppt-assistant</p></td>
+</tr>
+<tr class="row-even"><td><p>ENVIRONMENT</p></td>
+<td><p>Deployment environment</p></td>
+<td><p>production</p></td>
+</tr>
+<tr class="row-odd"><td><p>LOG_LEVEL</p></td>
+<td><p>Logging verbosity</p></td>
+<td><p>INFO</p></td>
+</tr>
+<tr class="row-even"><td><p>BEDROCK_MODEL_ID</p></td>
+<td><p>Default Bedrock model</p></td>
+<td><p>anthropic.claude-4-0</p></td>
+</tr>
+<tr class="row-odd"><td><p>NOVA_MODEL_ID</p></td>
+<td><p>Nova model for images</p></td>
+<td><p>amazon.nova-canvas-v1:0</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="页脚">
+        <a href="api.html" class="btn btn-neutral float-left" title="API文档" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+        <a href="deployment-checklist.html" class="btn btn-neutral float-right" title="部署检查清单" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, AI PPT Assistant Team。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

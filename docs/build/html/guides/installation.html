@@ -1,0 +1,232 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>安装指南 &mdash; AI PPT Assistant 1.0.0 文档</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=3bd3f67c" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=34088549"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=fd10adb8"></script>
+      <script src="../_static/translations.js?v=beaddf03"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="快速开始" href="quickstart.html" />
+    <link rel="prev" title="AI PPT Assistant 文档" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AI PPT Assistant
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">用户指南</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">安装指南</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id2">系统要求</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">环境准备</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id4">1. 克隆代码仓库</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#python">2. 创建Python虚拟环境</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">3. 安装依赖包</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#aws">AWS配置</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id6">1. 配置AWS凭证</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">2. 验证权限</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id8">前端安装 (可选)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id9">验证安装</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id10">下一步</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">快速开始</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">架构设计</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">系统架构</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">现有文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../existing/api.html">API文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/api.html#ai-ppt-assistant-api-documentation">AI PPT Assistant API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/deployment.html">部署文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/deployment.html#ai-ppt-assistant-deployment-guide">AI PPT Assistant - Deployment Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/deployment-checklist.html">部署检查清单</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/deployment-checklist.html#ai-ppt-assistant-deployment-checklist">AI PPT Assistant - Deployment Checklist</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/config-migration.html">配置迁移指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/config-migration.html#config">🔧 环境变量到Config文件迁移指南</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AI PPT Assistant</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">安装指南</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/guides/installation.rst.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>安装指南<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<section id="id2">
+<h2>系统要求<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>在开始安装之前，请确保您的系统满足以下要求：</p>
+<ul class="simple">
+<li><p>Python 3.13 或更高版本</p></li>
+<li><p>AWS CLI (配置了适当的权限)</p></li>
+<li><p>Node.js 18+ (用于前端开发)</p></li>
+<li><p>Terraform (用于基础设施部署)</p></li>
+</ul>
+</section>
+<section id="id3">
+<h2>环境准备<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<section id="id4">
+<h3>1. 克隆代码仓库<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>&lt;repository-url&gt;
+<span class="nb">cd</span><span class="w"> </span>ai-ppt-assistant
+</pre></div>
+</div>
+</section>
+<section id="python">
+<h3>2. 创建Python虚拟环境<a class="headerlink" href="#python" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
+<span class="nb">source</span><span class="w"> </span>.venv/bin/activate<span class="w">  </span><span class="c1"># Linux/Mac</span>
+<span class="c1"># 或</span>
+.venv<span class="se">\S</span>cripts<span class="se">\a</span>ctivate<span class="w">     </span><span class="c1"># Windows</span>
+</pre></div>
+</div>
+</section>
+<section id="id5">
+<h3>3. 安装依赖包<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>install
+</pre></div>
+</div>
+<p>这将安装所有必要的Python依赖包。</p>
+</section>
+</section>
+<section id="aws">
+<h2>AWS配置<a class="headerlink" href="#aws" title="Link to this heading"></a></h2>
+<section id="id6">
+<h3>1. 配置AWS凭证<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>aws<span class="w"> </span>configure
+</pre></div>
+</div>
+<p>输入您的AWS Access Key ID、Secret Access Key和默认区域。</p>
+</section>
+<section id="id7">
+<h3>2. 验证权限<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<p>确保您的AWS账户具有以下服务的权限：</p>
+<ul class="simple">
+<li><p>Amazon Bedrock</p></li>
+<li><p>AWS Lambda</p></li>
+<li><p>Amazon DynamoDB</p></li>
+<li><p>Amazon S3</p></li>
+<li><p>Amazon SQS</p></li>
+<li><p>Amazon API Gateway</p></li>
+<li><p>AWS CloudFormation</p></li>
+</ul>
+</section>
+</section>
+<section id="id8">
+<h2>前端安装 (可选)<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
+<p>如果需要运行前端开发服务器：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>frontend
+npm<span class="w"> </span>install
+npm<span class="w"> </span>run<span class="w"> </span>dev
+</pre></div>
+</div>
+</section>
+<section id="id9">
+<h2>验证安装<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
+<p>运行以下命令验证安装是否成功：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>test-unit
+</pre></div>
+</div>
+<p>如果所有测试通过，说明安装成功。</p>
+</section>
+<section id="id10">
+<h2>下一步<a class="headerlink" href="#id10" title="Link to this heading"></a></h2>
+<p>安装完成后，您可以继续阅读：</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="quickstart.html"><span class="doc">快速开始</span></a> - 快速开始指南</p></li>
+<li><p><span class="xref std std-doc">configuration</span> - 配置说明</p></li>
+<li><p><span class="xref std std-doc">deployment</span> - 部署指南</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="页脚">
+        <a href="../index.html" class="btn btn-neutral float-left" title="AI PPT Assistant 文档" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+        <a href="quickstart.html" class="btn btn-neutral float-right" title="快速开始" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, AI PPT Assistant Team。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

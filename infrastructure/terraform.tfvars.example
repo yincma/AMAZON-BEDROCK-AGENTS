@@ -1,0 +1,96 @@
+# Project Configuration
+project_name = "ai-ppt-assistant"
+environment  = "dev"
+aws_region   = "us-east-1"
+owner        = "team@example.com"
+cost_center  = "engineering"
+
+# VPC Configuration  
+vpc_cidr = "10.0.0.0/16"
+availability_zones = ["us-east-1a", "us-east-1b"]
+enable_vpc_endpoints = true
+enable_nat_gateway = false
+enable_vpc_flow_logs = true
+vpc_flow_log_retention_days = 7
+
+# Lambda Configuration
+lambda_architecture = "x86_64"
+enable_lambda_vpc_config = false
+log_level = "INFO"
+
+# DynamoDB Configuration
+dynamodb_billing_mode = "PAY_PER_REQUEST"
+
+# API Gateway Configuration
+api_throttle_rate_limit = 1000
+api_throttle_burst_limit = 2000
+
+# Bedrock Configuration
+bedrock_region = "us-east-1"
+bedrock_model_id = "anthropic.claude-v2"
+bedrock_model_version = "latest"
+
+# S3 Lifecycle Rules
+s3_lifecycle_rules = []
+s3_cors_configuration = {
+  cors_rules = [{
+    allowed_headers = ["*"]
+    allowed_methods = ["GET", "PUT", "POST", "DELETE", "HEAD"]
+    allowed_origins = ["*"]
+    expose_headers  = ["ETag"]
+    max_age_seconds = 3000
+  }]
+}
+
+# Lambda Functions Configuration
+lambda_functions = {
+  session_manager = {
+    handler     = "handler.lambda_handler"
+    timeout     = 30
+    memory_size = 512
+    reserved_concurrent_executions = 5
+  }
+  ppt_generator = {
+    handler     = "handler.lambda_handler"
+    timeout     = 300
+    memory_size = 2048
+    reserved_concurrent_executions = 2
+  }
+  content_enhancer = {
+    handler     = "handler.lambda_handler"  
+    timeout     = 60
+    memory_size = 1024
+    reserved_concurrent_executions = 3
+  }
+  auth_handler = {
+    handler     = "handler.lambda_handler"
+    timeout     = 10
+    memory_size = 256
+    reserved_concurrent_executions = 10
+  }
+}
+
+# Bedrock Agents Configuration
+bedrock_agents = {
+  orchestrator = {
+    description = "Main workflow orchestration agent"
+    temperature = 0.7
+    model_id    = "anthropic.claude-v2"
+  }
+  content = {
+    description = "Content generation and optimization agent"
+    temperature = 0.8
+    model_id    = "anthropic.claude-v2"
+  }
+  design = {
+    description = "Design and layout agent"
+    temperature = 0.8
+    model_id    = "anthropic.claude-v2"
+  }
+}
+
+# Additional Tags
+additional_tags = {
+  Terraform = "true"
+  Repository = "ai-ppt-assistant"
+}

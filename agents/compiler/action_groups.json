@@ -1,0 +1,437 @@
+{
+  "actionGroups": [
+    {
+      "actionGroupName": "PresentationAssembly",
+      "description": "Assembles all elements into presentation files",
+      "actionGroupExecutor": {
+        "lambda": {
+          "lambdaArn": "${COMPILE_PPTX_LAMBDA_ARN}"
+        }
+      },
+      "functionSchema": {
+        "functions": [
+          {
+            "name": "createPresentation",
+            "description": "Create a new presentation file",
+            "parameters": {
+              "title": {
+                "type": "string",
+                "description": "Presentation title",
+                "required": true
+              },
+              "template": {
+                "type": "string",
+                "description": "Template to use",
+                "required": false
+              },
+              "aspect_ratio": {
+                "type": "string",
+                "description": "Slide aspect ratio (16:9, 4:3, 16:10)",
+                "required": false
+              },
+              "metadata": {
+                "type": "object",
+                "description": "Presentation metadata (author, subject, keywords)",
+                "required": false
+              }
+            }
+          },
+          {
+            "name": "addSlide",
+            "description": "Add a slide to the presentation",
+            "parameters": {
+              "presentation_id": {
+                "type": "string",
+                "description": "ID of the presentation",
+                "required": true
+              },
+              "slide_content": {
+                "type": "object",
+                "description": "Slide content including title, body, notes",
+                "required": true
+              },
+              "layout": {
+                "type": "string",
+                "description": "Slide layout type",
+                "required": false
+              },
+              "position": {
+                "type": "integer",
+                "description": "Position in presentation",
+                "required": false
+              }
+            }
+          },
+          {
+            "name": "addVisualElement",
+            "description": "Add visual element to a slide",
+            "parameters": {
+              "slide_id": {
+                "type": "string",
+                "description": "ID of the slide",
+                "required": true
+              },
+              "element_type": {
+                "type": "string",
+                "description": "Type of element (image, chart, diagram, shape)",
+                "required": true
+              },
+              "element_data": {
+                "type": "object",
+                "description": "Element data and properties",
+                "required": true
+              },
+              "position": {
+                "type": "object",
+                "description": "Position and size on slide",
+                "required": false
+              }
+            }
+          },
+          {
+            "name": "compilePresentation",
+            "description": "Compile all elements into final presentation",
+            "parameters": {
+              "presentation_id": {
+                "type": "string",
+                "description": "ID of the presentation",
+                "required": true
+              },
+              "output_format": {
+                "type": "string",
+                "description": "Output format (pptx, pdf, html)",
+                "required": true
+              },
+              "quality_settings": {
+                "type": "object",
+                "description": "Quality and optimization settings",
+                "required": false
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "actionGroupName": "TemplateManagement",
+      "description": "Manages presentation templates",
+      "functionSchema": {
+        "functions": [
+          {
+            "name": "applyTemplate",
+            "description": "Apply template to presentation",
+            "parameters": {
+              "presentation_id": {
+                "type": "string",
+                "description": "ID of the presentation",
+                "required": true
+              },
+              "template_name": {
+                "type": "string",
+                "description": "Name of the template",
+                "required": true
+              },
+              "preserve_content": {
+                "type": "boolean",
+                "description": "Preserve existing content",
+                "required": false
+              }
+            }
+          },
+          {
+            "name": "customizeTemplate",
+            "description": "Customize template settings",
+            "parameters": {
+              "template_name": {
+                "type": "string",
+                "description": "Template to customize",
+                "required": true
+              },
+              "customizations": {
+                "type": "object",
+                "description": "Customization settings (colors, fonts, layouts)",
+                "required": true
+              }
+            }
+          },
+          {
+            "name": "createMasterSlide",
+            "description": "Create or modify master slide",
+            "parameters": {
+              "presentation_id": {
+                "type": "string",
+                "description": "ID of the presentation",
+                "required": true
+              },
+              "master_layout": {
+                "type": "object",
+                "description": "Master slide layout definition",
+                "required": true
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "actionGroupName": "FormatConversion",
+      "description": "Converts presentations between formats",
+      "functionSchema": {
+        "functions": [
+          {
+            "name": "exportToPDF",
+            "description": "Export presentation to PDF",
+            "parameters": {
+              "presentation_id": {
+                "type": "string",
+                "description": "ID of the presentation",
+                "required": true
+              },
+              "pdf_settings": {
+                "type": "object",
+                "description": "PDF export settings (quality, compression, security)",
+                "required": false
+              },
+              "include_notes": {
+                "type": "boolean",
+                "description": "Include speaker notes",
+                "required": false
+              },
+              "slides_per_page": {
+                "type": "integer",
+                "description": "Number of slides per page",
+                "required": false
+              }
+            }
+          },
+          {
+            "name": "exportToHTML",
+            "description": "Export presentation to HTML",
+            "parameters": {
+              "presentation_id": {
+                "type": "string",
+                "description": "ID of the presentation",
+                "required": true
+              },
+              "html_settings": {
+                "type": "object",
+                "description": "HTML export settings",
+                "required": false
+              },
+              "navigation_type": {
+                "type": "string",
+                "description": "Navigation style (buttons, keyboard, swipe)",
+                "required": false
+              },
+              "responsive": {
+                "type": "boolean",
+                "description": "Make responsive for mobile",
+                "required": false
+              }
+            }
+          },
+          {
+            "name": "exportToImages",
+            "description": "Export slides as images",
+            "parameters": {
+              "presentation_id": {
+                "type": "string",
+                "description": "ID of the presentation",
+                "required": true
+              },
+              "image_format": {
+                "type": "string",
+                "description": "Image format (png, jpeg, svg)",
+                "required": true
+              },
+              "resolution": {
+                "type": "string",
+                "description": "Output resolution",
+                "required": false
+              },
+              "slides": {
+                "type": "array",
+                "description": "Specific slides to export",
+                "required": false
+              }
+            }
+          },
+          {
+            "name": "exportToVideo",
+            "description": "Export presentation as video",
+            "parameters": {
+              "presentation_id": {
+                "type": "string",
+                "description": "ID of the presentation",
+                "required": true
+              },
+              "video_settings": {
+                "type": "object",
+                "description": "Video export settings (format, quality, fps)",
+                "required": false
+              },
+              "timing": {
+                "type": "object",
+                "description": "Slide timing and transitions",
+                "required": false
+              },
+              "include_audio": {
+                "type": "boolean",
+                "description": "Include audio narration",
+                "required": false
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "actionGroupName": "QualityControl",
+      "description": "Performs quality checks on presentations",
+      "functionSchema": {
+        "functions": [
+          {
+            "name": "validatePresentation",
+            "description": "Validate presentation integrity",
+            "parameters": {
+              "presentation_id": {
+                "type": "string",
+                "description": "ID of the presentation",
+                "required": true
+              },
+              "validation_rules": {
+                "type": "array",
+                "description": "Rules to validate",
+                "required": false
+              }
+            }
+          },
+          {
+            "name": "checkConsistency",
+            "description": "Check formatting consistency",
+            "parameters": {
+              "presentation_id": {
+                "type": "string",
+                "description": "ID of the presentation",
+                "required": true
+              },
+              "aspects": {
+                "type": "array",
+                "description": "Aspects to check (fonts, colors, spacing)",
+                "required": false
+              }
+            }
+          },
+          {
+            "name": "optimizeFileSize",
+            "description": "Optimize presentation file size",
+            "parameters": {
+              "presentation_id": {
+                "type": "string",
+                "description": "ID of the presentation",
+                "required": true
+              },
+              "optimization_level": {
+                "type": "string",
+                "description": "Level of optimization (light, moderate, aggressive)",
+                "required": false
+              },
+              "preserve_quality": {
+                "type": "boolean",
+                "description": "Maintain visual quality",
+                "required": false
+              }
+            }
+          },
+          {
+            "name": "fixIssues",
+            "description": "Automatically fix detected issues",
+            "parameters": {
+              "presentation_id": {
+                "type": "string",
+                "description": "ID of the presentation",
+                "required": true
+              },
+              "issues": {
+                "type": "array",
+                "description": "List of issues to fix",
+                "required": true
+              },
+              "auto_fix": {
+                "type": "boolean",
+                "description": "Apply automatic fixes",
+                "required": false
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "actionGroupName": "VersionControl",
+      "description": "Manages presentation versions",
+      "functionSchema": {
+        "functions": [
+          {
+            "name": "saveVersion",
+            "description": "Save presentation version",
+            "parameters": {
+              "presentation_id": {
+                "type": "string",
+                "description": "ID of the presentation",
+                "required": true
+              },
+              "version_name": {
+                "type": "string",
+                "description": "Name for this version",
+                "required": true
+              },
+              "description": {
+                "type": "string",
+                "description": "Version description",
+                "required": false
+              }
+            }
+          },
+          {
+            "name": "compareVersions",
+            "description": "Compare two versions",
+            "parameters": {
+              "version1_id": {
+                "type": "string",
+                "description": "First version ID",
+                "required": true
+              },
+              "version2_id": {
+                "type": "string",
+                "description": "Second version ID",
+                "required": true
+              },
+              "detail_level": {
+                "type": "string",
+                "description": "Level of comparison detail",
+                "required": false
+              }
+            }
+          },
+          {
+            "name": "restoreVersion",
+            "description": "Restore previous version",
+            "parameters": {
+              "presentation_id": {
+                "type": "string",
+                "description": "ID of the presentation",
+                "required": true
+              },
+              "version_id": {
+                "type": "string",
+                "description": "Version to restore",
+                "required": true
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

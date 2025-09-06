@@ -1,0 +1,335 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>系统架构 &mdash; AI PPT Assistant 1.0.0 文档</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=3bd3f67c" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=34088549"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=fd10adb8"></script>
+      <script src="../_static/translations.js?v=beaddf03"></script>
+      <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs"></script>
+      <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs"></script>
+      <script type="module">mermaid.initialize({startOnLoad:true});</script>
+      <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+      <script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs";
+window.addEventListener("load", () => mermaid.run());
+</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="API文档" href="../existing/api.html" />
+    <link rel="prev" title="快速开始" href="quickstart.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AI PPT Assistant
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">用户指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">安装指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">快速开始</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">架构设计</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">系统架构</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id2">整体架构</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">核心组件</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#api">API层</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">业务逻辑层</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">数据层</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ai">AI服务层</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id6">数据流</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id7">扩展性设计</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id8">安全架构</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id9">性能优化</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id10">成本优化</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id11">部署架构</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id12">监控和运维</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">现有文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../existing/api.html">API文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/api.html#ai-ppt-assistant-api-documentation">AI PPT Assistant API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/deployment.html">部署文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/deployment.html#ai-ppt-assistant-deployment-guide">AI PPT Assistant - Deployment Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/deployment-checklist.html">部署检查清单</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/deployment-checklist.html#ai-ppt-assistant-deployment-checklist">AI PPT Assistant - Deployment Checklist</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/config-migration.html">配置迁移指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/config-migration.html#config">🔧 环境变量到Config文件迁移指南</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AI PPT Assistant</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">系统架构</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/guides/architecture.rst.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>系统架构<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<p>AI PPT Assistant采用云原生的微服务架构，充分利用AWS的无服务器服务来实现高可扩展性和高可靠性。</p>
+<section id="id2">
+<h2>整体架构<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<pre  class="mermaid">
+        graph TB
+    A[用户] --&gt; B[API Gateway]
+    B --&gt; C[Lambda API层]
+    C --&gt; D[Bedrock Agent]
+    C --&gt; E[DynamoDB]
+    C --&gt; F[S3存储]
+    D --&gt; G[Lambda控制器]
+    G --&gt; H[内容生成]
+    G --&gt; I[图片搜索]
+    G --&gt; J[PPT生成]
+    H --&gt; K[Bedrock模型]
+    I --&gt; L[图片服务]
+    J --&gt; F
+    C --&gt; M[SQS队列]
+    M --&gt; N[异步处理]
+    </pre></section>
+<section id="id3">
+<h2>核心组件<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<section id="api">
+<h3>API层<a class="headerlink" href="#api" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>API Gateway</strong>: 统一的API入口点，处理认证、限流和路由</p></li>
+<li><p><strong>Lambda API Functions</strong>: 轻量级的API处理函数</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">generate_presentation.py</span></code> - 创建演示文稿任务</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">presentation_status.py</span></code> - 查询生成状态</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">presentation_download.py</span></code> - 下载完成的演示文稿</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">modify_slide.py</span></code> - 修改特定幻灯片</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="id4">
+<h3>业务逻辑层<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Bedrock Orchestrator Agent</strong>: 核心编排代理，协调整个生成流程</p></li>
+<li><p><strong>Lambda Controllers</strong>: 专门的业务逻辑处理函数</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">generate_content.py</span></code> - 内容生成控制器</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">find_image.py</span></code> - 图片搜索控制器</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">generate_speaker_notes.py</span></code> - 演讲备注生成</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="id5">
+<h3>数据层<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>DynamoDB</strong>: 存储演示文稿元数据和状态信息</p></li>
+<li><p><strong>S3</strong>: 存储生成的演示文稿文件和图片资源</p></li>
+<li><p><strong>SQS</strong>: 异步任务队列，处理长时间运行的生成任务</p></li>
+</ul>
+</section>
+<section id="ai">
+<h3>AI服务层<a class="headerlink" href="#ai" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Amazon Bedrock</strong>: 提供多种AI模型支持</p></li>
+<li><p><strong>Claude/GPT模型</strong>: 用于内容生成和优化</p></li>
+<li><p><strong>图片生成模型</strong>: 创建自定义图片内容</p></li>
+</ul>
+</section>
+</section>
+<section id="id6">
+<h2>数据流<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<ol class="arabic">
+<li><p><strong>请求处理流程</strong>:</p>
+<pre  class="mermaid">
+        sequenceDiagram
+    participant U as 用户
+    participant AG as API Gateway
+    participant L as Lambda API
+    participant D as DynamoDB
+    participant BA as Bedrock Agent
+    participant S as S3
+
+    U-&gt;&gt;AG: POST /presentations/generate
+    AG-&gt;&gt;L: 转发请求
+    L-&gt;&gt;D: 存储任务状态
+    L-&gt;&gt;BA: 启动生成流程
+    L-&gt;&gt;U: 返回任务ID
+    BA-&gt;&gt;BA: 异步生成内容
+    BA-&gt;&gt;S: 存储演示文稿
+    BA-&gt;&gt;D: 更新完成状态
+    </pre></li>
+<li><p><strong>内容生成流程</strong>:</p>
+<ol class="loweralpha simple">
+<li><p>解析用户需求和参数</p></li>
+<li><p>生成演示文稿大纲</p></li>
+<li><p>为每页幻灯片生成内容</p></li>
+<li><p>搜索和添加相关图片</p></li>
+<li><p>生成演讲者备注</p></li>
+<li><p>组装最终演示文稿</p></li>
+<li><p>上传到S3并更新状态</p></li>
+</ol>
+</li>
+</ol>
+</section>
+<section id="id7">
+<h2>扩展性设计<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<p><strong>水平扩展</strong>:
+- Lambda函数自动扩展，支持高并发
+- DynamoDB按需计费，支持大量读写
+- S3无限存储容量</p>
+<p><strong>容错设计</strong>:
+- 多个Lambda函数实例确保高可用性
+- DynamoDB多AZ部署
+- S3的99.999999999%数据持久性</p>
+<p><strong>监控和日志</strong>:
+- CloudWatch集成监控所有组件
+- 详细的错误日志和性能指标
+- 自动告警机制</p>
+</section>
+<section id="id8">
+<h2>安全架构<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
+<p><strong>认证和授权</strong>:
+- API Gateway集成IAM或Cognito
+- Lambda函数最小权限原则
+- 所有服务间通信使用IAM角色</p>
+<p><strong>数据安全</strong>:
+- 传输层TLS加密
+- S3数据静态加密
+- DynamoDB表加密</p>
+<p><strong>网络安全</strong>:
+- VPC端点减少公网暴露
+- 安全组精确控制访问
+- WAF保护API Gateway</p>
+</section>
+<section id="id9">
+<h2>性能优化<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
+<p><strong>缓存策略</strong>:
+- API Gateway缓存常用响应
+- Lambda保持连接池复用
+- S3 CloudFront分发加速</p>
+<p><strong>异步处理</strong>:
+- SQS解耦长时间任务
+- 批量处理提高效率
+- 优雅的错误重试机制</p>
+</section>
+<section id="id10">
+<h2>成本优化<a class="headerlink" href="#id10" title="Link to this heading"></a></h2>
+<p><strong>按需付费</strong>:
+- Lambda按执行时间计费
+- DynamoDB按读写请求计费
+- S3按存储和传输计费</p>
+<p><strong>资源优化</strong>:
+- Lambda内存和超时时间调优
+- DynamoDB读写容量自动调节
+- S3生命周期管理自动清理</p>
+</section>
+<section id="id11">
+<h2>部署架构<a class="headerlink" href="#id11" title="Link to this heading"></a></h2>
+<p>使用Infrastructure as Code (IaC)实现：</p>
+<ul class="simple">
+<li><p><strong>Terraform</strong>: 管理AWS资源</p></li>
+<li><p><strong>自动化部署</strong>: 通过Makefile和脚本</p></li>
+<li><p><strong>多环境支持</strong>: dev、test、prod环境隔离</p></li>
+<li><p><strong>CI/CD集成</strong>: GitHub Actions自动部署</p></li>
+</ul>
+</section>
+<section id="id12">
+<h2>监控和运维<a class="headerlink" href="#id12" title="Link to this heading"></a></h2>
+<p><strong>关键指标监控</strong>:
+- API响应时间和错误率
+- Lambda函数执行时间和内存使用
+- DynamoDB读写容量使用率
+- S3存储使用量</p>
+<p><strong>告警配置</strong>:
+- 错误率超过阈值告警
+- 资源使用量异常告警
+- 成本超预算告警</p>
+<p><strong>日志管理</strong>:
+- 结构化日志记录
+- 集中式日志查询
+- 错误追踪和分析</p>
+<p>这种架构设计确保了系统的高性能、高可用性和成本效益，同时支持未来的功能扩展和业务增长。</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="页脚">
+        <a href="quickstart.html" class="btn btn-neutral float-left" title="快速开始" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+        <a href="../existing/api.html" class="btn btn-neutral float-right" title="API文档" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, AI PPT Assistant Team。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,103 @@
+<testsuites id="" name="" tests="5" failures="2" skipped="0" errors="0" time="12.920352000000001">
+<testsuite name="tests/00-smoke.spec.ts" timestamp="2025-09-05T16:43:19.108Z" hostname="chromium" tests="5" failures="2" skipped="0" time="24.591" errors="0">
+<testcase name="Smoke Tests - 基础功能验证 › 应用程序能够正常启动" classname="tests/00-smoke.spec.ts" time="10.653">
+<failure message="00-smoke.spec.ts:4:3 应用程序能够正常启动" type="FAILURE">
+<![CDATA[  [chromium] › tests/00-smoke.spec.ts:4:3 › Smoke Tests - 基础功能验证 › 应用程序能够正常启动 ──────────────────────
+
+    Error: expect(page).toHaveTitle(expected) failed
+
+    Expected pattern: /AI PPT Generator/
+    Received string:  "Vite + React + TS"
+    Timeout: 10000ms
+
+    Call log:
+      - Expect "toHaveTitle" with timeout 10000ms
+        14 × unexpected value "Vite + React + TS"
+
+
+       7 |
+       8 |     // 验证页面标题
+    >  9 |     await expect(page).toHaveTitle(/AI PPT Generator/);
+         |                        ^
+      10 |
+      11 |     // 验证主要布局元素存在
+      12 |     const mainContent = page.locator('main, [role="main"], #root, #app');
+        at /Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/frontend/e2e/tests/00-smoke.spec.ts:9:24
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../test-results/tests-00-smoke-Smoke-Tests---基础功能验证-应用程序能够正常启动-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../test-results/tests-00-smoke-Smoke-Tests---基础功能验证-应用程序能够正常启动-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../test-results/tests-00-smoke-Smoke-Tests---基础功能验证-应用程序能够正常启动-chromium/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|tests-00-smoke-Smoke-Tests---基础功能验证-应用程序能够正常启动-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|tests-00-smoke-Smoke-Tests---基础功能验证-应用程序能够正常启动-chromium/video.webm]]
+
+[[ATTACHMENT|tests-00-smoke-Smoke-Tests---基础功能验证-应用程序能够正常启动-chromium/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Smoke Tests - 基础功能验证 › 基本导航和交互功能正常" classname="tests/00-smoke.spec.ts" time="0.919">
+</testcase>
+<testcase name="Smoke Tests - 基础功能验证 › 响应式布局在不同设备上正常工作" classname="tests/00-smoke.spec.ts" time="11.142">
+<failure message="00-smoke.spec.ts:43:3 响应式布局在不同设备上正常工作" type="FAILURE">
+<![CDATA[  [chromium] › tests/00-smoke.spec.ts:43:3 › Smoke Tests - 基础功能验证 › 响应式布局在不同设备上正常工作 ────────────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator:  locator('main, [role="main"], #root, #app').first()
+    Expected: visible
+    Received: hidden
+    Timeout:  10000ms
+
+    Call log:
+      - Expect "toBeVisible" with timeout 10000ms
+      - waiting for locator('main, [role="main"], #root, #app').first()
+        14 × locator resolved to <div id="root"></div>
+           - unexpected value "hidden"
+
+
+      48 |     
+      49 |     let mainContent = page.locator('main, [role="main"], #root, #app');
+    > 50 |     await expect(mainContent.first()).toBeVisible();
+         |                                       ^
+      51 |
+      52 |     // 测试平板尺寸
+      53 |     await page.setViewportSize({ width: 768, height: 1024 });
+        at /Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/frontend/e2e/tests/00-smoke.spec.ts:50:39
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../test-results/tests-00-smoke-Smoke-Tests---基础功能验证-响应式布局在不同设备上正常工作-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../test-results/tests-00-smoke-Smoke-Tests---基础功能验证-响应式布局在不同设备上正常工作-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../test-results/tests-00-smoke-Smoke-Tests---基础功能验证-响应式布局在不同设备上正常工作-chromium/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|tests-00-smoke-Smoke-Tests---基础功能验证-响应式布局在不同设备上正常工作-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|tests-00-smoke-Smoke-Tests---基础功能验证-响应式布局在不同设备上正常工作-chromium/video.webm]]
+
+[[ATTACHMENT|tests-00-smoke-Smoke-Tests---基础功能验证-响应式布局在不同设备上正常工作-chromium/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Smoke Tests - 基础功能验证 › 页面加载性能满足基本要求" classname="tests/00-smoke.spec.ts" time="0.958">
+</testcase>
+<testcase name="Smoke Tests - 基础功能验证 › 基本的可访问性要求" classname="tests/00-smoke.spec.ts" time="0.919">
+</testcase>
+</testsuite>
+</testsuites>

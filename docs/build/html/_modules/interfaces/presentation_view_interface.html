@@ -1,0 +1,519 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>interfaces.presentation_view_interface &mdash; AI PPT Assistant 1.0.0 文档</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=3bd3f67c" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=34088549"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=fd10adb8"></script>
+      <script src="../../_static/translations.js?v=beaddf03"></script>
+      <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs"></script>
+      <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs"></script>
+      <script type="module">mermaid.initialize({startOnLoad:true});</script>
+      <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+      <script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs";
+window.addEventListener("load", () => mermaid.run());
+</script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="搜索" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AI PPT Assistant
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">用户指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/installation.html">安装指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/quickstart.html">快速开始</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">架构设计</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/architecture.html">系统架构</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">现有文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/api.html">API文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/api.html#ai-ppt-assistant-api-documentation">AI PPT Assistant API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/deployment.html">部署文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/deployment.html#ai-ppt-assistant-deployment-guide">AI PPT Assistant - Deployment Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/deployment-checklist.html">部署检查清单</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/deployment-checklist.html#ai-ppt-assistant-deployment-checklist">AI PPT Assistant - Deployment Checklist</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/config-migration.html">配置迁移指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/config-migration.html#config">🔧 环境变量到Config文件迁移指南</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AI PPT Assistant</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">模块代码</a></li>
+      <li class="breadcrumb-item active">interfaces.presentation_view_interface</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>interfaces.presentation_view_interface 源代码</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Presentation View Interface - Abstract Rendering Layer</span>
+<span class="sd">Defines the contract for presentation rendering and styling operations</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="c1"># Import concrete data structures</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">views.presentation_styles</span><span class="w"> </span><span class="kn">import</span> <span class="n">SlideStyle</span>
+
+
+<div class="viewcode-block" id="IPresentationRenderer">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationRenderer">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">IPresentationRenderer</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Interface for basic presentation rendering operations&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="IPresentationRenderer.initialize_presentation">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationRenderer.initialize_presentation">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">initialize_presentation</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">template_data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a new presentation with optional template&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IPresentationRenderer.save_presentation">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationRenderer.save_presentation">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_presentation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save presentation and return binary data&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IPresentationRenderer.get_slide_count">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationRenderer.get_slide_count">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_slide_count</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get number of slides in presentation&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IPresentationRenderer.clear_presentation">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationRenderer.clear_presentation">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clear_presentation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear all slides and reset presentation&quot;&quot;&quot;</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ISlideCreator">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideCreator">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ISlideCreator</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Interface for creating different types of slides&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ISlideCreator.add_title_slide">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideCreator.add_title_slide">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_title_slide</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">subtitle</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">author</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a title slide to the presentation&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="ISlideCreator.add_content_slide">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideCreator.add_content_slide">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_content_slide</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">slide_number</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a content slide with bullet points&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="ISlideCreator.add_section_slide">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideCreator.add_section_slide">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_section_slide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subtitle</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a section divider slide&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="ISlideCreator.add_two_content_slide">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideCreator.add_two_content_slide">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_two_content_slide</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">left_content</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">right_content</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a two-column content slide&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="ISlideCreator.add_image_slide">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideCreator.add_image_slide">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_image_slide</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">image_data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span>
+        <span class="n">caption</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">layout</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;center&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a slide with an image&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="ISlideCreator.add_chart_slide">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideCreator.add_chart_slide">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_chart_slide</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">chart_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">chart_title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a slide with a chart&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="ISlideCreator.add_closing_slide">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideCreator.add_closing_slide">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_closing_slide</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Thank You&quot;</span><span class="p">,</span>
+        <span class="n">contact_info</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">additional_text</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a closing slide&quot;&quot;&quot;</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ISlideStyler">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideStyler">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ISlideStyler</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Interface for styling slides and presentation elements&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ISlideStyler.apply_slide_style">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideStyler.apply_slide_style">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply_slide_style</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slide</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">style</span><span class="p">:</span> <span class="n">SlideStyle</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply style to a specific slide&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="ISlideStyler.set_color_scheme">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideStyler.set_color_scheme">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_color_scheme</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color_scheme</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set color scheme for the presentation&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="ISlideStyler.apply_font_styling">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideStyler.apply_font_styling">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply_font_styling</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">element</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">font_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">font_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">color</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">bold</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">italic</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply font styling to text element&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="ISlideStyler.set_slide_background">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideStyler.set_slide_background">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_slide_background</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">slide</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">background_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">background_data</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set slide background (color, image, gradient)&quot;&quot;&quot;</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ISlideEnhancer">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideEnhancer">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ISlideEnhancer</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Interface for adding enhancements to slides&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ISlideEnhancer.add_speaker_notes">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideEnhancer.add_speaker_notes">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_speaker_notes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slide</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">notes</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add speaker notes to a slide&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="ISlideEnhancer.add_transition_effect">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideEnhancer.add_transition_effect">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_transition_effect</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">slide</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">effect_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add transition effect to slide&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="ISlideEnhancer.add_animation">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideEnhancer.add_animation">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_animation</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">element</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">animation_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">trigger</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;click&quot;</span><span class="p">,</span>
+        <span class="n">delay</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add animation to slide element&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="ISlideEnhancer.add_hyperlink">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideEnhancer.add_hyperlink">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_hyperlink</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tooltip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add hyperlink to slide element&quot;&quot;&quot;</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="IPresentationView">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationView">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">IPresentationView</span><span class="p">(</span>
+    <span class="n">IPresentationRenderer</span><span class="p">,</span> <span class="n">ISlideCreator</span><span class="p">,</span> <span class="n">ISlideStyler</span><span class="p">,</span> <span class="n">ISlideEnhancer</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Complete interface for presentation view operations&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="IPresentationView.set_presentation_properties">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationView.set_presentation_properties">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_presentation_properties</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">author</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">subject</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">category</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set presentation metadata properties&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IPresentationView.duplicate_slide">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationView.duplicate_slide">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">duplicate_slide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slide_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Duplicate a slide at given index&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IPresentationView.delete_slide">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationView.delete_slide">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete_slide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slide_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete slide at given index&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IPresentationView.reorder_slides">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationView.reorder_slides">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reorder_slides</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">to_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Move slide from one position to another&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IPresentationView.get_slide_by_index">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationView.get_slide_by_index">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_slide_by_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get slide object by index&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IPresentationView.export_slide_as_image">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationView.export_slide_as_image">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">export_slide_as_image</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">slide_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="nb">format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;PNG&quot;</span><span class="p">,</span>
+        <span class="n">width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1920</span><span class="p">,</span>
+        <span class="n">height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1080</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export specific slide as image&quot;&quot;&quot;</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="IPresentationTemplate">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationTemplate">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">IPresentationTemplate</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Interface for template management&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="IPresentationTemplate.load_template">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationTemplate.load_template">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load template configuration&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IPresentationTemplate.apply_template_to_slide">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationTemplate.apply_template_to_slide">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply_template_to_slide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slide</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">layout_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply template layout to specific slide&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IPresentationTemplate.get_template_layouts">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationTemplate.get_template_layouts">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_template_layouts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get available template layout types&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IPresentationTemplate.customize_template">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationTemplate.customize_template">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">customize_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">modifications</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply customizations to current template&quot;&quot;&quot;</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="IPresentationValidator">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationValidator">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">IPresentationValidator</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Interface for presentation validation&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="IPresentationValidator.validate_slide_content">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationValidator.validate_slide_content">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_slide_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slide</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate slide content and structure&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IPresentationValidator.validate_presentation_structure">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationValidator.validate_presentation_structure">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_presentation_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate overall presentation structure&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IPresentationValidator.get_validation_warnings">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationValidator.get_validation_warnings">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_validation_warnings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get list of validation warnings&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IPresentationValidator.get_accessibility_report">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationValidator.get_accessibility_report">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_accessibility_report</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate accessibility compliance report&quot;&quot;&quot;</span></div>
+</div>
+
+
+
+<span class="c1"># Factory interface for creating view instances</span>
+<div class="viewcode-block" id="IPresentationViewFactory">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationViewFactory">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">IPresentationViewFactory</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Factory interface for creating view instances&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="IPresentationViewFactory.create_view">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationViewFactory.create_view">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">style</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IPresentationView</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a presentation view instance&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IPresentationViewFactory.create_template_manager">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationViewFactory.create_template_manager">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_template_manager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IPresentationTemplate</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a template manager instance&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IPresentationViewFactory.create_validator">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationViewFactory.create_validator">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_validator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IPresentationValidator</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a presentation validator instance&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IPresentationViewFactory.get_supported_styles">
+<a class="viewcode-back" href="../../api/interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationViewFactory.get_supported_styles">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_supported_styles</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get list of supported presentation styles&quot;&quot;&quot;</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, AI PPT Assistant Team。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

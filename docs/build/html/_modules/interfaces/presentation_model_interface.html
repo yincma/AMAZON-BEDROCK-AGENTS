@@ -1,0 +1,369 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>interfaces.presentation_model_interface &mdash; AI PPT Assistant 1.0.0 文档</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=3bd3f67c" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=34088549"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=fd10adb8"></script>
+      <script src="../../_static/translations.js?v=beaddf03"></script>
+      <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs"></script>
+      <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs"></script>
+      <script type="module">mermaid.initialize({startOnLoad:true});</script>
+      <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+      <script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs";
+window.addEventListener("load", () => mermaid.run());
+</script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="搜索" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AI PPT Assistant
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">用户指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/installation.html">安装指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/quickstart.html">快速开始</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">架构设计</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/architecture.html">系统架构</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">现有文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/api.html">API文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/api.html#ai-ppt-assistant-api-documentation">AI PPT Assistant API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/deployment.html">部署文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/deployment.html#ai-ppt-assistant-deployment-guide">AI PPT Assistant - Deployment Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/deployment-checklist.html">部署检查清单</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/deployment-checklist.html#ai-ppt-assistant-deployment-checklist">AI PPT Assistant - Deployment Checklist</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/config-migration.html">配置迁移指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/config-migration.html#config">🔧 环境变量到Config文件迁移指南</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AI PPT Assistant</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">模块代码</a></li>
+      <li class="breadcrumb-item active">interfaces.presentation_model_interface</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>interfaces.presentation_model_interface 源代码</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Presentation Model Interface - Abstract Data Access Layer</span>
+<span class="sd">Defines the contract for presentation data operations</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="c1"># Import data structures (these remain concrete)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">models.data_structures</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">PresentationMetadata</span><span class="p">,</span>
+    <span class="n">SlideData</span><span class="p">,</span>
+    <span class="n">TemplateMetadata</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="IPresentationModelReader">
+<a class="viewcode-back" href="../../api/interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModelReader">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">IPresentationModelReader</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Interface for read operations on presentation data&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="IPresentationModelReader.get_presentation_record">
+<a class="viewcode-back" href="../../api/interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModelReader.get_presentation_record">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_presentation_record</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">presentation_id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PresentationMetadata</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve presentation metadata by ID&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IPresentationModelReader.get_slide_content">
+<a class="viewcode-back" href="../../api/interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModelReader.get_slide_content">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_slide_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">presentation_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SlideData</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get slide content for a presentation&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IPresentationModelReader.get_template">
+<a class="viewcode-back" href="../../api/interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModelReader.get_template">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_template</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">template_id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TemplateMetadata</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get template data and metadata&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IPresentationModelReader.get_default_template">
+<a class="viewcode-back" href="../../api/interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModelReader.get_default_template">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_default_template</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">TemplateMetadata</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the default template&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IPresentationModelReader.list_templates">
+<a class="viewcode-back" href="../../api/interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModelReader.list_templates">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">list_templates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TemplateMetadata</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List available templates&quot;&quot;&quot;</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="IPresentationModelWriter">
+<a class="viewcode-back" href="../../api/interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModelWriter">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">IPresentationModelWriter</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Interface for write operations on presentation data&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="IPresentationModelWriter.update_presentation_status">
+<a class="viewcode-back" href="../../api/interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModelWriter.update_presentation_status">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_presentation_status</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">presentation_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update presentation status and metadata&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IPresentationModelWriter.save_presentation_to_s3">
+<a class="viewcode-back" href="../../api/interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModelWriter.save_presentation_to_s3">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_presentation_to_s3</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">presentation_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">presentation_data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save presentation to S3 and return S3 key and download URL&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IPresentationModelWriter.save_slide_data">
+<a class="viewcode-back" href="../../api/interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModelWriter.save_slide_data">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_slide_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">presentation_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slides</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">SlideData</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save slide data to storage&quot;&quot;&quot;</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="IPresentationModel">
+<a class="viewcode-back" href="../../api/interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModel">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">IPresentationModel</span><span class="p">(</span><span class="n">IPresentationModelReader</span><span class="p">,</span> <span class="n">IPresentationModelWriter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Complete interface for presentation model operations&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="IPresentationModel.create_presentation_record">
+<a class="viewcode-back" href="../../api/interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModel.create_presentation_record">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_presentation_record</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">presentation_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">metadata</span><span class="p">:</span> <span class="n">PresentationMetadata</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new presentation record&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IPresentationModel.delete_presentation">
+<a class="viewcode-back" href="../../api/interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModel.delete_presentation">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete_presentation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">presentation_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete presentation and associated data&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IPresentationModel.get_presentation_history">
+<a class="viewcode-back" href="../../api/interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModel.get_presentation_history">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_presentation_history</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">presentation_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get presentation modification history&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IPresentationModel.backup_presentation">
+<a class="viewcode-back" href="../../api/interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModel.backup_presentation">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">backup_presentation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">presentation_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create backup of presentation and return backup ID&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IPresentationModel.restore_presentation">
+<a class="viewcode-back" href="../../api/interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModel.restore_presentation">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">restore_presentation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">presentation_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">backup_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Restore presentation from backup&quot;&quot;&quot;</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="IPresentationCache">
+<a class="viewcode-back" href="../../api/interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationCache">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">IPresentationCache</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Interface for presentation caching operations&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="IPresentationCache.get_cached_template">
+<a class="viewcode-back" href="../../api/interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationCache.get_cached_template">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_cached_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get template from cache&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IPresentationCache.cache_template">
+<a class="viewcode-back" href="../../api/interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationCache.cache_template">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cache_template</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">template_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">template_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">ttl</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3600</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Cache template data&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IPresentationCache.invalidate_cache">
+<a class="viewcode-back" href="../../api/interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationCache.invalidate_cache">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">invalidate_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Invalidate cache entry&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IPresentationCache.clear_cache">
+<a class="viewcode-back" href="../../api/interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationCache.clear_cache">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clear_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear all cache entries&quot;&quot;&quot;</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="IPresentationValidator">
+<a class="viewcode-back" href="../../api/interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationValidator">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">IPresentationValidator</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Interface for presentation data validation&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="IPresentationValidator.validate_presentation_data">
+<a class="viewcode-back" href="../../api/interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationValidator.validate_presentation_data">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_presentation_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">presentation_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate presentation data structure&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IPresentationValidator.validate_slide_data">
+<a class="viewcode-back" href="../../api/interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationValidator.validate_slide_data">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_slide_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slide_data</span><span class="p">:</span> <span class="n">SlideData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate individual slide data&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IPresentationValidator.validate_template_data">
+<a class="viewcode-back" href="../../api/interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationValidator.validate_template_data">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_template_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate template data structure&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IPresentationValidator.get_validation_errors">
+<a class="viewcode-back" href="../../api/interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationValidator.get_validation_errors">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_validation_errors</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get list of validation errors from last validation&quot;&quot;&quot;</span></div>
+</div>
+
+
+
+<span class="c1"># Factory interface for creating model instances</span>
+<div class="viewcode-block" id="IPresentationModelFactory">
+<a class="viewcode-back" href="../../api/interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModelFactory">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">IPresentationModelFactory</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Factory interface for creating model instances&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="IPresentationModelFactory.create_model">
+<a class="viewcode-back" href="../../api/interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModelFactory.create_model">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IPresentationModel</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a presentation model instance&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IPresentationModelFactory.create_cache">
+<a class="viewcode-back" href="../../api/interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModelFactory.create_cache">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IPresentationCache</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a cache instance&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IPresentationModelFactory.create_validator">
+<a class="viewcode-back" href="../../api/interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModelFactory.create_validator">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_validator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IPresentationValidator</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a validator instance&quot;&quot;&quot;</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, AI PPT Assistant Team。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

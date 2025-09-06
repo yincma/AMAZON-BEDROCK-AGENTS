@@ -1,0 +1,27 @@
+# Security scanning dependencies for AI PPT Assistant
+# Latest stable versions compatible with Python 3.13 and ARM64
+
+# Core security scanning tools
+bandit==1.7.5           # Python AST scanner for common security issues
+safety==3.2.7           # Known security vulnerabilities checker  
+pip-audit==2.6.3        # Python packages vulnerability auditor
+semgrep==1.45.0         # Static analysis security scanner
+
+# AWS security tools
+checkov==3.2.200        # Infrastructure as code security scanner
+cfn-lint==1.15.0        # CloudFormation template linter
+
+# Secret detection
+detect-secrets==1.4.0   # Secrets detection and management
+truffleHog==3.66.3       # Git secrets scanner
+
+# SAST and dependency analysis
+cyclonedx-bom==6.1.0    # Software Bill of Materials generation
+vulncost==0.1.5         # VS Code extension dependency analysis
+
+# Reporting and utilities
+jinja2==3.1.3           # Template engine for reports
+click==8.1.7            # Command line interface utilities
+colorama==0.4.6         # Cross-platform colored terminal text
+tabulate==0.9.0         # Pretty-print tabular data
+python-dateutil==2.8.2 # Date utilities

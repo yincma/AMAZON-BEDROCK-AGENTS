@@ -1,0 +1,61 @@
+# Lambda Layer Dependencies for AI PPT Assistant
+# Python 3.13 runtime compatible packages
+
+# AWS SDK (latest stable version for Bedrock and ARM64 support)
+boto3==1.35.14
+botocore==1.35.14
+
+# PowerPoint generation (latest stable)
+python-pptx==0.6.23
+
+# Image processing (latest stable with ARM64 optimizations)
+# Pillow>=10.0.0  # Temporarily disabled due to ARM64 compatibility issues
+
+# JSON handling and validation (latest stable)
+jsonschema==4.23.0
+
+# HTTP requests for external APIs (latest stable)
+requests==2.32.3
+urllib3==2.2.3
+
+# Date and time utilities (latest stable)
+python-dateutil==2.9.0
+
+# Environment variable handling (latest stable)
+python-dotenv==1.0.1
+
+# Data validation (latest stable with performance improvements)
+pydantic==2.9.2
+pydantic-core==2.27.1
+
+# Async support for Python 3.13 (latest stable)
+aiohttp==3.10.8
+aioboto3==13.2.0
+
+# Logging and monitoring (latest stable with ARM64 optimizations)
+aws-lambda-powertools==3.2.0
+aws-xray-sdk==2.15.0
+
+# Type hints support (latest stable)
+typing-extensions==4.12.2
+
+# Error handling and retries (latest stable)
+tenacity==9.0.0
+
+# Text processing (latest stable)
+beautifulsoup4==4.12.3
+html5lib==1.1
+
+# Performance optimization (latest stable)
+cachetools==5.5.0
+
+# Security (latest stable with ARM64 support)
+cryptography==43.0.1
+
+# YAML configuration support (latest stable)
+PyYAML==6.0.1
+
+# Testing utilities (latest stable - for development only)
+pytest==8.3.3
+pytest-asyncio==0.24.0
+moto==5.0.15

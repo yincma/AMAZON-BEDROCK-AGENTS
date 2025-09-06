@@ -1,0 +1,504 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>部署检查清单 &mdash; AI PPT Assistant 1.0.0 文档</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=3bd3f67c" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=34088549"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=fd10adb8"></script>
+      <script src="../_static/translations.js?v=beaddf03"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="配置迁移指南" href="config-migration.html" />
+    <link rel="prev" title="部署文档" href="deployment.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AI PPT Assistant
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">用户指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/installation.html">安装指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/quickstart.html">快速开始</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">架构设计</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/architecture.html">系统架构</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">现有文档</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="api.html">API文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html#ai-ppt-assistant-api-documentation">AI PPT Assistant API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deployment.html">部署文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deployment.html#ai-ppt-assistant-deployment-guide">AI PPT Assistant - Deployment Guide</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">部署检查清单</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#ai-ppt-assistant-deployment-checklist">AI PPT Assistant - Deployment Checklist</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#pre-deployment-checklist">📋 Pre-Deployment Checklist</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#environment-preparation">Environment Preparation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#code-quality">Code Quality</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#configuration">Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#deployment-steps">🚀 Deployment Steps</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#infrastructure-deployment">1. Infrastructure Deployment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lambda-functions">2. Lambda Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#api-gateway">3. API Gateway</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dynamodb">4. DynamoDB</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#s3-buckets">5. S3 Buckets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sqs-queues">6. SQS Queues</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bedrock-agents">7. Bedrock Agents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#monitoring-alarms">8. Monitoring &amp; Alarms</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#post-deployment-verification">✅ Post-Deployment Verification</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#functional-tests">Functional Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#performance-tests">Performance Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#security-verification">Security Verification</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#rollback-plan">🔄 Rollback Plan</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#quick-rollback">Quick Rollback</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gradual-rollback">Gradual Rollback</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#success-criteria">📊 Success Criteria</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#final-steps">🎯 Final Steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#notes">📝 Notes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="config-migration.html">配置迁移指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config-migration.html#config">🔧 环境变量到Config文件迁移指南</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AI PPT Assistant</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">部署检查清单</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/existing/deployment-checklist.md.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>部署检查清单<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+</section>
+<section id="ai-ppt-assistant-deployment-checklist">
+<h1>AI PPT Assistant - Deployment Checklist<a class="headerlink" href="#ai-ppt-assistant-deployment-checklist" title="Link to this heading"></a></h1>
+<section id="pre-deployment-checklist">
+<h2>📋 Pre-Deployment Checklist<a class="headerlink" href="#pre-deployment-checklist" title="Link to this heading"></a></h2>
+<section id="environment-preparation">
+<h3>Environment Preparation<a class="headerlink" href="#environment-preparation" title="Link to this heading"></a></h3>
+<ul class="contains-task-list simple">
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> AWS credentials configured</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Correct AWS region selected (us-east-1)</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Terraform installed (v1.6.0+)</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Python 3.13 installed</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> All required tools available (aws-cli, make, git)</p></li>
+</ul>
+</section>
+<section id="code-quality">
+<h3>Code Quality<a class="headerlink" href="#code-quality" title="Link to this heading"></a></h3>
+<ul class="contains-task-list simple">
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> All unit tests passing (&gt;80% coverage)</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Integration tests passing</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> No critical linting errors</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Security scan completed</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Dependencies updated</p></li>
+</ul>
+</section>
+<section id="configuration">
+<h3>Configuration<a class="headerlink" href="#configuration" title="Link to this heading"></a></h3>
+<ul class="contains-task-list simple">
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> terraform.tfvars created with correct values</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> API keys generated</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Environment variables documented</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Bedrock model access enabled</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Service quotas verified</p></li>
+</ul>
+</section>
+</section>
+<section id="deployment-steps">
+<h2>🚀 Deployment Steps<a class="headerlink" href="#deployment-steps" title="Link to this heading"></a></h2>
+<section id="infrastructure-deployment">
+<h3>1. Infrastructure Deployment<a class="headerlink" href="#infrastructure-deployment" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run the automated deployment script</span>
+./deploy.sh
+
+<span class="c1"># Or manual steps:</span>
+<span class="nb">cd</span><span class="w"> </span>infrastructure
+terraform<span class="w"> </span>init
+terraform<span class="w"> </span>plan<span class="w"> </span>-var-file<span class="o">=</span><span class="s2">&quot;terraform.tfvars&quot;</span>
+terraform<span class="w"> </span>apply<span class="w"> </span>-var-file<span class="o">=</span><span class="s2">&quot;terraform.tfvars&quot;</span>
+</pre></div>
+</div>
+<p><strong>Verification Points:</strong></p>
+<ul class="contains-task-list simple">
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Terraform init successful</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Terraform plan shows expected resources</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Terraform apply completed without errors</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> All resources created in correct region</p></li>
+</ul>
+</section>
+<section id="lambda-functions">
+<h3>2. Lambda Functions<a class="headerlink" href="#lambda-functions" title="Link to this heading"></a></h3>
+<ul class="contains-task-list simple">
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Lambda layers built successfully</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> All Lambda functions packaged</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Functions deployed to AWS</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Correct runtime (Python 3.13) configured</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Environment variables set</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> IAM roles attached</p></li>
+</ul>
+<p><strong>Verification Commands:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># List Lambda functions</span>
+aws<span class="w"> </span>lambda<span class="w"> </span>list-functions<span class="w"> </span>--query<span class="w"> </span><span class="s2">&quot;Functions[?starts_with(FunctionName, &#39;ai-ppt-assistant&#39;)].[FunctionName,Runtime,State]&quot;</span><span class="w"> </span>--output<span class="w"> </span>table
+
+<span class="c1"># Test a Lambda function</span>
+aws<span class="w"> </span>lambda<span class="w"> </span>invoke<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--function-name<span class="w"> </span>ai-ppt-assistant-create-outline<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--payload<span class="w"> </span><span class="s1">&#39;{&quot;topic&quot;:&quot;Test&quot;}&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>response.json
+</pre></div>
+</div>
+</section>
+<section id="api-gateway">
+<h3>3. API Gateway<a class="headerlink" href="#api-gateway" title="Link to this heading"></a></h3>
+<ul class="contains-task-list simple">
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> REST API created</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> All endpoints configured</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> API key authentication enabled</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Request validation configured</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> CORS settings applied</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Rate limiting configured</p></li>
+</ul>
+<p><strong>Verification Commands:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get API information</span>
+aws<span class="w"> </span>apigateway<span class="w"> </span>get-rest-apis<span class="w"> </span>--query<span class="w"> </span><span class="s2">&quot;items[?name==&#39;ai-ppt-assistant-api&#39;]&quot;</span>
+
+<span class="c1"># Test API endpoint</span>
+curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span>https://your-api-url/health<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;x-api-key: your-api-key&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="dynamodb">
+<h3>4. DynamoDB<a class="headerlink" href="#dynamodb" title="Link to this heading"></a></h3>
+<ul class="contains-task-list simple">
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Table created with correct schema</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> TTL enabled (30 days)</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> On-demand billing mode set</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Point-in-time recovery enabled</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Encryption at rest enabled</p></li>
+</ul>
+<p><strong>Verification Commands:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Describe table</span>
+aws<span class="w"> </span>dynamodb<span class="w"> </span>describe-table<span class="w"> </span>--table-name<span class="w"> </span>ai-ppt-assistant-presentations
+
+<span class="c1"># Check table status</span>
+aws<span class="w"> </span>dynamodb<span class="w"> </span>describe-table<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--table-name<span class="w"> </span>ai-ppt-assistant-presentations<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--query<span class="w"> </span><span class="s2">&quot;Table.TableStatus&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="s3-buckets">
+<h3>5. S3 Buckets<a class="headerlink" href="#s3-buckets" title="Link to this heading"></a></h3>
+<ul class="contains-task-list simple">
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Presentation storage bucket created</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Agent configuration bucket created</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Encryption enabled</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Lifecycle policies configured</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> CORS configured for presigned URLs</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Versioning enabled</p></li>
+</ul>
+<p><strong>Verification Commands:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># List buckets</span>
+aws<span class="w"> </span>s3<span class="w"> </span>ls<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>ai-ppt-assistant
+
+<span class="c1"># Check bucket encryption</span>
+aws<span class="w"> </span>s3api<span class="w"> </span>get-bucket-encryption<span class="w"> </span>--bucket<span class="w"> </span>ai-ppt-assistant-presentations
+</pre></div>
+</div>
+</section>
+<section id="sqs-queues">
+<h3>6. SQS Queues<a class="headerlink" href="#sqs-queues" title="Link to this heading"></a></h3>
+<ul class="contains-task-list simple">
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Main processing queue created</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Dead letter queue created</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Redrive policy configured</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Message retention set</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Encryption enabled</p></li>
+</ul>
+<p><strong>Verification Commands:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># List queues</span>
+aws<span class="w"> </span>sqs<span class="w"> </span>list-queues<span class="w"> </span>--queue-name-prefix<span class="w"> </span>ai-ppt-assistant
+
+<span class="c1"># Get queue attributes</span>
+aws<span class="w"> </span>sqs<span class="w"> </span>get-queue-attributes<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--queue-url<span class="w"> </span>https://sqs.region.amazonaws.com/account/ai-ppt-assistant-queue<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--attribute-names<span class="w"> </span>All
+</pre></div>
+</div>
+</section>
+<section id="bedrock-agents">
+<h3>7. Bedrock Agents<a class="headerlink" href="#bedrock-agents" title="Link to this heading"></a></h3>
+<ul class="contains-task-list simple">
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Orchestrator Agent deployed</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Content Agent deployed</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Visual Agent deployed</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Compiler Agent deployed</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Agent instructions uploaded</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Action groups configured</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Model permissions granted</p></li>
+</ul>
+<p><strong>Verification Commands:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># List Bedrock agents</span>
+aws<span class="w"> </span>bedrock-agent<span class="w"> </span>list-agents<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--query<span class="w"> </span><span class="s2">&quot;agentSummaries[?contains(agentName, &#39;ai-ppt-assistant&#39;)]&quot;</span>
+
+<span class="c1"># Get agent details</span>
+aws<span class="w"> </span>bedrock-agent<span class="w"> </span>get-agent<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--agent-id<span class="w"> </span>&lt;agent-id&gt;
+</pre></div>
+</div>
+</section>
+<section id="monitoring-alarms">
+<h3>8. Monitoring &amp; Alarms<a class="headerlink" href="#monitoring-alarms" title="Link to this heading"></a></h3>
+<ul class="contains-task-list simple">
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> CloudWatch log groups created</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> CloudWatch dashboard configured</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Lambda error alarms set</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> API Gateway 4xx/5xx alarms set</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> DynamoDB throttle alarms set</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> SQS DLQ alarms set</p></li>
+</ul>
+<p><strong>Verification Commands:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># List dashboards</span>
+aws<span class="w"> </span>cloudwatch<span class="w"> </span>list-dashboards<span class="w"> </span>--dashboard-name-prefix<span class="w"> </span>ai-ppt-assistant
+
+<span class="c1"># List alarms</span>
+aws<span class="w"> </span>cloudwatch<span class="w"> </span>describe-alarms<span class="w"> </span>--alarm-name-prefix<span class="w"> </span>ai-ppt-assistant
+</pre></div>
+</div>
+</section>
+</section>
+<section id="post-deployment-verification">
+<h2>✅ Post-Deployment Verification<a class="headerlink" href="#post-deployment-verification" title="Link to this heading"></a></h2>
+<section id="functional-tests">
+<h3>Functional Tests<a class="headerlink" href="#functional-tests" title="Link to this heading"></a></h3>
+<ul class="contains-task-list simple">
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Create a test presentation request</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Monitor status updates</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Download generated presentation</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Verify file integrity</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Test slide modification</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Check error handling</p></li>
+</ul>
+<p><strong>Test Script:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Test presentation generation</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>https://api-url/presentations/generate<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;x-api-key: your-api-key&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;topic&quot;: &quot;Deployment Test Presentation&quot;,</span>
+<span class="s1">    &quot;slide_count&quot;: 5,</span>
+<span class="s1">    &quot;duration&quot;: 10</span>
+<span class="s1">  }&#39;</span>
+
+<span class="c1"># Save the presentation_id and check status</span>
+<span class="nv">presentation_id</span><span class="o">=</span><span class="s2">&quot;returned-id&quot;</span>
+
+<span class="c1"># Check status</span>
+curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span>https://api-url/presentations/<span class="nv">$presentation_id</span>/status<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;x-api-key: your-api-key&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="performance-tests">
+<h3>Performance Tests<a class="headerlink" href="#performance-tests" title="Link to this heading"></a></h3>
+<ul class="contains-task-list simple">
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> API response time &lt; 500ms</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Lambda cold start &lt; 3s</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Total generation time &lt; 60s</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Concurrent request handling works</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Rate limiting works correctly</p></li>
+</ul>
+</section>
+<section id="security-verification">
+<h3>Security Verification<a class="headerlink" href="#security-verification" title="Link to this heading"></a></h3>
+<ul class="contains-task-list simple">
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> API key authentication required</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Invalid requests rejected</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Rate limiting enforced</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Encryption in transit verified</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Encryption at rest verified</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> IAM permissions follow least privilege</p></li>
+</ul>
+</section>
+</section>
+<section id="rollback-plan">
+<h2>🔄 Rollback Plan<a class="headerlink" href="#rollback-plan" title="Link to this heading"></a></h2>
+<p>If issues are encountered:</p>
+<section id="quick-rollback">
+<h3>Quick Rollback<a class="headerlink" href="#quick-rollback" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>infrastructure
+terraform<span class="w"> </span>destroy<span class="w"> </span>-var-file<span class="o">=</span><span class="s2">&quot;terraform.tfvars&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="gradual-rollback">
+<h3>Gradual Rollback<a class="headerlink" href="#gradual-rollback" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>Disable API Gateway stage</p></li>
+<li><p>Set Lambda concurrency to 0</p></li>
+<li><p>Investigate issues</p></li>
+<li><p>Fix and redeploy</p></li>
+</ol>
+</section>
+</section>
+<section id="success-criteria">
+<h2>📊 Success Criteria<a class="headerlink" href="#success-criteria" title="Link to this heading"></a></h2>
+<p>The deployment is considered successful when:</p>
+<ul class="contains-task-list simple">
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> All infrastructure resources are created</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> All Lambda functions are responding</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> API endpoints are accessible</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Test presentation can be generated</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Monitoring shows no errors</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Performance meets requirements</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Security checks pass</p></li>
+</ul>
+</section>
+<section id="final-steps">
+<h2>🎯 Final Steps<a class="headerlink" href="#final-steps" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Documentation Review</strong></p>
+<ul class="contains-task-list simple">
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Update README with deployment details</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Document any custom configurations</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Update API documentation if needed</p></li>
+</ul>
+</li>
+<li><p><strong>Team Communication</strong></p>
+<ul class="contains-task-list simple">
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Notify team of deployment completion</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Share API endpoints and keys</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Schedule deployment review meeting</p></li>
+</ul>
+</li>
+<li><p><strong>Monitoring Setup</strong></p>
+<ul class="contains-task-list simple">
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Configure alert notifications</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Set up on-call rotation</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Create runbook for common issues</p></li>
+</ul>
+</li>
+<li><p><strong>Backup Configuration</strong></p>
+<ul class="contains-task-list simple">
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Enable DynamoDB backups</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Configure S3 cross-region replication</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox"> Document disaster recovery plan</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="notes">
+<h2>📝 Notes<a class="headerlink" href="#notes" title="Link to this heading"></a></h2>
+<p><strong>Deployment Date</strong>: _______________<br />
+<strong>Deployed By</strong>: _______________<br />
+<strong>Environment</strong>: _______________<br />
+<strong>Version</strong>: _______________</p>
+<p><strong>Issues Encountered</strong>:</p>
+<hr class="docutils" />
+<hr class="docutils" />
+<hr class="docutils" />
+<p><strong>Resolution</strong>:</p>
+<hr class="docutils" />
+<hr class="docutils" />
+<hr class="docutils" />
+<hr class="docutils" />
+<p>✅ <strong>Sign-off</strong>: I confirm that all items in this checklist have been completed and verified.</p>
+<p><strong>Name</strong>: _______________<br />
+<strong>Date</strong>: _______________<br />
+<strong>Signature</strong>: _______________</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="页脚">
+        <a href="deployment.html" class="btn btn-neutral float-left" title="部署文档" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+        <a href="config-migration.html" class="btn btn-neutral float-right" title="配置迁移指南" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, AI PPT Assistant Team。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

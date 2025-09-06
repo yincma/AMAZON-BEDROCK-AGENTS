@@ -1,0 +1,63 @@
+{
+  "timestamp": "2025-09-05T19:52:52.098360",
+  "environment": "dev",
+  "region": "us-east-1",
+  "results": {
+    "session_manager": true,
+    "ppt_generator": true,
+    "content_enhancer": true,
+    "auth_handler": true,
+    "outline_creator": true,
+    "image_finder": true
+  },
+  "verification": {
+    "session_manager": {
+      "deployed": true,
+      "arn": "arn:aws:lambda:us-east-1:375004070918:function:ai-ppt-assistant-dev-session_manager",
+      "runtime": "python3.13",
+      "handler": "handler.lambda_handler",
+      "state": "Active",
+      "last_modified": "2025-09-05T10:52:44.919+0000"
+    },
+    "ppt_generator": {
+      "deployed": true,
+      "arn": "arn:aws:lambda:us-east-1:375004070918:function:ai-ppt-assistant-dev-ppt_generator",
+      "runtime": "python3.13",
+      "handler": "compile_pptx.lambda_handler",
+      "state": "Active",
+      "last_modified": "2025-09-05T10:52:45.994+0000"
+    },
+    "content_enhancer": {
+      "deployed": true,
+      "arn": "arn:aws:lambda:us-east-1:375004070918:function:ai-ppt-assistant-dev-content_enhancer",
+      "runtime": "python3.13",
+      "handler": "generate_content.lambda_handler",
+      "state": "Active",
+      "last_modified": "2025-09-05T10:52:47.081+0000"
+    },
+    "auth_handler": {
+      "deployed": true,
+      "arn": "arn:aws:lambda:us-east-1:375004070918:function:ai-ppt-assistant-dev-auth_handler",
+      "runtime": "python3.13",
+      "handler": "handler.lambda_handler",
+      "state": "Active",
+      "last_modified": "2025-09-05T10:52:47.989+0000"
+    },
+    "outline_creator": {
+      "deployed": true,
+      "arn": "arn:aws:lambda:us-east-1:375004070918:function:ai-ppt-assistant-dev-outline_creator",
+      "runtime": "python3.13",
+      "handler": "create_outline.lambda_handler",
+      "state": "Pending",
+      "last_modified": "2025-09-05T10:52:48.895+0000"
+    },
+    "image_finder": {
+      "deployed": true,
+      "arn": "arn:aws:lambda:us-east-1:375004070918:function:ai-ppt-assistant-dev-image_finder",
+      "runtime": "python3.13",
+      "handler": "find_image.lambda_handler",
+      "state": "Pending",
+      "last_modified": "2025-09-05T10:52:49.936+0000"
+    }
+  }
+}

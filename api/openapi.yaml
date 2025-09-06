@@ -1,0 +1,900 @@
+openapi: 3.0.3
+info:
+  title: AI PPT Assistant API
+  description: RESTful API for AI-powered presentation generation using Amazon Bedrock Agents
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@example.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.example.com/v1
+    description: Production server
+  - url: https://staging-api.example.com/v1
+    description: Staging server
+  - url: http://localhost:3000/v1
+    description: Development server
+
+tags:
+  - name: presentations
+    description: Presentation creation and management
+  - name: tasks
+    description: Async task management
+  - name: templates
+    description: Template management
+  - name: health
+    description: Health and status endpoints
+
+paths:
+  /presentations:
+    post:
+      tags:
+        - presentations
+      summary: Create a new presentation
+      description: Initiates an asynchronous presentation creation task
+      operationId: createPresentation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePresentationRequest'
+            examples:
+              basic:
+                value:
+                  title: "Q4 2024 Business Review"
+                  topic: "Quarterly business performance and strategic outlook"
+                  language: "en"
+                  slide_count: 15
+                  style: "corporate"
+                  template: "executive_summary"
+              detailed:
+                value:
+                  title: "AI Technology Trends 2025"
+                  topic: "Emerging AI technologies and their business impact"
+                  language: "en"
+                  slide_count: 20
+                  style: "modern"
+                  template: "technology_showcase"
+                  audience_type: "technical"
+                  tone: "informative"
+                  include_speaker_notes: true
+                  color_scheme: "blue_gradient"
+      responses:
+        '202':
+          description: Presentation creation task accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    get:
+      tags:
+        - presentations
+      summary: List presentations
+      description: Retrieves a list of created presentations
+      operationId: listPresentations
+      parameters:
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/PageToken'
+        - $ref: '#/components/parameters/SortBy'
+        - $ref: '#/components/parameters/SortOrder'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [completed, processing, failed]
+          description: Filter by presentation status
+        - name: created_after
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: Filter presentations created after this date
+      responses:
+        '200':
+          description: List of presentations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PresentationListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /presentations/{presentationId}:
+    parameters:
+      - $ref: '#/components/parameters/PresentationId'
+    
+    get:
+      tags:
+        - presentations
+      summary: Get presentation details
+      description: Retrieves details of a specific presentation
+      operationId: getPresentation
+      responses:
+        '200':
+          description: Presentation details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PresentationResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      tags:
+        - presentations
+      summary: Update presentation
+      description: Updates an existing presentation
+      operationId: updatePresentation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePresentationRequest'
+      responses:
+        '200':
+          description: Presentation updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PresentationResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags:
+        - presentations
+      summary: Delete presentation
+      description: Deletes a presentation and its associated files
+      operationId: deletePresentation
+      responses:
+        '204':
+          description: Presentation deleted successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /presentations/{presentationId}/download:
+    parameters:
+      - $ref: '#/components/parameters/PresentationId'
+    
+    get:
+      tags:
+        - presentations
+      summary: Download presentation file
+      description: Downloads the presentation file in specified format
+      operationId: downloadPresentation
+      parameters:
+        - name: format
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [pptx, pdf, html, images]
+            default: pptx
+          description: Output format for the presentation
+      responses:
+        '200':
+          description: Presentation file
+          content:
+            application/vnd.openxmlformats-officedocument.presentationml.presentation:
+              schema:
+                type: string
+                format: binary
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+            text/html:
+              schema:
+                type: string
+            application/zip:
+              schema:
+                type: string
+                format: binary
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /presentations/{presentationId}/slides:
+    parameters:
+      - $ref: '#/components/parameters/PresentationId'
+    
+    post:
+      tags:
+        - presentations
+      summary: Add slide to presentation
+      description: Adds a new slide to an existing presentation
+      operationId: addSlide
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddSlideRequest'
+      responses:
+        '201':
+          description: Slide added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SlideResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /tasks/{taskId}:
+    parameters:
+      - $ref: '#/components/parameters/TaskId'
+    
+    get:
+      tags:
+        - tasks
+      summary: Get task status
+      description: Retrieves the status of an asynchronous task
+      operationId: getTaskStatus
+      responses:
+        '200':
+          description: Task status information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskStatusResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags:
+        - tasks
+      summary: Cancel task
+      description: Cancels an ongoing task
+      operationId: cancelTask
+      responses:
+        '204':
+          description: Task cancelled successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /templates:
+    get:
+      tags:
+        - templates
+      summary: List available templates
+      description: Retrieves a list of available presentation templates
+      operationId: listTemplates
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+            enum: [business, education, creative, technical]
+          description: Filter templates by category
+      responses:
+        '200':
+          description: List of templates
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /templates/{templateId}:
+    parameters:
+      - $ref: '#/components/parameters/TemplateId'
+    
+    get:
+      tags:
+        - templates
+      summary: Get template details
+      description: Retrieves details of a specific template
+      operationId: getTemplate
+      responses:
+        '200':
+          description: Template details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /health:
+    get:
+      tags:
+        - health
+      summary: Health check
+      description: Returns the health status of the API
+      operationId: healthCheck
+      security: []
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '503':
+          description: Service is unhealthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /health/ready:
+    get:
+      tags:
+        - health
+      summary: Readiness check
+      description: Checks if the service is ready to accept requests
+      operationId: readinessCheck
+      security: []
+      responses:
+        '200':
+          description: Service is ready
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadinessResponse'
+        '503':
+          description: Service is not ready
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadinessResponse'
+
+components:
+  parameters:
+    PresentationId:
+      name: presentationId
+      in: path
+      required: true
+      description: Unique identifier of the presentation
+      schema:
+        type: string
+        format: uuid
+
+    TaskId:
+      name: taskId
+      in: path
+      required: true
+      description: Unique identifier of the task
+      schema:
+        type: string
+        format: uuid
+
+    TemplateId:
+      name: templateId
+      in: path
+      required: true
+      description: Unique identifier of the template
+      schema:
+        type: string
+
+    PageSize:
+      name: page_size
+      in: query
+      description: Number of items per page
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+
+    PageToken:
+      name: page_token
+      in: query
+      description: Token for pagination
+      schema:
+        type: string
+
+    SortBy:
+      name: sort_by
+      in: query
+      description: Field to sort by
+      schema:
+        type: string
+        enum: [created_at, updated_at, title]
+        default: created_at
+
+    SortOrder:
+      name: sort_order
+      in: query
+      description: Sort order
+      schema:
+        type: string
+        enum: [asc, desc]
+        default: desc
+
+  schemas:
+    CreatePresentationRequest:
+      type: object
+      required:
+        - title
+        - topic
+      properties:
+        title:
+          type: string
+          description: Presentation title
+          minLength: 1
+          maxLength: 200
+        topic:
+          type: string
+          description: Main topic or content description
+          minLength: 10
+          maxLength: 2000
+        language:
+          type: string
+          description: Language code
+          enum: [en, ja, zh, es, fr, de, pt, ko]
+          default: en
+        slide_count:
+          type: integer
+          description: Number of slides to generate
+          minimum: 5
+          maximum: 50
+          default: 10
+        style:
+          type: string
+          description: Presentation style
+          enum: [corporate, creative, minimal, academic, modern]
+          default: corporate
+        template:
+          type: string
+          description: Template identifier
+        audience_type:
+          type: string
+          description: Target audience type
+          enum: [executive, technical, general, academic, sales]
+        tone:
+          type: string
+          description: Presentation tone
+          enum: [formal, informal, persuasive, informative, inspiring]
+        include_speaker_notes:
+          type: boolean
+          description: Whether to generate speaker notes
+          default: true
+        color_scheme:
+          type: string
+          description: Color scheme preference
+        custom_requirements:
+          type: string
+          description: Additional custom requirements
+          maxLength: 1000
+        metadata:
+          type: object
+          description: Additional metadata
+          additionalProperties: true
+
+    UpdatePresentationRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Updated presentation title
+        metadata:
+          type: object
+          description: Updated metadata
+          additionalProperties: true
+
+    AddSlideRequest:
+      type: object
+      required:
+        - content
+        - position
+      properties:
+        content:
+          type: string
+          description: Slide content
+        position:
+          type: integer
+          description: Position to insert the slide
+        layout:
+          type: string
+          description: Slide layout type
+          enum: [title, content, two_column, image, comparison, blank]
+        notes:
+          type: string
+          description: Speaker notes for the slide
+
+    TaskResponse:
+      type: object
+      properties:
+        task_id:
+          type: string
+          format: uuid
+          description: Unique task identifier
+        status:
+          type: string
+          enum: [pending, processing, completed, failed, cancelled]
+          description: Current task status
+        created_at:
+          type: string
+          format: date-time
+          description: Task creation timestamp
+        estimated_completion:
+          type: string
+          format: date-time
+          description: Estimated completion time
+        _links:
+          type: object
+          properties:
+            self:
+              type: string
+              description: Link to task status endpoint
+            result:
+              type: string
+              description: Link to result when completed
+
+    TaskStatusResponse:
+      type: object
+      properties:
+        task_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [pending, processing, completed, failed, cancelled]
+        progress:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Progress percentage
+        message:
+          type: string
+          description: Current status message
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+        result:
+          type: object
+          description: Task result when completed
+          properties:
+            presentation_id:
+              type: string
+              format: uuid
+            download_url:
+              type: string
+              format: uri
+        error:
+          type: object
+          description: Error information if failed
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+
+    PresentationResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        topic:
+          type: string
+        language:
+          type: string
+        slide_count:
+          type: integer
+        style:
+          type: string
+        template:
+          type: string
+        status:
+          type: string
+          enum: [draft, processing, completed, failed]
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        metadata:
+          type: object
+        download_urls:
+          type: object
+          properties:
+            pptx:
+              type: string
+              format: uri
+            pdf:
+              type: string
+              format: uri
+            html:
+              type: string
+              format: uri
+        _links:
+          type: object
+          properties:
+            self:
+              type: string
+            download:
+              type: string
+            slides:
+              type: string
+
+    PresentationListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PresentationSummary'
+        pagination:
+          $ref: '#/components/schemas/PaginationInfo'
+
+    PresentationSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        slide_count:
+          type: integer
+        status:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        _links:
+          type: object
+          properties:
+            self:
+              type: string
+
+    SlideResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        position:
+          type: integer
+        content:
+          type: string
+        layout:
+          type: string
+        notes:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    TemplateResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        preview_url:
+          type: string
+          format: uri
+        supported_languages:
+          type: array
+          items:
+            type: string
+
+    TemplateListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TemplateSummary'
+        total:
+          type: integer
+
+    TemplateSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        category:
+          type: string
+        preview_url:
+          type: string
+          format: uri
+
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+        checks:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              status:
+                type: string
+              message:
+                type: string
+
+    ReadinessResponse:
+      type: object
+      properties:
+        ready:
+          type: boolean
+        timestamp:
+          type: string
+          format: date-time
+        dependencies:
+          type: object
+          additionalProperties:
+            type: boolean
+
+    PaginationInfo:
+      type: object
+      properties:
+        total:
+          type: integer
+        page_size:
+          type: integer
+        next_token:
+          type: string
+        previous_token:
+          type: string
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+            request_id:
+              type: string
+            timestamp:
+              type: string
+              format: date-time
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    TooManyRequests:
+      description: Too many requests
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key for authentication
+
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token for authentication
+
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.example.com/oauth/authorize
+          tokenUrl: https://auth.example.com/oauth/token
+          scopes:
+            read: Read access to presentations
+            write: Write access to presentations
+            admin: Administrative access
+
+security:
+  - ApiKeyAuth: []
+  - BearerAuth: []
+  - OAuth2: [read, write]

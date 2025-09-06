@@ -1,0 +1,27 @@
+{
+  "id": "approval_1756976388246_19ripmobc",
+  "title": "AI PPT Assistant - Requirements Document (Revised)",
+  "filePath": ".spec-workflow/specs/ai-ppt-assistant/requirements.md",
+  "type": "document",
+  "status": "needs-revision",
+  "createdAt": "2025-09-04T08:59:48.246Z",
+  "category": "spec",
+  "categoryName": "ai-ppt-assistant",
+  "response": "Feedback Summary (1 comments):\n\nSpecific Text Comments:\n1. \"### Requirement 4: 品牌一致性管理\n\n**User Story:** 作为一个市场...\": 暂时不需要这项\n",
+  "annotations": "{\n  \"decision\": \"needs-revision\",\n  \"comments\": [\n    {\n      \"type\": \"selection\",\n      \"comment\": \"暂时不需要这项\",\n      \"timestamp\": \"2025-09-04T09:01:02.384Z\",\n      \"selectedText\": \"### Requirement 4: 品牌一致性管理\\n\\n**User Story:** 作为一个市场部员工，我想确保所有演示文稿符合公司品牌规范，以维护品牌形象。\\n\\n#### Acceptance Criteria\\n\\n1. WHEN 系统加载品牌指南 THEN 系统 SHALL 自动应用标准色彩、字体和 Logo 位置\\n2. IF 用户选择内容与品牌规范冲突 THEN 系统 SHALL 提供合规建议\\n3. WHEN 生成演示文稿 THEN 系统 SHALL 在指定位置正确放置公司 Logo\\n4. IF 品牌指南更新 THEN 系统 SHALL 在下次生成时自动应用新规范\",\n      \"highlightColor\": {\n        \"bg\": \"rgba(255, 235, 59, 0.3)\",\n        \"border\": \"#FFEB3B\",\n        \"name\": \"#ffeb3b\"\n      },\n      \"id\": \"comment_1756976462384_4zpyz8hs1\"\n    }\n  ],\n  \"summary\": \"Feedback Summary (1 comments):\\n\\nSpecific Text Comments:\\n1. \\\"### Requirement 4: 品牌一致性管理\\n\\n**User Story:** 作为一个市场...\\\": 暂时不需要这项\\n\",\n  \"timestamp\": \"2025-09-04T09:01:23.815Z\"\n}",
+  "respondedAt": "2025-09-04T09:01:23.827Z",
+  "comments": [
+    {
+      "type": "selection",
+      "comment": "暂时不需要这项",
+      "timestamp": "2025-09-04T09:01:02.384Z",
+      "selectedText": "### Requirement 4: 品牌一致性管理\n\n**User Story:** 作为一个市场部员工，我想确保所有演示文稿符合公司品牌规范，以维护品牌形象。\n\n#### Acceptance Criteria\n\n1. WHEN 系统加载品牌指南 THEN 系统 SHALL 自动应用标准色彩、字体和 Logo 位置\n2. IF 用户选择内容与品牌规范冲突 THEN 系统 SHALL 提供合规建议\n3. WHEN 生成演示文稿 THEN 系统 SHALL 在指定位置正确放置公司 Logo\n4. IF 品牌指南更新 THEN 系统 SHALL 在下次生成时自动应用新规范",
+      "highlightColor": {
+        "bg": "rgba(255, 235, 59, 0.3)",
+        "border": "#FFEB3B",
+        "name": "#ffeb3b"
+      },
+      "id": "comment_1756976462384_4zpyz8hs1"
+    }
+  ]
+}

@@ -1,0 +1,403 @@
+{
+  "knowledgeBaseName": "PPTCompilerKnowledgeBase",
+  "description": "Knowledge base for Compiler Agent containing file format specifications, template structures, and compilation best practices",
+  "roleArn": "${KNOWLEDGE_BASE_ROLE_ARN}",
+  "knowledgeBaseConfiguration": {
+    "type": "VECTOR",
+    "vectorKnowledgeBaseConfiguration": {
+      "embeddingModelArn": "arn:aws:bedrock:${AWS_REGION}::foundation-model/amazon.titan-embed-text-v2:0",
+      "embeddingModelConfiguration": {
+        "embeddingDataType": "FLOAT32",
+        "dimensions": 1024
+      }
+    }
+  },
+  "storageConfiguration": {
+    "type": "OPENSEARCH_SERVERLESS",
+    "opensearchServerlessConfiguration": {
+      "collectionArn": "${OPENSEARCH_COLLECTION_ARN}",
+      "vectorIndexName": "ppt-compiler-index",
+      "fieldMapping": {
+        "vectorField": "embedding",
+        "textField": "text",
+        "metadataField": "metadata"
+      }
+    }
+  },
+  "dataSources": [
+    {
+      "dataSourceName": "FileFormats",
+      "description": "Specifications for different file formats",
+      "dataSourceConfiguration": {
+        "type": "S3",
+        "s3DataSourceConfiguration": {
+          "bucketArn": "${KNOWLEDGE_BASE_BUCKET_ARN}",
+          "inclusionPrefixes": ["file-formats/"]
+        }
+      },
+      "dataSourceContent": [
+        {
+          "fileName": "pptx_specification.json",
+          "content": {
+            "format": "Office Open XML (OOXML)",
+            "structure": {
+              "presentation": "Main presentation data",
+              "slides": "Individual slide definitions",
+              "slideLayouts": "Layout templates",
+              "slideMasters": "Master slide definitions",
+              "theme": "Color, font, and effect schemes",
+              "media": "Embedded images and videos"
+            },
+            "compatibility": {
+              "powerpoint_2007": "Basic compatibility",
+              "powerpoint_2010": "Transitions and animations",
+              "powerpoint_2013": "Enhanced media support",
+              "powerpoint_2016": "Modern features and effects",
+              "powerpoint_365": "Full feature support"
+            },
+            "limitations": {
+              "max_slides": "No practical limit (tested up to 10,000)",
+              "max_file_size": "2GB theoretical, 250MB practical",
+              "max_image_size": "50MB per image",
+              "max_video_size": "100MB per video"
+            }
+          }
+        },
+        {
+          "fileName": "pdf_specification.json",
+          "content": {
+            "format": "Portable Document Format",
+            "versions": {
+              "PDF_1_4": "Basic support, wide compatibility",
+              "PDF_1_7": "ISO standard, advanced features",
+              "PDF_A": "Archival format, long-term preservation",
+              "PDF_X": "Print production standard"
+            },
+            "export_settings": {
+              "quality": ["screen", "standard", "high", "print"],
+              "compression": ["none", "jpeg", "zip", "automatic"],
+              "security": {
+                "password_protection": "128-bit or 256-bit encryption",
+                "permissions": ["print", "copy", "modify", "annotate"]
+              }
+            },
+            "features": {
+              "bookmarks": "Slide titles as navigation",
+              "hyperlinks": "Preserve interactive links",
+              "annotations": "Speaker notes as comments",
+              "metadata": "Document properties and tags"
+            }
+          }
+        },
+        {
+          "fileName": "html_specification.json",
+          "content": {
+            "format": "HTML5 Web Presentation",
+            "structure": {
+              "index_html": "Main presentation file",
+              "css": "Styling and animations",
+              "javascript": "Navigation and interactions",
+              "assets": "Images, fonts, and media"
+            },
+            "frameworks": {
+              "reveal_js": "Popular presentation framework",
+              "impress_js": "3D presentation effects",
+              "deck_js": "Modern HTML presentations",
+              "custom": "Proprietary implementation"
+            },
+            "features": {
+              "responsive": "Mobile and tablet support",
+              "offline": "Service worker for offline viewing",
+              "fullscreen": "Full screen API support",
+              "navigation": "Keyboard, touch, and mouse"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dataSourceName": "Templates",
+      "description": "Presentation template structures",
+      "dataSourceConfiguration": {
+        "type": "S3",
+        "s3DataSourceConfiguration": {
+          "bucketArn": "${KNOWLEDGE_BASE_BUCKET_ARN}",
+          "inclusionPrefixes": ["templates/"]
+        }
+      },
+      "dataSourceContent": [
+        {
+          "fileName": "template_types.json",
+          "content": {
+            "business": {
+              "layouts": ["Title", "Title and Content", "Section Header", "Two Content", "Comparison", "Title Only", "Blank"],
+              "color_schemes": {
+                "corporate_blue": ["#003366", "#0066CC", "#3399FF", "#FFFFFF"],
+                "professional_gray": ["#333333", "#666666", "#999999", "#FFFFFF"],
+                "modern_teal": ["#008B8B", "#20B2AA", "#48D1CC", "#FFFFFF"]
+              },
+              "fonts": {
+                "headings": ["Helvetica Neue", "Arial", "Calibri"],
+                "body": ["Helvetica", "Arial", "Calibri Light"]
+              }
+            },
+            "creative": {
+              "layouts": ["Full Image", "Split Screen", "Mosaic", "Circular", "Diagonal", "Asymmetric"],
+              "color_schemes": {
+                "vibrant": ["#FF6B35", "#F7931E", "#FDC830", "#FFFFFF"],
+                "pastel": ["#FFE5E5", "#FFD6A5", "#FDFFB6", "#CAFFBF"],
+                "gradient": ["Linear gradients", "Radial gradients", "Mesh gradients"]
+              },
+              "fonts": {
+                "headings": ["Montserrat", "Playfair Display", "Bebas Neue"],
+                "body": ["Open Sans", "Lato", "Source Sans Pro"]
+              }
+            },
+            "academic": {
+              "layouts": ["Title", "Objectives", "Methodology", "Results", "Discussion", "References", "Q&A"],
+              "color_schemes": {
+                "scholarly": ["#2C3E50", "#34495E", "#7F8C8D", "#FFFFFF"],
+                "university": ["Institution colors", "Department colors"]
+              },
+              "fonts": {
+                "headings": ["Times New Roman", "Georgia", "Cambria"],
+                "body": ["Times New Roman", "Georgia", "Garamond"]
+              }
+            }
+          }
+        },
+        {
+          "fileName": "master_slides.json",
+          "content": {
+            "components": {
+              "header": {
+                "elements": ["logo", "title", "subtitle", "date"],
+                "position": "top 10% of slide"
+              },
+              "footer": {
+                "elements": ["page_number", "copyright", "company_name"],
+                "position": "bottom 5% of slide"
+              },
+              "background": {
+                "options": ["solid_color", "gradient", "pattern", "image"],
+                "opacity": "10-100%"
+              },
+              "placeholders": {
+                "title": "Main heading placeholder",
+                "content": "Body text placeholder",
+                "image": "Media placeholder",
+                "chart": "Data visualization placeholder"
+              }
+            },
+            "layout_grids": {
+              "rule_of_thirds": "3x3 grid for balanced composition",
+              "golden_ratio": "1.618 proportions for aesthetic appeal",
+              "modular_grid": "Flexible column-based system",
+              "baseline_grid": "Consistent vertical rhythm"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dataSourceName": "CompilationRules",
+      "description": "Rules and best practices for compilation",
+      "dataSourceConfiguration": {
+        "type": "S3",
+        "s3DataSourceConfiguration": {
+          "bucketArn": "${KNOWLEDGE_BASE_BUCKET_ARN}",
+          "inclusionPrefixes": ["compilation-rules/"]
+        }
+      },
+      "dataSourceContent": [
+        {
+          "fileName": "assembly_rules.json",
+          "content": {
+            "content_ordering": {
+              "standard_flow": ["Title", "Agenda", "Introduction", "Main Content", "Conclusion", "Q&A", "Thank You"],
+              "content_grouping": "Group related slides together",
+              "transitions": "Maintain logical flow between sections"
+            },
+            "formatting_consistency": {
+              "fonts": {
+                "limit": "Maximum 2 font families",
+                "sizes": "3-4 size variations maximum",
+                "styles": "Use bold and italic sparingly"
+              },
+              "colors": {
+                "palette": "4-5 colors maximum",
+                "consistency": "Same colors for same elements",
+                "contrast": "Ensure readability"
+              },
+              "spacing": {
+                "margins": "Consistent margins on all slides",
+                "padding": "Uniform padding around elements",
+                "alignment": "Consistent alignment grid"
+              }
+            },
+            "media_handling": {
+              "images": {
+                "embedding": "Embed for reliability",
+                "linking": "Link for smaller file size",
+                "compression": "Balance quality and size"
+              },
+              "videos": {
+                "format": "MP4 for compatibility",
+                "embedding": "Consider file size impact",
+                "fallback": "Provide static alternative"
+              },
+              "audio": {
+                "format": "MP3 for compatibility",
+                "synchronization": "Match with slide timing"
+              }
+            }
+          }
+        },
+        {
+          "fileName": "quality_checks.json",
+          "content": {
+            "content_validation": {
+              "completeness": "All placeholders filled",
+              "accuracy": "Spell check and grammar",
+              "consistency": "Terminology and style",
+              "references": "Valid links and citations"
+            },
+            "visual_validation": {
+              "resolution": "Sufficient for projection",
+              "aspect_ratio": "Matches presentation settings",
+              "color_mode": "RGB for screen, CMYK for print",
+              "accessibility": "Alt text and contrast"
+            },
+            "technical_validation": {
+              "file_integrity": "No corruption",
+              "compatibility": "Target platform support",
+              "performance": "Reasonable load times",
+              "dependencies": "All assets included"
+            },
+            "export_validation": {
+              "format_specific": "Format requirements met",
+              "quality_settings": "Appropriate for use case",
+              "metadata": "Complete and accurate",
+              "security": "Appropriate restrictions"
+            }
+          }
+        },
+        {
+          "fileName": "optimization_strategies.json",
+          "content": {
+            "file_size_optimization": {
+              "images": {
+                "resize": "Match display resolution",
+                "compress": "JPEG quality 80-90%",
+                "format": "Choose appropriate format",
+                "reuse": "Reuse images across slides"
+              },
+              "fonts": {
+                "subset": "Include only used characters",
+                "embed": "Embed essential fonts only",
+                "fallback": "Define fallback fonts"
+              },
+              "content": {
+                "remove_unused": "Delete hidden slides",
+                "clean_metadata": "Remove editing history",
+                "compress_xml": "Optimize XML structure"
+              }
+            },
+            "performance_optimization": {
+              "loading": {
+                "progressive": "Load visible content first",
+                "lazy_loading": "Defer non-critical resources",
+                "caching": "Enable browser caching"
+              },
+              "rendering": {
+                "simplify": "Reduce complex animations",
+                "optimize_transitions": "Use GPU-accelerated effects",
+                "limit_effects": "Avoid excessive effects"
+              }
+            },
+            "compatibility_optimization": {
+              "cross_platform": {
+                "fonts": "Use web-safe fonts",
+                "media": "Use widely supported formats",
+                "features": "Provide fallbacks"
+              },
+              "version_support": {
+                "downgrade": "Save in compatible format",
+                "feature_detection": "Check for support",
+                "graceful_degradation": "Maintain core functionality"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dataSourceName": "OutputFormats",
+      "description": "Output format specifications and settings",
+      "dataSourceConfiguration": {
+        "type": "S3",
+        "s3DataSourceConfiguration": {
+          "bucketArn": "${KNOWLEDGE_BASE_BUCKET_ARN}",
+          "inclusionPrefixes": ["output-formats/"]
+        }
+      },
+      "dataSourceContent": [
+        {
+          "category": "Print Formats",
+          "specifications": {
+            "handouts": {
+              "slides_per_page": [1, 2, 3, 4, 6, 9],
+              "orientation": ["portrait", "landscape"],
+              "include_notes": true,
+              "margins": "0.5 inch minimum"
+            },
+            "notes_pages": {
+              "layout": "Slide thumbnail with notes area",
+              "notes_formatting": "Preserve formatting",
+              "page_numbers": "Include page numbers"
+            },
+            "outline_view": {
+              "content": "Text content only",
+              "hierarchy": "Preserve slide structure",
+              "formatting": "Basic text formatting"
+            }
+          }
+        },
+        {
+          "category": "Digital Formats",
+          "specifications": {
+            "screen_show": {
+              "resolution": ["1920x1080", "1280x720", "1024x768"],
+              "aspect_ratio": ["16:9", "16:10", "4:3"],
+              "color_depth": "24-bit minimum"
+            },
+            "web_presentation": {
+              "responsive": "Adapt to screen size",
+              "interactivity": "Click, swipe, keyboard",
+              "compatibility": "Modern browsers"
+            },
+            "video_export": {
+              "format": ["MP4", "WebM", "AVI"],
+              "resolution": ["4K", "1080p", "720p"],
+              "frame_rate": [24, 30, 60],
+              "codec": ["H.264", "H.265", "VP9"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "retrievalConfiguration": {
+    "vectorSearchConfiguration": {
+      "numberOfResults": 5,
+      "overrideSearchType": "HYBRID",
+      "filter": null
+    }
+  },
+  "tags": {
+    "Environment": "Production",
+    "Project": "AI-PPT-Assistant",
+    "Component": "KnowledgeBase",
+    "Agent": "Compiler"
+  }
+}

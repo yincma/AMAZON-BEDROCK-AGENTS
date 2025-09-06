@@ -1,0 +1,309 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>interfaces package &mdash; AI PPT Assistant 1.0.0 文档</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=3bd3f67c" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=34088549"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=fd10adb8"></script>
+      <script src="../_static/translations.js?v=beaddf03"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AI PPT Assistant
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">用户指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/installation.html">安装指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/quickstart.html">快速开始</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">架构设计</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/architecture.html">系统架构</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">现有文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../existing/api.html">API文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/api.html#ai-ppt-assistant-api-documentation">AI PPT Assistant API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/deployment.html">部署文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/deployment.html#ai-ppt-assistant-deployment-guide">AI PPT Assistant - Deployment Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/deployment-checklist.html">部署检查清单</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/deployment-checklist.html#ai-ppt-assistant-deployment-checklist">AI PPT Assistant - Deployment Checklist</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/config-migration.html">配置迁移指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/config-migration.html#config">🔧 环境变量到Config文件迁移指南</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AI PPT Assistant</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">interfaces package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/interfaces.rst.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="interfaces-package">
+<h1>interfaces package<a class="headerlink" href="#interfaces-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="interfaces.presentation_controller_interface.html">interfaces.presentation_controller_interface module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IPresentationCompiler"><code class="docutils literal notranslate"><span class="pre">IPresentationCompiler</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IPresentationCompiler.compile_presentation"><code class="docutils literal notranslate"><span class="pre">IPresentationCompiler.compile_presentation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IPresentationCompiler.validate_compilation_request"><code class="docutils literal notranslate"><span class="pre">IPresentationCompiler.validate_compilation_request()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IPresentationCompiler.get_compilation_status"><code class="docutils literal notranslate"><span class="pre">IPresentationCompiler.get_compilation_status()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IPresentationCompiler.cancel_compilation"><code class="docutils literal notranslate"><span class="pre">IPresentationCompiler.cancel_compilation()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IPresentationOrchestrator"><code class="docutils literal notranslate"><span class="pre">IPresentationOrchestrator</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IPresentationOrchestrator.initialize_compilation"><code class="docutils literal notranslate"><span class="pre">IPresentationOrchestrator.initialize_compilation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IPresentationOrchestrator.setup_resources"><code class="docutils literal notranslate"><span class="pre">IPresentationOrchestrator.setup_resources()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IPresentationOrchestrator.coordinate_content_generation"><code class="docutils literal notranslate"><span class="pre">IPresentationOrchestrator.coordinate_content_generation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IPresentationOrchestrator.finalize_presentation"><code class="docutils literal notranslate"><span class="pre">IPresentationOrchestrator.finalize_presentation()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IContentProcessor"><code class="docutils literal notranslate"><span class="pre">IContentProcessor</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IContentProcessor.process_slide_content"><code class="docutils literal notranslate"><span class="pre">IContentProcessor.process_slide_content()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IContentProcessor.process_speaker_notes"><code class="docutils literal notranslate"><span class="pre">IContentProcessor.process_speaker_notes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IContentProcessor.process_images"><code class="docutils literal notranslate"><span class="pre">IContentProcessor.process_images()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IContentProcessor.process_charts"><code class="docutils literal notranslate"><span class="pre">IContentProcessor.process_charts()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IResourceManager"><code class="docutils literal notranslate"><span class="pre">IResourceManager</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IResourceManager.acquire_resources"><code class="docutils literal notranslate"><span class="pre">IResourceManager.acquire_resources()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IResourceManager.release_resources"><code class="docutils literal notranslate"><span class="pre">IResourceManager.release_resources()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IResourceManager.cache_resource"><code class="docutils literal notranslate"><span class="pre">IResourceManager.cache_resource()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IResourceManager.get_resource_status"><code class="docutils literal notranslate"><span class="pre">IResourceManager.get_resource_status()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IQualityController"><code class="docutils literal notranslate"><span class="pre">IQualityController</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IQualityController.validate_input_data"><code class="docutils literal notranslate"><span class="pre">IQualityController.validate_input_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IQualityController.check_content_quality"><code class="docutils literal notranslate"><span class="pre">IQualityController.check_content_quality()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IQualityController.verify_output_integrity"><code class="docutils literal notranslate"><span class="pre">IQualityController.verify_output_integrity()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IQualityController.generate_quality_report"><code class="docutils literal notranslate"><span class="pre">IQualityController.generate_quality_report()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IPresentationController"><code class="docutils literal notranslate"><span class="pre">IPresentationController</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IPresentationController.set_model"><code class="docutils literal notranslate"><span class="pre">IPresentationController.set_model()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IPresentationController.set_view"><code class="docutils literal notranslate"><span class="pre">IPresentationController.set_view()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IPresentationController.get_performance_metrics"><code class="docutils literal notranslate"><span class="pre">IPresentationController.get_performance_metrics()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IPresentationController.cleanup_resources"><code class="docutils literal notranslate"><span class="pre">IPresentationController.cleanup_resources()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IAsyncCompiler"><code class="docutils literal notranslate"><span class="pre">IAsyncCompiler</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IAsyncCompiler.compile_presentation_async"><code class="docutils literal notranslate"><span class="pre">IAsyncCompiler.compile_presentation_async()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IAsyncCompiler.get_compilation_progress"><code class="docutils literal notranslate"><span class="pre">IAsyncCompiler.get_compilation_progress()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IBatchCompiler"><code class="docutils literal notranslate"><span class="pre">IBatchCompiler</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IBatchCompiler.compile_presentations_batch"><code class="docutils literal notranslate"><span class="pre">IBatchCompiler.compile_presentations_batch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IBatchCompiler.get_batch_status"><code class="docutils literal notranslate"><span class="pre">IBatchCompiler.get_batch_status()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IPresentationControllerFactory"><code class="docutils literal notranslate"><span class="pre">IPresentationControllerFactory</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IPresentationControllerFactory.create_compiler"><code class="docutils literal notranslate"><span class="pre">IPresentationControllerFactory.create_compiler()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IPresentationControllerFactory.create_orchestrator"><code class="docutils literal notranslate"><span class="pre">IPresentationControllerFactory.create_orchestrator()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IPresentationControllerFactory.create_quality_controller"><code class="docutils literal notranslate"><span class="pre">IPresentationControllerFactory.create_quality_controller()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IPresentationControllerFactory.create_async_compiler"><code class="docutils literal notranslate"><span class="pre">IPresentationControllerFactory.create_async_compiler()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_controller_interface.html#interfaces.presentation_controller_interface.IPresentationControllerFactory.create_batch_compiler"><code class="docutils literal notranslate"><span class="pre">IPresentationControllerFactory.create_batch_compiler()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="interfaces.presentation_model_interface.html">interfaces.presentation_model_interface module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModelReader"><code class="docutils literal notranslate"><span class="pre">IPresentationModelReader</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModelReader.get_presentation_record"><code class="docutils literal notranslate"><span class="pre">IPresentationModelReader.get_presentation_record()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModelReader.get_slide_content"><code class="docutils literal notranslate"><span class="pre">IPresentationModelReader.get_slide_content()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModelReader.get_template"><code class="docutils literal notranslate"><span class="pre">IPresentationModelReader.get_template()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModelReader.get_default_template"><code class="docutils literal notranslate"><span class="pre">IPresentationModelReader.get_default_template()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModelReader.list_templates"><code class="docutils literal notranslate"><span class="pre">IPresentationModelReader.list_templates()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModelWriter"><code class="docutils literal notranslate"><span class="pre">IPresentationModelWriter</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModelWriter.update_presentation_status"><code class="docutils literal notranslate"><span class="pre">IPresentationModelWriter.update_presentation_status()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModelWriter.save_presentation_to_s3"><code class="docutils literal notranslate"><span class="pre">IPresentationModelWriter.save_presentation_to_s3()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModelWriter.save_slide_data"><code class="docutils literal notranslate"><span class="pre">IPresentationModelWriter.save_slide_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModel"><code class="docutils literal notranslate"><span class="pre">IPresentationModel</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModel.create_presentation_record"><code class="docutils literal notranslate"><span class="pre">IPresentationModel.create_presentation_record()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModel.delete_presentation"><code class="docutils literal notranslate"><span class="pre">IPresentationModel.delete_presentation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModel.get_presentation_history"><code class="docutils literal notranslate"><span class="pre">IPresentationModel.get_presentation_history()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModel.backup_presentation"><code class="docutils literal notranslate"><span class="pre">IPresentationModel.backup_presentation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModel.restore_presentation"><code class="docutils literal notranslate"><span class="pre">IPresentationModel.restore_presentation()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationCache"><code class="docutils literal notranslate"><span class="pre">IPresentationCache</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationCache.get_cached_template"><code class="docutils literal notranslate"><span class="pre">IPresentationCache.get_cached_template()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationCache.cache_template"><code class="docutils literal notranslate"><span class="pre">IPresentationCache.cache_template()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationCache.invalidate_cache"><code class="docutils literal notranslate"><span class="pre">IPresentationCache.invalidate_cache()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationCache.clear_cache"><code class="docutils literal notranslate"><span class="pre">IPresentationCache.clear_cache()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationValidator"><code class="docutils literal notranslate"><span class="pre">IPresentationValidator</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationValidator.validate_presentation_data"><code class="docutils literal notranslate"><span class="pre">IPresentationValidator.validate_presentation_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationValidator.validate_slide_data"><code class="docutils literal notranslate"><span class="pre">IPresentationValidator.validate_slide_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationValidator.validate_template_data"><code class="docutils literal notranslate"><span class="pre">IPresentationValidator.validate_template_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationValidator.get_validation_errors"><code class="docutils literal notranslate"><span class="pre">IPresentationValidator.get_validation_errors()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModelFactory"><code class="docutils literal notranslate"><span class="pre">IPresentationModelFactory</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModelFactory.create_model"><code class="docutils literal notranslate"><span class="pre">IPresentationModelFactory.create_model()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModelFactory.create_cache"><code class="docutils literal notranslate"><span class="pre">IPresentationModelFactory.create_cache()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_model_interface.html#interfaces.presentation_model_interface.IPresentationModelFactory.create_validator"><code class="docutils literal notranslate"><span class="pre">IPresentationModelFactory.create_validator()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="interfaces.presentation_view_interface.html">interfaces.presentation_view_interface module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationRenderer"><code class="docutils literal notranslate"><span class="pre">IPresentationRenderer</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationRenderer.initialize_presentation"><code class="docutils literal notranslate"><span class="pre">IPresentationRenderer.initialize_presentation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationRenderer.save_presentation"><code class="docutils literal notranslate"><span class="pre">IPresentationRenderer.save_presentation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationRenderer.get_slide_count"><code class="docutils literal notranslate"><span class="pre">IPresentationRenderer.get_slide_count()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationRenderer.clear_presentation"><code class="docutils literal notranslate"><span class="pre">IPresentationRenderer.clear_presentation()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideCreator"><code class="docutils literal notranslate"><span class="pre">ISlideCreator</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideCreator.add_title_slide"><code class="docutils literal notranslate"><span class="pre">ISlideCreator.add_title_slide()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideCreator.add_content_slide"><code class="docutils literal notranslate"><span class="pre">ISlideCreator.add_content_slide()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideCreator.add_section_slide"><code class="docutils literal notranslate"><span class="pre">ISlideCreator.add_section_slide()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideCreator.add_two_content_slide"><code class="docutils literal notranslate"><span class="pre">ISlideCreator.add_two_content_slide()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideCreator.add_image_slide"><code class="docutils literal notranslate"><span class="pre">ISlideCreator.add_image_slide()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideCreator.add_chart_slide"><code class="docutils literal notranslate"><span class="pre">ISlideCreator.add_chart_slide()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideCreator.add_closing_slide"><code class="docutils literal notranslate"><span class="pre">ISlideCreator.add_closing_slide()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideStyler"><code class="docutils literal notranslate"><span class="pre">ISlideStyler</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideStyler.apply_slide_style"><code class="docutils literal notranslate"><span class="pre">ISlideStyler.apply_slide_style()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideStyler.set_color_scheme"><code class="docutils literal notranslate"><span class="pre">ISlideStyler.set_color_scheme()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideStyler.apply_font_styling"><code class="docutils literal notranslate"><span class="pre">ISlideStyler.apply_font_styling()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideStyler.set_slide_background"><code class="docutils literal notranslate"><span class="pre">ISlideStyler.set_slide_background()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideEnhancer"><code class="docutils literal notranslate"><span class="pre">ISlideEnhancer</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideEnhancer.add_speaker_notes"><code class="docutils literal notranslate"><span class="pre">ISlideEnhancer.add_speaker_notes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideEnhancer.add_transition_effect"><code class="docutils literal notranslate"><span class="pre">ISlideEnhancer.add_transition_effect()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideEnhancer.add_animation"><code class="docutils literal notranslate"><span class="pre">ISlideEnhancer.add_animation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.ISlideEnhancer.add_hyperlink"><code class="docutils literal notranslate"><span class="pre">ISlideEnhancer.add_hyperlink()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationView"><code class="docutils literal notranslate"><span class="pre">IPresentationView</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationView.set_presentation_properties"><code class="docutils literal notranslate"><span class="pre">IPresentationView.set_presentation_properties()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationView.duplicate_slide"><code class="docutils literal notranslate"><span class="pre">IPresentationView.duplicate_slide()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationView.delete_slide"><code class="docutils literal notranslate"><span class="pre">IPresentationView.delete_slide()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationView.reorder_slides"><code class="docutils literal notranslate"><span class="pre">IPresentationView.reorder_slides()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationView.get_slide_by_index"><code class="docutils literal notranslate"><span class="pre">IPresentationView.get_slide_by_index()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationView.export_slide_as_image"><code class="docutils literal notranslate"><span class="pre">IPresentationView.export_slide_as_image()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationTemplate"><code class="docutils literal notranslate"><span class="pre">IPresentationTemplate</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationTemplate.load_template"><code class="docutils literal notranslate"><span class="pre">IPresentationTemplate.load_template()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationTemplate.apply_template_to_slide"><code class="docutils literal notranslate"><span class="pre">IPresentationTemplate.apply_template_to_slide()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationTemplate.get_template_layouts"><code class="docutils literal notranslate"><span class="pre">IPresentationTemplate.get_template_layouts()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationTemplate.customize_template"><code class="docutils literal notranslate"><span class="pre">IPresentationTemplate.customize_template()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationValidator"><code class="docutils literal notranslate"><span class="pre">IPresentationValidator</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationValidator.validate_slide_content"><code class="docutils literal notranslate"><span class="pre">IPresentationValidator.validate_slide_content()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationValidator.validate_presentation_structure"><code class="docutils literal notranslate"><span class="pre">IPresentationValidator.validate_presentation_structure()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationValidator.get_validation_warnings"><code class="docutils literal notranslate"><span class="pre">IPresentationValidator.get_validation_warnings()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationValidator.get_accessibility_report"><code class="docutils literal notranslate"><span class="pre">IPresentationValidator.get_accessibility_report()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationViewFactory"><code class="docutils literal notranslate"><span class="pre">IPresentationViewFactory</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationViewFactory.create_view"><code class="docutils literal notranslate"><span class="pre">IPresentationViewFactory.create_view()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationViewFactory.create_template_manager"><code class="docutils literal notranslate"><span class="pre">IPresentationViewFactory.create_template_manager()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationViewFactory.create_validator"><code class="docutils literal notranslate"><span class="pre">IPresentationViewFactory.create_validator()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="interfaces.presentation_view_interface.html#interfaces.presentation_view_interface.IPresentationViewFactory.get_supported_styles"><code class="docutils literal notranslate"><span class="pre">IPresentationViewFactory.get_supported_styles()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="module-interfaces">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-interfaces" title="Link to this heading"></a></h2>
+<p>Interfaces package for AI PPT Assistant
+Defines abstract interfaces for MVC architecture layers</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, AI PPT Assistant Team。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

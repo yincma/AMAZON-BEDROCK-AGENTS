@@ -1,0 +1,590 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>interfaces.presentation_view_interface module &mdash; AI PPT Assistant 1.0.0 文档</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=3bd3f67c" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=34088549"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=fd10adb8"></script>
+      <script src="../_static/translations.js?v=beaddf03"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AI PPT Assistant
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">用户指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/installation.html">安装指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/quickstart.html">快速开始</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">架构设计</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/architecture.html">系统架构</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">现有文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../existing/api.html">API文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/api.html#ai-ppt-assistant-api-documentation">AI PPT Assistant API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/deployment.html">部署文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/deployment.html#ai-ppt-assistant-deployment-guide">AI PPT Assistant - Deployment Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/deployment-checklist.html">部署检查清单</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/deployment-checklist.html#ai-ppt-assistant-deployment-checklist">AI PPT Assistant - Deployment Checklist</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/config-migration.html">配置迁移指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/config-migration.html#config">🔧 环境变量到Config文件迁移指南</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AI PPT Assistant</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">interfaces.presentation_view_interface module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/interfaces.presentation_view_interface.rst.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-interfaces.presentation_view_interface">
+<span id="interfaces-presentation-view-interface-module"></span><h1>interfaces.presentation_view_interface module<a class="headerlink" href="#module-interfaces.presentation_view_interface" title="Link to this heading"></a></h1>
+<p>Presentation View Interface - Abstract Rendering Layer
+Defines the contract for presentation rendering and styling operations</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.IPresentationRenderer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">interfaces.presentation_view_interface.</span></span><span class="sig-name descname"><span class="pre">IPresentationRenderer</span></span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#IPresentationRenderer"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.IPresentationRenderer" title="Link to this definition"></a></dt>
+<dd><p>基类：<a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>Interface for basic presentation rendering operations</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.IPresentationRenderer.initialize_presentation">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">initialize_presentation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">template_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#IPresentationRenderer.initialize_presentation"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.IPresentationRenderer.initialize_presentation" title="Link to this definition"></a></dt>
+<dd><p>Initialize a new presentation with optional template</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.IPresentationRenderer.save_presentation">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">save_presentation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#IPresentationRenderer.save_presentation"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.IPresentationRenderer.save_presentation" title="Link to this definition"></a></dt>
+<dd><p>Save presentation and return binary data</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.IPresentationRenderer.get_slide_count">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_slide_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#IPresentationRenderer.get_slide_count"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.IPresentationRenderer.get_slide_count" title="Link to this definition"></a></dt>
+<dd><p>Get number of slides in presentation</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.IPresentationRenderer.clear_presentation">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">clear_presentation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#IPresentationRenderer.clear_presentation"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.IPresentationRenderer.clear_presentation" title="Link to this definition"></a></dt>
+<dd><p>Clear all slides and reset presentation</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.ISlideCreator">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">interfaces.presentation_view_interface.</span></span><span class="sig-name descname"><span class="pre">ISlideCreator</span></span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#ISlideCreator"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.ISlideCreator" title="Link to this definition"></a></dt>
+<dd><p>基类：<a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>Interface for creating different types of slides</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.ISlideCreator.add_title_slide">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_title_slide</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subtitle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">author</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#ISlideCreator.add_title_slide"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.ISlideCreator.add_title_slide" title="Link to this definition"></a></dt>
+<dd><p>Add a title slide to the presentation</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.ISlideCreator.add_content_slide">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_content_slide</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slide_number</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#ISlideCreator.add_content_slide"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.ISlideCreator.add_content_slide" title="Link to this definition"></a></dt>
+<dd><p>Add a content slide with bullet points</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.ISlideCreator.add_section_slide">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_section_slide</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subtitle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#ISlideCreator.add_section_slide"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.ISlideCreator.add_section_slide" title="Link to this definition"></a></dt>
+<dd><p>Add a section divider slide</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.ISlideCreator.add_two_content_slide">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_two_content_slide</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left_content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right_content</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#ISlideCreator.add_two_content_slide"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.ISlideCreator.add_two_content_slide" title="Link to this definition"></a></dt>
+<dd><p>Add a two-column content slide</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.ISlideCreator.add_image_slide">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_image_slide</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">caption</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'center'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#ISlideCreator.add_image_slide"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.ISlideCreator.add_image_slide" title="Link to this definition"></a></dt>
+<dd><p>Add a slide with an image</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.ISlideCreator.add_chart_slide">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_chart_slide</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chart_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chart_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#ISlideCreator.add_chart_slide"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.ISlideCreator.add_chart_slide" title="Link to this definition"></a></dt>
+<dd><p>Add a slide with a chart</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.ISlideCreator.add_closing_slide">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_closing_slide</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Thank</span> <span class="pre">You'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contact_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additional_text</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#ISlideCreator.add_closing_slide"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.ISlideCreator.add_closing_slide" title="Link to this definition"></a></dt>
+<dd><p>Add a closing slide</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.ISlideStyler">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">interfaces.presentation_view_interface.</span></span><span class="sig-name descname"><span class="pre">ISlideStyler</span></span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#ISlideStyler"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.ISlideStyler" title="Link to this definition"></a></dt>
+<dd><p>基类：<a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>Interface for styling slides and presentation elements</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.ISlideStyler.apply_slide_style">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">apply_slide_style</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slide</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">style</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#ISlideStyler.apply_slide_style"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.ISlideStyler.apply_slide_style" title="Link to this definition"></a></dt>
+<dd><p>Apply style to a specific slide</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.ISlideStyler.set_color_scheme">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_color_scheme</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">color_scheme</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#ISlideStyler.set_color_scheme"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.ISlideStyler.set_color_scheme" title="Link to this definition"></a></dt>
+<dd><p>Set color scheme for the presentation</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.ISlideStyler.apply_font_styling">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">apply_font_styling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">font_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">font_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">italic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#ISlideStyler.apply_font_styling"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.ISlideStyler.apply_font_styling" title="Link to this definition"></a></dt>
+<dd><p>Apply font styling to text element</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.ISlideStyler.set_slide_background">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_slide_background</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slide</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#ISlideStyler.set_slide_background"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.ISlideStyler.set_slide_background" title="Link to this definition"></a></dt>
+<dd><p>Set slide background (color, image, gradient)</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.ISlideEnhancer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">interfaces.presentation_view_interface.</span></span><span class="sig-name descname"><span class="pre">ISlideEnhancer</span></span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#ISlideEnhancer"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.ISlideEnhancer" title="Link to this definition"></a></dt>
+<dd><p>基类：<a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>Interface for adding enhancements to slides</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.ISlideEnhancer.add_speaker_notes">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_speaker_notes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slide</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">notes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#ISlideEnhancer.add_speaker_notes"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.ISlideEnhancer.add_speaker_notes" title="Link to this definition"></a></dt>
+<dd><p>Add speaker notes to a slide</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.ISlideEnhancer.add_transition_effect">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_transition_effect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slide</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">effect_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#ISlideEnhancer.add_transition_effect"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.ISlideEnhancer.add_transition_effect" title="Link to this definition"></a></dt>
+<dd><p>Add transition effect to slide</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.ISlideEnhancer.add_animation">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_animation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">animation_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trigger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'click'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#ISlideEnhancer.add_animation"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.ISlideEnhancer.add_animation" title="Link to this definition"></a></dt>
+<dd><p>Add animation to slide element</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.ISlideEnhancer.add_hyperlink">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_hyperlink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tooltip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#ISlideEnhancer.add_hyperlink"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.ISlideEnhancer.add_hyperlink" title="Link to this definition"></a></dt>
+<dd><p>Add hyperlink to slide element</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.IPresentationView">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">interfaces.presentation_view_interface.</span></span><span class="sig-name descname"><span class="pre">IPresentationView</span></span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#IPresentationView"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.IPresentationView" title="Link to this definition"></a></dt>
+<dd><p>基类：<a class="reference internal" href="#interfaces.presentation_view_interface.IPresentationRenderer" title="interfaces.presentation_view_interface.IPresentationRenderer"><code class="xref py py-class docutils literal notranslate"><span class="pre">IPresentationRenderer</span></code></a>, <a class="reference internal" href="#interfaces.presentation_view_interface.ISlideCreator" title="interfaces.presentation_view_interface.ISlideCreator"><code class="xref py py-class docutils literal notranslate"><span class="pre">ISlideCreator</span></code></a>, <a class="reference internal" href="#interfaces.presentation_view_interface.ISlideStyler" title="interfaces.presentation_view_interface.ISlideStyler"><code class="xref py py-class docutils literal notranslate"><span class="pre">ISlideStyler</span></code></a>, <a class="reference internal" href="#interfaces.presentation_view_interface.ISlideEnhancer" title="interfaces.presentation_view_interface.ISlideEnhancer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ISlideEnhancer</span></code></a></p>
+<p>Complete interface for presentation view operations</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.IPresentationView.set_presentation_properties">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_presentation_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">author</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subject</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#IPresentationView.set_presentation_properties"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.IPresentationView.set_presentation_properties" title="Link to this definition"></a></dt>
+<dd><p>Set presentation metadata properties</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.IPresentationView.duplicate_slide">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">duplicate_slide</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slide_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#IPresentationView.duplicate_slide"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.IPresentationView.duplicate_slide" title="Link to this definition"></a></dt>
+<dd><p>Duplicate a slide at given index</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.IPresentationView.delete_slide">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_slide</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slide_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#IPresentationView.delete_slide"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.IPresentationView.delete_slide" title="Link to this definition"></a></dt>
+<dd><p>Delete slide at given index</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.IPresentationView.reorder_slides">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reorder_slides</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#IPresentationView.reorder_slides"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.IPresentationView.reorder_slides" title="Link to this definition"></a></dt>
+<dd><p>Move slide from one position to another</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.IPresentationView.get_slide_by_index">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_slide_by_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#IPresentationView.get_slide_by_index"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.IPresentationView.get_slide_by_index" title="Link to this definition"></a></dt>
+<dd><p>Get slide object by index</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.IPresentationView.export_slide_as_image">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">export_slide_as_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slide_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'PNG'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1920</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1080</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#IPresentationView.export_slide_as_image"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.IPresentationView.export_slide_as_image" title="Link to this definition"></a></dt>
+<dd><p>Export specific slide as image</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.IPresentationTemplate">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">interfaces.presentation_view_interface.</span></span><span class="sig-name descname"><span class="pre">IPresentationTemplate</span></span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#IPresentationTemplate"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.IPresentationTemplate" title="Link to this definition"></a></dt>
+<dd><p>基类：<a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>Interface for template management</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.IPresentationTemplate.load_template">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_template</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">template_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#IPresentationTemplate.load_template"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.IPresentationTemplate.load_template" title="Link to this definition"></a></dt>
+<dd><p>Load template configuration</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.IPresentationTemplate.apply_template_to_slide">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">apply_template_to_slide</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slide</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layout_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#IPresentationTemplate.apply_template_to_slide"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.IPresentationTemplate.apply_template_to_slide" title="Link to this definition"></a></dt>
+<dd><p>Apply template layout to specific slide</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.IPresentationTemplate.get_template_layouts">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_template_layouts</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#IPresentationTemplate.get_template_layouts"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.IPresentationTemplate.get_template_layouts" title="Link to this definition"></a></dt>
+<dd><p>Get available template layout types</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.IPresentationTemplate.customize_template">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">customize_template</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">modifications</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#IPresentationTemplate.customize_template"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.IPresentationTemplate.customize_template" title="Link to this definition"></a></dt>
+<dd><p>Apply customizations to current template</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.IPresentationValidator">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">interfaces.presentation_view_interface.</span></span><span class="sig-name descname"><span class="pre">IPresentationValidator</span></span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#IPresentationValidator"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.IPresentationValidator" title="Link to this definition"></a></dt>
+<dd><p>基类：<a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>Interface for presentation validation</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.IPresentationValidator.validate_slide_content">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_slide_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slide</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#IPresentationValidator.validate_slide_content"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.IPresentationValidator.validate_slide_content" title="Link to this definition"></a></dt>
+<dd><p>Validate slide content and structure</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.IPresentationValidator.validate_presentation_structure">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_presentation_structure</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#IPresentationValidator.validate_presentation_structure"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.IPresentationValidator.validate_presentation_structure" title="Link to this definition"></a></dt>
+<dd><p>Validate overall presentation structure</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.IPresentationValidator.get_validation_warnings">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_validation_warnings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#IPresentationValidator.get_validation_warnings"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.IPresentationValidator.get_validation_warnings" title="Link to this definition"></a></dt>
+<dd><p>Get list of validation warnings</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.IPresentationValidator.get_accessibility_report">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_accessibility_report</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#IPresentationValidator.get_accessibility_report"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.IPresentationValidator.get_accessibility_report" title="Link to this definition"></a></dt>
+<dd><p>Generate accessibility compliance report</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.IPresentationViewFactory">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">interfaces.presentation_view_interface.</span></span><span class="sig-name descname"><span class="pre">IPresentationViewFactory</span></span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#IPresentationViewFactory"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.IPresentationViewFactory" title="Link to this definition"></a></dt>
+<dd><p>基类：<a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>Factory interface for creating view instances</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.IPresentationViewFactory.create_view">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">style</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#IPresentationViewFactory.create_view"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.IPresentationViewFactory.create_view" title="Link to this definition"></a></dt>
+<dd><p>Create a presentation view instance</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#interfaces.presentation_view_interface.IPresentationView" title="interfaces.presentation_view_interface.IPresentationView"><code class="xref py py-class docutils literal notranslate"><span class="pre">IPresentationView</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.IPresentationViewFactory.create_template_manager">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_template_manager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#IPresentationViewFactory.create_template_manager"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.IPresentationViewFactory.create_template_manager" title="Link to this definition"></a></dt>
+<dd><p>Create a template manager instance</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#interfaces.presentation_view_interface.IPresentationTemplate" title="interfaces.presentation_view_interface.IPresentationTemplate"><code class="xref py py-class docutils literal notranslate"><span class="pre">IPresentationTemplate</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.IPresentationViewFactory.create_validator">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_validator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#IPresentationViewFactory.create_validator"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.IPresentationViewFactory.create_validator" title="Link to this definition"></a></dt>
+<dd><p>Create a presentation validator instance</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#interfaces.presentation_view_interface.IPresentationValidator" title="interfaces.presentation_view_interface.IPresentationValidator"><code class="xref py py-class docutils literal notranslate"><span class="pre">IPresentationValidator</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interfaces.presentation_view_interface.IPresentationViewFactory.get_supported_styles">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_supported_styles</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interfaces/presentation_view_interface.html#IPresentationViewFactory.get_supported_styles"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#interfaces.presentation_view_interface.IPresentationViewFactory.get_supported_styles" title="Link to this definition"></a></dt>
+<dd><p>Get list of supported presentation styles</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, AI PPT Assistant Team。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

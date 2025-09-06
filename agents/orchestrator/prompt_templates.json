@@ -1,0 +1,34 @@
+{
+  "promptTemplates": {
+    "userQueryProcessing": {
+      "description": "Template for processing initial user queries",
+      "template": "Based on the user's request: '{user_input}', extract the following information:\n\n1. **Topic**: What is the main subject of the presentation?\n2. **Audience**: Who is the target audience? (executives, technical team, students, general public)\n3. **Duration**: How long should the presentation be? (default: 20 minutes)\n4. **Style**: What style is preferred? (professional, creative, educational, technical)\n5. **Language**: What language should be used? (default: English)\n6. **Special Requirements**: Any specific elements needed? (charts, images, animations)\n\nIf any information is missing, use reasonable defaults based on the topic and context.\n\nProvide the extracted information in a structured format."
+    },
+    "workflowOrchestration": {
+      "description": "Template for determining the workflow steps",
+      "template": "For creating a presentation on '{topic}' with the following requirements:\n- Audience: {audience}\n- Duration: {duration} minutes\n- Style: {style}\n- Language: {language}\n\nDetermine the optimal workflow:\n\n1. **Outline Generation**: Create structure with {estimated_slides} slides\n2. **Content Creation**: Generate content appropriate for {audience}\n3. **Visual Elements**: \n   - Images needed: {image_requirements}\n   - Charts needed: {chart_requirements}\n4. **Speaker Notes**: Create notes for {duration} minute presentation\n5. **Compilation**: Assemble using {style} template\n\nProvide specific parameters for each step."
+    },
+    "qualityControl": {
+      "description": "Template for quality checking the presentation",
+      "template": "Review the presentation with ID '{presentation_id}' against these criteria:\n\n## Content Quality\n- Relevance to topic: Does all content relate to '{topic}'?\n- Audience appropriateness: Is it suitable for {audience}?\n- Completeness: Are all required sections present?\n- Accuracy: Is the information correct and up-to-date?\n\n## Visual Quality\n- Image relevance: Do images support the content?\n- Chart clarity: Are data visualizations clear?\n- Design consistency: Does it follow the {style} template?\n\n## Timing\n- Total duration: Does it fit within {duration} minutes?\n- Slide pacing: Is time allocation appropriate?\n- Speaker notes: Do they support the timing?\n\n## Overall Coherence\n- Logical flow: Is the progression logical?\n- Transitions: Are slides well-connected?\n- Key messages: Are main points clear?\n\nProvide a quality score and any recommendations for improvement."
+    },
+    "errorRecovery": {
+      "description": "Template for handling errors in the workflow",
+      "template": "An error occurred during {operation} for presentation '{presentation_id}':\n\nError: {error_message}\nError Type: {error_type}\nFailed Step: {failed_step}\n\nAnalyze the error and determine the best recovery strategy:\n\n1. **Retry Options**:\n   - Can this operation be retried? {retry_eligible}\n   - Retry attempts remaining: {retry_count}\n   - Suggested wait time: {backoff_time}\n\n2. **Fallback Options**:\n   - Alternative approach: {fallback_strategy}\n   - Partial completion possible: {partial_completion}\n   - Skip and continue: {can_skip}\n\n3. **User Notification**:\n   - Severity: {severity}\n   - User message: {user_message}\n   - Suggested actions: {user_actions}\n\nRecommend the best course of action."
+    },
+    "sessionContext": {
+      "description": "Template for maintaining session context",
+      "template": "Session ID: {session_id}\nConversation History:\n{conversation_history}\n\nCurrent Context:\n- Active Presentation: {presentation_id}\n- Current Stage: {current_stage}\n- User Preferences: {preferences}\n- Previous Requests: {request_history}\n\nBased on this context and the new request: '{new_request}', determine:\n\n1. Is this a continuation of the current presentation?\n2. Is this a modification request?\n3. Is this a new presentation request?\n4. What context should be carried forward?\n\nProvide recommendations for handling this request in context."
+    },
+    "responseGeneration": {
+      "description": "Template for generating user responses",
+      "template": "Generate a response for the user based on:\n\nRequest: '{user_request}'\nAction Taken: {action}\nResult: {result}\nPresentation Status: {status}\n\nResponse Guidelines:\n- Be conversational and helpful\n- Acknowledge what was completed\n- Explain current status\n- Provide next steps or options\n- Include relevant details (download URL, preview, etc.)\n- Mention estimated completion time if still processing\n\nKeep the response concise but informative."
+    }
+  },
+  "systemPrompts": {
+    "roleDefinition": "You are the PPT Orchestrator Agent, an AI assistant specialized in creating professional presentations. You coordinate between multiple specialized agents to deliver high-quality presentations tailored to user needs.",
+    "capabilities": "You can:\n- Create presentations on any topic\n- Generate outlines, content, and speaker notes\n- Find or create relevant images\n- Compile presentations in various styles\n- Support multiple languages\n- Provide progress updates\n- Handle modifications and refinements",
+    "limitations": "Current limitations:\n- Maximum 50 slides per presentation\n- Processing time varies (2-5 minutes typical)\n- Some complex charts may require manual adjustment\n- PDF export coming soon",
+    "personality": "Maintain a professional yet friendly tone. Be proactive in suggesting improvements, ask clarifying questions when needed, and provide clear guidance throughout the process."
+  }
+}

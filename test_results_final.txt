@@ -1,0 +1,232 @@
+/Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/.venv/lib/python3.13/site-packages/pytest_asyncio/plugin.py:208: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts ==============================
+platform darwin -- Python 3.13.7, pytest-8.3.3, pluggy-1.6.0 -- /Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/tests
+configfile: pytest.ini
+plugins: asyncio-0.24.0, cov-5.0.0, Faker-30.1.0, timeout-2.4.0, mock-3.14.0
+asyncio: mode=Mode.STRICT, default_loop_scope=None
+collecting ... collected 90 items
+
+tests/e2e/test_scenarios.py::TestUserJourneys::test_simple_presentation_generation FAILED [  1%]
+tests/e2e/test_scenarios.py::TestUserJourneys::test_complex_presentation_generation FAILED [  2%]
+tests/e2e/test_scenarios.py::TestUserJourneys::test_presentation_with_modifications FAILED [  3%]
+tests/e2e/test_scenarios.py::TestUserJourneys::test_concurrent_presentations FAILED [  4%]
+tests/e2e/test_scenarios.py::TestUserJourneys::test_error_recovery_scenario FAILED [  5%]
+tests/e2e/test_scenarios.py::TestUserJourneys::test_performance_metrics FAILED [  6%]
+tests/e2e/test_scenarios.py::TestPerformanceScenarios::test_load_testing FAILED [  7%]
+tests/integration/test_async_processing.py::TestAsyncProcessing::test_sqs_message_processing PASSED [  8%]
+tests/integration/test_async_processing.py::TestAsyncProcessing::test_state_management_workflow FAILED [ 10%]
+tests/integration/test_async_processing.py::TestAsyncProcessing::test_concurrent_request_handling PASSED [ 11%]
+tests/integration/test_async_processing.py::TestAsyncProcessing::test_retry_logic_and_dlq PASSED [ 12%]
+tests/integration/test_workflow.py::TestPresentationWorkflow::test_complete_presentation_workflow FAILED [ 13%]
+tests/integration/test_workflow.py::TestPresentationWorkflow::test_agent_to_lambda_communication PASSED [ 14%]
+tests/integration/test_workflow.py::TestPresentationWorkflow::test_error_handling_workflow FAILED [ 15%]
+tests/integration/test_workflow.py::TestAgentActionGroups::test_orchestrator_action_groups PASSED [ 16%]
+tests/integration/test_workflow.py::TestAgentActionGroups::test_content_agent_action_groups PASSED [ 17%]
+tests/integration/test_workflow.py::TestAgentActionGroups::test_visual_agent_action_groups PASSED [ 18%]
+tests/integration/test_workflow.py::TestAgentActionGroups::test_compiler_agent_action_groups PASSED [ 20%]
+tests/test_aws_resources.py::test_s3_bucket PASSED                       [ 21%]
+tests/test_aws_resources.py::test_dynamodb_tables PASSED                 [ 22%]
+tests/test_aws_resources.py::test_lambda_layer PASSED                    [ 23%]
+tests/test_aws_resources.py::test_sqs_queues PASSED                      [ 24%]
+tests/test_aws_resources.py::test_iam_role PASSED                        [ 25%]
+tests/test_aws_resources.py::test_api_gateway PASSED                     [ 26%]
+tests/test_config_system.py::TestEnhancedConfigManager::test_backward_compatibility PASSED [ 27%]
+tests/test_config_system.py::TestEnhancedConfigManager::test_config_directory_exists PASSED [ 28%]
+tests/test_config_system.py::TestEnhancedConfigManager::test_config_validation FAILED [ 30%]
+tests/test_config_system.py::TestEnhancedConfigManager::test_default_config_exists PASSED [ 31%]
+tests/test_config_system.py::TestEnhancedConfigManager::test_environment_configs_exist FAILED [ 32%]
+tests/test_config_system.py::TestEnhancedConfigManager::test_get_config_value FAILED [ 33%]
+tests/test_config_system.py::TestEnhancedConfigManager::test_load_configuration FAILED [ 34%]
+tests/test_config_system.py::TestEnhancedConfigManager::test_sensitive_data_handling FAILED [ 35%]
+tests/test_config_system.py::TestAWSServiceManager::test_aws_service_initialization PASSED [ 36%]
+tests/test_config_system.py::TestAWSServiceManager::test_get_dynamodb_client FAILED [ 37%]
+tests/test_config_system.py::TestAWSServiceManager::test_get_s3_client FAILED [ 38%]
+tests/test_config_system.py::TestConfigMigration::test_config_file_structure FAILED [ 40%]
+tests/test_config_system.py::TestConfigMigration::test_migration_completeness FAILED [ 41%]
+tests/test_config_system.py::TestIntegration::test_config_override_hierarchy FAILED [ 42%]
+tests/test_config_system.py::TestIntegration::test_end_to_end_config_loading FAILED [ 43%]
+tests/test_enhancement_strategy.py::TestPresentationFactory::test_create_presentation_success FAILED [ 44%]
+tests/test_enhancement_strategy.py::TestPresentationFactory::test_create_presentation_invalid_input FAILED [ 45%]
+tests/test_enhancement_strategy.py::TestPresentationFactory::test_create_presentation_bedrock_error FAILED [ 46%]
+tests/test_enhancement_strategy.py::TestEnhancedConfigManager::test_get_value_default PASSED [ 47%]
+tests/test_enhancement_strategy.py::TestEnhancedConfigManager::test_get_value_with_fallback_env_var PASSED [ 48%]
+tests/test_enhancement_strategy.py::TestEnhancedConfigManager::test_get_aws_config PASSED [ 50%]
+tests/test_enhancement_strategy.py::TestEnhancedConfigManager::test_get_s3_config PASSED [ 51%]
+tests/test_enhancement_strategy.py::TestEnhancedConfigManager::test_get_dynamodb_config PASSED [ 52%]
+tests/test_enhancement_strategy.py::TestEnhancedConfigManager::test_get_bedrock_config PASSED [ 53%]
+tests/test_enhancement_strategy.py::TestEnhancedConfigManager::test_get_performance_config PASSED [ 54%]
+tests/test_enhancement_strategy.py::TestEnhancedConfigManager::test_get_security_config PASSED [ 55%]
+tests/test_enhancement_strategy.py::TestEnhancedConfigManager::test_get_feature_flags PASSED [ 56%]
+tests/test_enhancement_strategy.py::TestEnhancedConfigManager::test_get_project_metadata PASSED [ 57%]
+tests/test_enhancement_strategy.py::TestEnhancedConfigManager::test_validate_configuration PASSED [ 58%]
+tests/test_enhancement_strategy.py::TestEnhancedConfigManager::test_get_all_config PASSED [ 60%]
+tests/test_enhancement_strategy.py::TestEnhancedConfigManager::test_reload_configuration PASSED [ 61%]
+tests/test_enhancement_strategy.py::TestImageProcessor::test_generate_image_success FAILED [ 62%]
+tests/test_enhancement_strategy.py::TestImageProcessor::test_optimize_prompt FAILED [ 63%]
+tests/test_enhancement_strategy.py::TestImageProcessor::test_generate_image_with_fallback FAILED [ 64%]
+tests/test_enhancement_strategy.py::TestImageProcessor::test_validate_image_parameters FAILED [ 65%]
+tests/unit/test_api_endpoints.py::TestGeneratePresentationAPI::test_generate_presentation_success FAILED [ 66%]
+tests/unit/test_api_endpoints.py::TestGeneratePresentationAPI::test_generate_presentation_invalid_request FAILED [ 67%]
+tests/unit/test_api_endpoints.py::TestGeneratePresentationAPI::test_generate_presentation_malformed_json FAILED [ 68%]
+tests/unit/test_api_endpoints.py::TestPresentationStatusAPI::test_get_status_success FAILED [ 70%]
+tests/unit/test_api_endpoints.py::TestPresentationStatusAPI::test_get_status_not_found FAILED [ 71%]
+tests/unit/test_api_endpoints.py::TestPresentationDownloadAPI::test_download_success FAILED [ 72%]
+tests/unit/test_api_endpoints.py::TestPresentationDownloadAPI::test_download_not_ready FAILED [ 73%]
+tests/unit/test_api_endpoints.py::TestModifySlideAPI::test_modify_slide_content FAILED [ 74%]
+tests/unit/test_api_endpoints.py::TestModifySlideAPI::test_modify_slide_invalid_type FAILED [ 75%]
+tests/unit/test_compile_pptx.py::TestCompilePPTX::test_compile_pptx_success FAILED [ 76%]
+tests/unit/test_compile_pptx.py::TestCompilePPTX::test_compile_pptx_missing_data FAILED [ 77%]
+tests/unit/test_compile_pptx.py::TestCompilePPTX::test_compile_pptx_empty_slides FAILED [ 78%]
+tests/unit/test_compile_pptx.py::TestCompilePPTX::test_compile_pptx_with_images FAILED [ 80%]
+tests/unit/test_compile_pptx.py::TestCompilePPTX::test_compile_pptx_view_error FAILED [ 81%]
+tests/unit/test_compile_pptx.py::TestCompilePPTX::test_compile_pptx_s3_upload_error FAILED [ 82%]
+tests/unit/test_compile_pptx.py::TestCompilePPTX::test_compile_pptx_large_presentation FAILED [ 83%]
+tests/unit/test_create_outline.py::TestCreateOutline::test_create_outline_success FAILED [ 84%]
+tests/unit/test_create_outline.py::TestCreateOutline::test_create_outline_missing_topic FAILED [ 85%]
+tests/unit/test_create_outline.py::TestCreateOutline::test_create_outline_bedrock_error FAILED [ 86%]
+tests/unit/test_create_outline.py::TestCreateOutline::test_create_outline_invalid_language FAILED [ 87%]
+tests/unit/test_create_outline.py::TestCreateOutline::test_create_outline_with_custom_parameters FAILED [ 88%]
+tests/unit/test_generate_content.py::TestGenerateContent::test_generate_content_success FAILED [ 90%]
+tests/unit/test_generate_content.py::TestGenerateContent::test_generate_content_missing_outline FAILED [ 91%]
+tests/unit/test_generate_content.py::TestGenerateContent::test_generate_content_empty_slides FAILED [ 92%]
+tests/unit/test_generate_content.py::TestGenerateContent::test_generate_content_parallel_processing FAILED [ 93%]
+tests/unit/test_generate_content.py::TestGenerateContent::test_generate_content_bedrock_error FAILED [ 94%]
+tests/unit/test_generate_image.py::TestGenerateImage::test_generate_image_success FAILED [ 95%]
+tests/unit/test_generate_image.py::TestGenerateImage::test_generate_image_nova_failure_with_fallback FAILED [ 96%]
+tests/unit/test_generate_image.py::TestGenerateImage::test_generate_image_missing_parameters FAILED [ 97%]
+tests/unit/test_generate_image.py::TestGenerateImage::test_generate_image_prompt_optimization FAILED [ 98%]
+tests/unit/test_generate_image.py::TestGenerateImage::test_generate_image_with_environment_config FAILED [100%]
+
+=============================== warnings summary ===============================
+integration/test_async_processing.py::TestAsyncProcessing::test_sqs_message_processing
+  /Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/tests/integration/test_async_processing.py:83: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    'updated_at': {'S': datetime.utcnow().isoformat()}
+
+integration/test_async_processing.py::TestAsyncProcessing::test_sqs_message_processing
+  /Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/tests/integration/test_async_processing.py:94: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    ':timestamp': {'S': datetime.utcnow().isoformat()}
+
+integration/test_async_processing.py::TestAsyncProcessing::test_state_management_workflow
+  /Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/tests/integration/test_async_processing.py:123: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    'created_at': datetime.utcnow().isoformat(),
+
+integration/test_async_processing.py::TestAsyncProcessing::test_state_management_workflow
+  /Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/tests/integration/test_async_processing.py:203: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    'completed_at': {'S': datetime.utcnow().isoformat()}
+
+integration/test_async_processing.py::TestAsyncProcessing::test_state_management_workflow
+  /Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/tests/integration/test_async_processing.py:216: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    ':timestamp': {'S': datetime.utcnow().isoformat()}
+
+integration/test_async_processing.py::TestAsyncProcessing::test_concurrent_request_handling
+integration/test_async_processing.py::TestAsyncProcessing::test_concurrent_request_handling
+integration/test_async_processing.py::TestAsyncProcessing::test_concurrent_request_handling
+integration/test_async_processing.py::TestAsyncProcessing::test_concurrent_request_handling
+integration/test_async_processing.py::TestAsyncProcessing::test_concurrent_request_handling
+  /Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/tests/integration/test_async_processing.py:248: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    'timestamp': datetime.utcnow().isoformat()
+
+test_aws_resources.py: 8 warnings
+test_enhancement_strategy.py: 4 warnings
+  /Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/.venv/lib/python3.13/site-packages/botocore/auth.py:424: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    datetime_now = datetime.datetime.utcnow()
+
+test_aws_resources.py::test_s3_bucket
+  /Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/.venv/lib/python3.13/site-packages/_pytest/python.py:163: PytestReturnNotNoneWarning: Expected None, but test_aws_resources.py::test_s3_bucket returned False, which will be an error in a future version of pytest.  Did you mean to use `assert` instead of `return`?
+    warnings.warn(
+
+test_aws_resources.py::test_dynamodb_tables
+  /Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/.venv/lib/python3.13/site-packages/_pytest/python.py:163: PytestReturnNotNoneWarning: Expected None, but test_aws_resources.py::test_dynamodb_tables returned False, which will be an error in a future version of pytest.  Did you mean to use `assert` instead of `return`?
+    warnings.warn(
+
+test_aws_resources.py::test_lambda_layer
+  /Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/.venv/lib/python3.13/site-packages/_pytest/python.py:163: PytestReturnNotNoneWarning: Expected None, but test_aws_resources.py::test_lambda_layer returned False, which will be an error in a future version of pytest.  Did you mean to use `assert` instead of `return`?
+    warnings.warn(
+
+test_aws_resources.py::test_sqs_queues
+  /Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/.venv/lib/python3.13/site-packages/_pytest/python.py:163: PytestReturnNotNoneWarning: Expected None, but test_aws_resources.py::test_sqs_queues returned False, which will be an error in a future version of pytest.  Did you mean to use `assert` instead of `return`?
+    warnings.warn(
+
+test_aws_resources.py::test_iam_role
+  /Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/.venv/lib/python3.13/site-packages/_pytest/python.py:163: PytestReturnNotNoneWarning: Expected None, but test_aws_resources.py::test_iam_role returned False, which will be an error in a future version of pytest.  Did you mean to use `assert` instead of `return`?
+    warnings.warn(
+
+test_aws_resources.py::test_api_gateway
+  /Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/.venv/lib/python3.13/site-packages/_pytest/python.py:163: PytestReturnNotNoneWarning: Expected None, but test_aws_resources.py::test_api_gateway returned False, which will be an error in a future version of pytest.  Did you mean to use `assert` instead of `return`?
+    warnings.warn(
+
+test_enhancement_strategy.py::TestPresentationFactory::test_create_presentation_success
+  /Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/tests/integration/../../lambdas/models/request_response_models.py:26: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.11/migration/
+    @validator("style")
+
+test_enhancement_strategy.py::TestPresentationFactory::test_create_presentation_success
+  /Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/tests/integration/../../lambdas/models/request_response_models.py:33: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.11/migration/
+    @validator("output_format")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/e2e/test_scenarios.py::TestUserJourneys::test_simple_presentation_generation
+FAILED tests/e2e/test_scenarios.py::TestUserJourneys::test_complex_presentation_generation
+FAILED tests/e2e/test_scenarios.py::TestUserJourneys::test_presentation_with_modifications
+FAILED tests/e2e/test_scenarios.py::TestUserJourneys::test_concurrent_presentations
+FAILED tests/e2e/test_scenarios.py::TestUserJourneys::test_error_recovery_scenario
+FAILED tests/e2e/test_scenarios.py::TestUserJourneys::test_performance_metrics
+FAILED tests/e2e/test_scenarios.py::TestPerformanceScenarios::test_load_testing
+FAILED tests/integration/test_async_processing.py::TestAsyncProcessing::test_state_management_workflow
+FAILED tests/integration/test_workflow.py::TestPresentationWorkflow::test_complete_presentation_workflow
+FAILED tests/integration/test_workflow.py::TestPresentationWorkflow::test_error_handling_workflow
+FAILED tests/test_config_system.py::TestEnhancedConfigManager::test_config_validation
+FAILED tests/test_config_system.py::TestEnhancedConfigManager::test_environment_configs_exist
+FAILED tests/test_config_system.py::TestEnhancedConfigManager::test_get_config_value
+FAILED tests/test_config_system.py::TestEnhancedConfigManager::test_load_configuration
+FAILED tests/test_config_system.py::TestEnhancedConfigManager::test_sensitive_data_handling
+FAILED tests/test_config_system.py::TestAWSServiceManager::test_get_dynamodb_client
+FAILED tests/test_config_system.py::TestAWSServiceManager::test_get_s3_client
+FAILED tests/test_config_system.py::TestConfigMigration::test_config_file_structure
+FAILED tests/test_config_system.py::TestConfigMigration::test_migration_completeness
+FAILED tests/test_config_system.py::TestIntegration::test_config_override_hierarchy
+FAILED tests/test_config_system.py::TestIntegration::test_end_to_end_config_loading
+FAILED tests/test_enhancement_strategy.py::TestPresentationFactory::test_create_presentation_success
+FAILED tests/test_enhancement_strategy.py::TestPresentationFactory::test_create_presentation_invalid_input
+FAILED tests/test_enhancement_strategy.py::TestPresentationFactory::test_create_presentation_bedrock_error
+FAILED tests/test_enhancement_strategy.py::TestImageProcessor::test_generate_image_success
+FAILED tests/test_enhancement_strategy.py::TestImageProcessor::test_optimize_prompt
+FAILED tests/test_enhancement_strategy.py::TestImageProcessor::test_generate_image_with_fallback
+FAILED tests/test_enhancement_strategy.py::TestImageProcessor::test_validate_image_parameters
+FAILED tests/unit/test_api_endpoints.py::TestGeneratePresentationAPI::test_generate_presentation_success
+FAILED tests/unit/test_api_endpoints.py::TestGeneratePresentationAPI::test_generate_presentation_invalid_request
+FAILED tests/unit/test_api_endpoints.py::TestGeneratePresentationAPI::test_generate_presentation_malformed_json
+FAILED tests/unit/test_api_endpoints.py::TestPresentationStatusAPI::test_get_status_success
+FAILED tests/unit/test_api_endpoints.py::TestPresentationStatusAPI::test_get_status_not_found
+FAILED tests/unit/test_api_endpoints.py::TestPresentationDownloadAPI::test_download_success
+FAILED tests/unit/test_api_endpoints.py::TestPresentationDownloadAPI::test_download_not_ready
+FAILED tests/unit/test_api_endpoints.py::TestModifySlideAPI::test_modify_slide_content
+FAILED tests/unit/test_api_endpoints.py::TestModifySlideAPI::test_modify_slide_invalid_type
+FAILED tests/unit/test_compile_pptx.py::TestCompilePPTX::test_compile_pptx_success
+FAILED tests/unit/test_compile_pptx.py::TestCompilePPTX::test_compile_pptx_missing_data
+FAILED tests/unit/test_compile_pptx.py::TestCompilePPTX::test_compile_pptx_empty_slides
+FAILED tests/unit/test_compile_pptx.py::TestCompilePPTX::test_compile_pptx_with_images
+FAILED tests/unit/test_compile_pptx.py::TestCompilePPTX::test_compile_pptx_view_error
+FAILED tests/unit/test_compile_pptx.py::TestCompilePPTX::test_compile_pptx_s3_upload_error
+FAILED tests/unit/test_compile_pptx.py::TestCompilePPTX::test_compile_pptx_large_presentation
+FAILED tests/unit/test_create_outline.py::TestCreateOutline::test_create_outline_success
+FAILED tests/unit/test_create_outline.py::TestCreateOutline::test_create_outline_missing_topic
+FAILED tests/unit/test_create_outline.py::TestCreateOutline::test_create_outline_bedrock_error
+FAILED tests/unit/test_create_outline.py::TestCreateOutline::test_create_outline_invalid_language
+FAILED tests/unit/test_create_outline.py::TestCreateOutline::test_create_outline_with_custom_parameters
+FAILED tests/unit/test_generate_content.py::TestGenerateContent::test_generate_content_success
+FAILED tests/unit/test_generate_content.py::TestGenerateContent::test_generate_content_missing_outline
+FAILED tests/unit/test_generate_content.py::TestGenerateContent::test_generate_content_empty_slides
+FAILED tests/unit/test_generate_content.py::TestGenerateContent::test_generate_content_parallel_processing
+FAILED tests/unit/test_generate_content.py::TestGenerateContent::test_generate_content_bedrock_error
+FAILED tests/unit/test_generate_image.py::TestGenerateImage::test_generate_image_success
+FAILED tests/unit/test_generate_image.py::TestGenerateImage::test_generate_image_nova_failure_with_fallback
+FAILED tests/unit/test_generate_image.py::TestGenerateImage::test_generate_image_missing_parameters
+FAILED tests/unit/test_generate_image.py::TestGenerateImage::test_generate_image_prompt_optimization
+FAILED tests/unit/test_generate_image.py::TestGenerateImage::test_generate_image_with_environment_config
+================== 59 failed, 31 passed, 30 warnings in 6.21s ==================

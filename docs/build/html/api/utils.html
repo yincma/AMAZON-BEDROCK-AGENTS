@@ -1,0 +1,527 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>utils package &mdash; AI PPT Assistant 1.0.0 文档</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=3bd3f67c" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=34088549"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=fd10adb8"></script>
+      <script src="../_static/translations.js?v=beaddf03"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AI PPT Assistant
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">用户指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/installation.html">安装指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/quickstart.html">快速开始</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">架构设计</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/architecture.html">系统架构</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">现有文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../existing/api.html">API文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/api.html#ai-ppt-assistant-api-documentation">AI PPT Assistant API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/deployment.html">部署文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/deployment.html#ai-ppt-assistant-deployment-guide">AI PPT Assistant - Deployment Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/deployment-checklist.html">部署检查清单</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/deployment-checklist.html#ai-ppt-assistant-deployment-checklist">AI PPT Assistant - Deployment Checklist</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/config-migration.html">配置迁移指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../existing/config-migration.html#config">🔧 环境变量到Config文件迁移指南</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AI PPT Assistant</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">utils package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/utils.rst.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="utils-package">
+<h1>utils package<a class="headerlink" href="#utils-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="utils.api_utils.html">utils.api_utils module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.HTTPStatus"><code class="docutils literal notranslate"><span class="pre">HTTPStatus</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.HTTPStatus.OK"><code class="docutils literal notranslate"><span class="pre">HTTPStatus.OK</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.HTTPStatus.CREATED"><code class="docutils literal notranslate"><span class="pre">HTTPStatus.CREATED</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.HTTPStatus.ACCEPTED"><code class="docutils literal notranslate"><span class="pre">HTTPStatus.ACCEPTED</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.HTTPStatus.NO_CONTENT"><code class="docutils literal notranslate"><span class="pre">HTTPStatus.NO_CONTENT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.HTTPStatus.BAD_REQUEST"><code class="docutils literal notranslate"><span class="pre">HTTPStatus.BAD_REQUEST</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.HTTPStatus.UNAUTHORIZED"><code class="docutils literal notranslate"><span class="pre">HTTPStatus.UNAUTHORIZED</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.HTTPStatus.FORBIDDEN"><code class="docutils literal notranslate"><span class="pre">HTTPStatus.FORBIDDEN</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.HTTPStatus.NOT_FOUND"><code class="docutils literal notranslate"><span class="pre">HTTPStatus.NOT_FOUND</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.HTTPStatus.CONFLICT"><code class="docutils literal notranslate"><span class="pre">HTTPStatus.CONFLICT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.HTTPStatus.REQUEST_TIMEOUT"><code class="docutils literal notranslate"><span class="pre">HTTPStatus.REQUEST_TIMEOUT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.HTTPStatus.INTERNAL_SERVER_ERROR"><code class="docutils literal notranslate"><span class="pre">HTTPStatus.INTERNAL_SERVER_ERROR</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.HTTPStatus.SERVICE_UNAVAILABLE"><code class="docutils literal notranslate"><span class="pre">HTTPStatus.SERVICE_UNAVAILABLE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.HTTPStatus.GATEWAY_TIMEOUT"><code class="docutils literal notranslate"><span class="pre">HTTPStatus.GATEWAY_TIMEOUT</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.APIResponseBuilder"><code class="docutils literal notranslate"><span class="pre">APIResponseBuilder</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.APIResponseBuilder.__init__"><code class="docutils literal notranslate"><span class="pre">APIResponseBuilder.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.APIResponseBuilder.create_headers"><code class="docutils literal notranslate"><span class="pre">APIResponseBuilder.create_headers()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.APIResponseBuilder.success_response"><code class="docutils literal notranslate"><span class="pre">APIResponseBuilder.success_response()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.APIResponseBuilder.error_response"><code class="docutils literal notranslate"><span class="pre">APIResponseBuilder.error_response()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.APIResponseBuilder.validation_error_response"><code class="docutils literal notranslate"><span class="pre">APIResponseBuilder.validation_error_response()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.APIResponseBuilder.not_found_response"><code class="docutils literal notranslate"><span class="pre">APIResponseBuilder.not_found_response()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.APIResponseBuilder.timeout_response"><code class="docutils literal notranslate"><span class="pre">APIResponseBuilder.timeout_response()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.APIRequestParser"><code class="docutils literal notranslate"><span class="pre">APIRequestParser</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.APIRequestParser.__init__"><code class="docutils literal notranslate"><span class="pre">APIRequestParser.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.APIRequestParser.get_path_parameters"><code class="docutils literal notranslate"><span class="pre">APIRequestParser.get_path_parameters()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.APIRequestParser.get_query_parameters"><code class="docutils literal notranslate"><span class="pre">APIRequestParser.get_query_parameters()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.APIRequestParser.get_headers"><code class="docutils literal notranslate"><span class="pre">APIRequestParser.get_headers()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.APIRequestParser.get_body"><code class="docutils literal notranslate"><span class="pre">APIRequestParser.get_body()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.APIRequestParser.get_user_context"><code class="docutils literal notranslate"><span class="pre">APIRequestParser.get_user_context()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.APIRequestParser.get_pagination_params"><code class="docutils literal notranslate"><span class="pre">APIRequestParser.get_pagination_params()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.APIValidator"><code class="docutils literal notranslate"><span class="pre">APIValidator</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.APIValidator.validate_uuid"><code class="docutils literal notranslate"><span class="pre">APIValidator.validate_uuid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.APIValidator.validate_required_fields"><code class="docutils literal notranslate"><span class="pre">APIValidator.validate_required_fields()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.APIValidator.validate_string_length"><code class="docutils literal notranslate"><span class="pre">APIValidator.validate_string_length()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.APIValidator.validate_numeric_range"><code class="docutils literal notranslate"><span class="pre">APIValidator.validate_numeric_range()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.APIMetricsHelper"><code class="docutils literal notranslate"><span class="pre">APIMetricsHelper</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.APIMetricsHelper.record_api_metrics"><code class="docutils literal notranslate"><span class="pre">APIMetricsHelper.record_api_metrics()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.create_api_response"><code class="docutils literal notranslate"><span class="pre">create_api_response()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.parse_api_request"><code class="docutils literal notranslate"><span class="pre">parse_api_request()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.validate_presentation_id"><code class="docutils literal notranslate"><span class="pre">validate_presentation_id()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.validate_slide_id"><code class="docutils literal notranslate"><span class="pre">validate_slide_id()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.extract_and_validate_path_params"><code class="docutils literal notranslate"><span class="pre">extract_and_validate_path_params()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.create_pagination_response"><code class="docutils literal notranslate"><span class="pre">create_pagination_response()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.handle_api_exceptions"><code class="docutils literal notranslate"><span class="pre">handle_api_exceptions()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.api_utils.html#utils.api_utils.create_response"><code class="docutils literal notranslate"><span class="pre">create_response()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utils.aws_service_utils.html">utils.aws_service_utils module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="utils.aws_service_utils.html#utils.aws_service_utils.AWSServiceManager"><code class="docutils literal notranslate"><span class="pre">AWSServiceManager</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.aws_service_utils.html#utils.aws_service_utils.AWSServiceManager.__init__"><code class="docutils literal notranslate"><span class="pre">AWSServiceManager.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.aws_service_utils.html#utils.aws_service_utils.S3ServiceManager"><code class="docutils literal notranslate"><span class="pre">S3ServiceManager</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.aws_service_utils.html#utils.aws_service_utils.S3ServiceManager.__init__"><code class="docutils literal notranslate"><span class="pre">S3ServiceManager.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.aws_service_utils.html#utils.aws_service_utils.S3ServiceManager.upload_object"><code class="docutils literal notranslate"><span class="pre">S3ServiceManager.upload_object()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.aws_service_utils.html#utils.aws_service_utils.S3ServiceManager.download_object"><code class="docutils literal notranslate"><span class="pre">S3ServiceManager.download_object()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.aws_service_utils.html#utils.aws_service_utils.S3ServiceManager.generate_presigned_url"><code class="docutils literal notranslate"><span class="pre">S3ServiceManager.generate_presigned_url()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.aws_service_utils.html#utils.aws_service_utils.DynamoDBServiceManager"><code class="docutils literal notranslate"><span class="pre">DynamoDBServiceManager</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.aws_service_utils.html#utils.aws_service_utils.DynamoDBServiceManager.__init__"><code class="docutils literal notranslate"><span class="pre">DynamoDBServiceManager.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.aws_service_utils.html#utils.aws_service_utils.DynamoDBServiceManager.put_item"><code class="docutils literal notranslate"><span class="pre">DynamoDBServiceManager.put_item()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.aws_service_utils.html#utils.aws_service_utils.DynamoDBServiceManager.get_item"><code class="docutils literal notranslate"><span class="pre">DynamoDBServiceManager.get_item()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.aws_service_utils.html#utils.aws_service_utils.DynamoDBServiceManager.update_item"><code class="docutils literal notranslate"><span class="pre">DynamoDBServiceManager.update_item()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.aws_service_utils.html#utils.aws_service_utils.BedrockServiceManager"><code class="docutils literal notranslate"><span class="pre">BedrockServiceManager</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.aws_service_utils.html#utils.aws_service_utils.BedrockServiceManager.__init__"><code class="docutils literal notranslate"><span class="pre">BedrockServiceManager.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.aws_service_utils.html#utils.aws_service_utils.BedrockServiceManager.invoke_claude_model"><code class="docutils literal notranslate"><span class="pre">BedrockServiceManager.invoke_claude_model()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.aws_service_utils.html#utils.aws_service_utils.BedrockServiceManager.invoke_nova_canvas"><code class="docutils literal notranslate"><span class="pre">BedrockServiceManager.invoke_nova_canvas()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.aws_service_utils.html#utils.aws_service_utils.BedrockServiceManager.invoke_agent"><code class="docutils literal notranslate"><span class="pre">BedrockServiceManager.invoke_agent()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.aws_service_utils.html#utils.aws_service_utils.SQSServiceManager"><code class="docutils literal notranslate"><span class="pre">SQSServiceManager</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.aws_service_utils.html#utils.aws_service_utils.SQSServiceManager.__init__"><code class="docutils literal notranslate"><span class="pre">SQSServiceManager.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.aws_service_utils.html#utils.aws_service_utils.SQSServiceManager.send_message"><code class="docutils literal notranslate"><span class="pre">SQSServiceManager.send_message()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.aws_service_utils.html#utils.aws_service_utils.get_s3_manager"><code class="docutils literal notranslate"><span class="pre">get_s3_manager()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.aws_service_utils.html#utils.aws_service_utils.get_dynamodb_manager"><code class="docutils literal notranslate"><span class="pre">get_dynamodb_manager()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.aws_service_utils.html#utils.aws_service_utils.get_bedrock_manager"><code class="docutils literal notranslate"><span class="pre">get_bedrock_manager()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.aws_service_utils.html#utils.aws_service_utils.get_sqs_manager"><code class="docutils literal notranslate"><span class="pre">get_sqs_manager()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.aws_service_utils.html#utils.aws_service_utils.upload_to_s3"><code class="docutils literal notranslate"><span class="pre">upload_to_s3()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.aws_service_utils.html#utils.aws_service_utils.download_from_s3"><code class="docutils literal notranslate"><span class="pre">download_from_s3()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.aws_service_utils.html#utils.aws_service_utils.generate_s3_presigned_url"><code class="docutils literal notranslate"><span class="pre">generate_s3_presigned_url()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.aws_service_utils.html#utils.aws_service_utils.save_to_dynamodb"><code class="docutils literal notranslate"><span class="pre">save_to_dynamodb()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.aws_service_utils.html#utils.aws_service_utils.get_from_dynamodb"><code class="docutils literal notranslate"><span class="pre">get_from_dynamodb()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.aws_service_utils.html#utils.aws_service_utils.invoke_claude_model"><code class="docutils literal notranslate"><span class="pre">invoke_claude_model()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.aws_service_utils.html#utils.aws_service_utils.generate_image_with_nova"><code class="docutils literal notranslate"><span class="pre">generate_image_with_nova()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.aws_service_utils.html#utils.aws_service_utils.send_to_sqs"><code class="docutils literal notranslate"><span class="pre">send_to_sqs()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utils.checkpoint_manager.html">utils.checkpoint_manager module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointStatus"><code class="docutils literal notranslate"><span class="pre">CheckpointStatus</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointStatus.CREATED"><code class="docutils literal notranslate"><span class="pre">CheckpointStatus.CREATED</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointStatus.ACTIVE"><code class="docutils literal notranslate"><span class="pre">CheckpointStatus.ACTIVE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointStatus.COMPLETED"><code class="docutils literal notranslate"><span class="pre">CheckpointStatus.COMPLETED</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointStatus.FAILED"><code class="docutils literal notranslate"><span class="pre">CheckpointStatus.FAILED</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointStatus.EXPIRED"><code class="docutils literal notranslate"><span class="pre">CheckpointStatus.EXPIRED</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointStatus.RESTORED"><code class="docutils literal notranslate"><span class="pre">CheckpointStatus.RESTORED</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.TaskStage"><code class="docutils literal notranslate"><span class="pre">TaskStage</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.TaskStage.INITIALIZATION"><code class="docutils literal notranslate"><span class="pre">TaskStage.INITIALIZATION</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.TaskStage.OUTLINE_CREATION"><code class="docutils literal notranslate"><span class="pre">TaskStage.OUTLINE_CREATION</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.TaskStage.CONTENT_GENERATION"><code class="docutils literal notranslate"><span class="pre">TaskStage.CONTENT_GENERATION</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.TaskStage.IMAGE_PROCESSING"><code class="docutils literal notranslate"><span class="pre">TaskStage.IMAGE_PROCESSING</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.TaskStage.SPEAKER_NOTES"><code class="docutils literal notranslate"><span class="pre">TaskStage.SPEAKER_NOTES</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.TaskStage.COMPILATION"><code class="docutils literal notranslate"><span class="pre">TaskStage.COMPILATION</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.TaskStage.FINALIZATION"><code class="docutils literal notranslate"><span class="pre">TaskStage.FINALIZATION</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.TaskStage.COMPLETED"><code class="docutils literal notranslate"><span class="pre">TaskStage.COMPLETED</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointData"><code class="docutils literal notranslate"><span class="pre">CheckpointData</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointData.checkpoint_id"><code class="docutils literal notranslate"><span class="pre">CheckpointData.checkpoint_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointData.task_id"><code class="docutils literal notranslate"><span class="pre">CheckpointData.task_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointData.task_type"><code class="docutils literal notranslate"><span class="pre">CheckpointData.task_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointData.presentation_id"><code class="docutils literal notranslate"><span class="pre">CheckpointData.presentation_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointData.stage"><code class="docutils literal notranslate"><span class="pre">CheckpointData.stage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointData.status"><code class="docutils literal notranslate"><span class="pre">CheckpointData.status</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointData.created_at"><code class="docutils literal notranslate"><span class="pre">CheckpointData.created_at</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointData.updated_at"><code class="docutils literal notranslate"><span class="pre">CheckpointData.updated_at</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointData.progress_percentage"><code class="docutils literal notranslate"><span class="pre">CheckpointData.progress_percentage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointData.current_step"><code class="docutils literal notranslate"><span class="pre">CheckpointData.current_step</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointData.next_step"><code class="docutils literal notranslate"><span class="pre">CheckpointData.next_step</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointData.presentation_metadata"><code class="docutils literal notranslate"><span class="pre">CheckpointData.presentation_metadata</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointData.outline_data"><code class="docutils literal notranslate"><span class="pre">CheckpointData.outline_data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointData.slides_data"><code class="docutils literal notranslate"><span class="pre">CheckpointData.slides_data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointData.images_data"><code class="docutils literal notranslate"><span class="pre">CheckpointData.images_data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointData.speaker_notes_data"><code class="docutils literal notranslate"><span class="pre">CheckpointData.speaker_notes_data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointData.processed_slides"><code class="docutils literal notranslate"><span class="pre">CheckpointData.processed_slides</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointData.failed_operations"><code class="docutils literal notranslate"><span class="pre">CheckpointData.failed_operations</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointData.retry_count"><code class="docutils literal notranslate"><span class="pre">CheckpointData.retry_count</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointData.error_message"><code class="docutils literal notranslate"><span class="pre">CheckpointData.error_message</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointData.recovery_instructions"><code class="docutils literal notranslate"><span class="pre">CheckpointData.recovery_instructions</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointData.s3_data_keys"><code class="docutils literal notranslate"><span class="pre">CheckpointData.s3_data_keys</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointData.ttl"><code class="docutils literal notranslate"><span class="pre">CheckpointData.ttl</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointData.__init__"><code class="docutils literal notranslate"><span class="pre">CheckpointData.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointManager"><code class="docutils literal notranslate"><span class="pre">CheckpointManager</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointManager.__init__"><code class="docutils literal notranslate"><span class="pre">CheckpointManager.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointManager.create_checkpoint"><code class="docutils literal notranslate"><span class="pre">CheckpointManager.create_checkpoint()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointManager.update_checkpoint"><code class="docutils literal notranslate"><span class="pre">CheckpointManager.update_checkpoint()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointManager.get_checkpoint"><code class="docutils literal notranslate"><span class="pre">CheckpointManager.get_checkpoint()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointManager.get_task_checkpoints"><code class="docutils literal notranslate"><span class="pre">CheckpointManager.get_task_checkpoints()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointManager.find_recovery_point"><code class="docutils literal notranslate"><span class="pre">CheckpointManager.find_recovery_point()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointManager.restore_from_checkpoint"><code class="docutils literal notranslate"><span class="pre">CheckpointManager.restore_from_checkpoint()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.CheckpointManager.cleanup_expired_checkpoints"><code class="docutils literal notranslate"><span class="pre">CheckpointManager.cleanup_expired_checkpoints()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.create_checkpoint_manager"><code class="docutils literal notranslate"><span class="pre">create_checkpoint_manager()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.checkpoint_manager.html#utils.checkpoint_manager.create_task_checkpoint"><code class="docutils literal notranslate"><span class="pre">create_task_checkpoint()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utils.enhanced_config_manager.html">utils.enhanced_config_manager module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.ConfigSource"><code class="docutils literal notranslate"><span class="pre">ConfigSource</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.ConfigSource.CONFIG_FILE"><code class="docutils literal notranslate"><span class="pre">ConfigSource.CONFIG_FILE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.ConfigSource.ENVIRONMENT"><code class="docutils literal notranslate"><span class="pre">ConfigSource.ENVIRONMENT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.ConfigSource.SSM"><code class="docutils literal notranslate"><span class="pre">ConfigSource.SSM</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.ConfigSource.SECRETS_MANAGER"><code class="docutils literal notranslate"><span class="pre">ConfigSource.SECRETS_MANAGER</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.ConfigSource.DEFAULT"><code class="docutils literal notranslate"><span class="pre">ConfigSource.DEFAULT</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedAWSConfig"><code class="docutils literal notranslate"><span class="pre">EnhancedAWSConfig</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedAWSConfig.region"><code class="docutils literal notranslate"><span class="pre">EnhancedAWSConfig.region</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedAWSConfig.profile"><code class="docutils literal notranslate"><span class="pre">EnhancedAWSConfig.profile</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedAWSConfig.role_arn"><code class="docutils literal notranslate"><span class="pre">EnhancedAWSConfig.role_arn</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedAWSConfig.__init__"><code class="docutils literal notranslate"><span class="pre">EnhancedAWSConfig.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.S3Config"><code class="docutils literal notranslate"><span class="pre">S3Config</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.S3Config.bucket"><code class="docutils literal notranslate"><span class="pre">S3Config.bucket</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.S3Config.templates_bucket"><code class="docutils literal notranslate"><span class="pre">S3Config.templates_bucket</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.S3Config.lifecycle"><code class="docutils literal notranslate"><span class="pre">S3Config.lifecycle</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.S3Config.__init__"><code class="docutils literal notranslate"><span class="pre">S3Config.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.DynamoDBConfig"><code class="docutils literal notranslate"><span class="pre">DynamoDBConfig</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.DynamoDBConfig.table"><code class="docutils literal notranslate"><span class="pre">DynamoDBConfig.table</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.DynamoDBConfig.checkpoints_table"><code class="docutils literal notranslate"><span class="pre">DynamoDBConfig.checkpoints_table</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.DynamoDBConfig.billing_mode"><code class="docutils literal notranslate"><span class="pre">DynamoDBConfig.billing_mode</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.DynamoDBConfig.ttl_days"><code class="docutils literal notranslate"><span class="pre">DynamoDBConfig.ttl_days</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.DynamoDBConfig.__init__"><code class="docutils literal notranslate"><span class="pre">DynamoDBConfig.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.BedrockConfig"><code class="docutils literal notranslate"><span class="pre">BedrockConfig</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.BedrockConfig.model_id"><code class="docutils literal notranslate"><span class="pre">BedrockConfig.model_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.BedrockConfig.nova_model_id"><code class="docutils literal notranslate"><span class="pre">BedrockConfig.nova_model_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.BedrockConfig.orchestrator_agent_id"><code class="docutils literal notranslate"><span class="pre">BedrockConfig.orchestrator_agent_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.BedrockConfig.content_agent_id"><code class="docutils literal notranslate"><span class="pre">BedrockConfig.content_agent_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.BedrockConfig.visual_agent_id"><code class="docutils literal notranslate"><span class="pre">BedrockConfig.visual_agent_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.BedrockConfig.compiler_agent_id"><code class="docutils literal notranslate"><span class="pre">BedrockConfig.compiler_agent_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.BedrockConfig.__init__"><code class="docutils literal notranslate"><span class="pre">BedrockConfig.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.LambdaConfig"><code class="docutils literal notranslate"><span class="pre">LambdaConfig</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.LambdaConfig.memory_sizes"><code class="docutils literal notranslate"><span class="pre">LambdaConfig.memory_sizes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.LambdaConfig.timeouts"><code class="docutils literal notranslate"><span class="pre">LambdaConfig.timeouts</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.LambdaConfig.reserved_concurrency"><code class="docutils literal notranslate"><span class="pre">LambdaConfig.reserved_concurrency</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.LambdaConfig.__init__"><code class="docutils literal notranslate"><span class="pre">LambdaConfig.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedPerformanceConfig"><code class="docutils literal notranslate"><span class="pre">EnhancedPerformanceConfig</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedPerformanceConfig.lambda_config"><code class="docutils literal notranslate"><span class="pre">EnhancedPerformanceConfig.lambda_config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedPerformanceConfig.max_concurrent_downloads"><code class="docutils literal notranslate"><span class="pre">EnhancedPerformanceConfig.max_concurrent_downloads</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedPerformanceConfig.max_concurrent_images"><code class="docutils literal notranslate"><span class="pre">EnhancedPerformanceConfig.max_concurrent_images</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedPerformanceConfig.max_concurrent_slides"><code class="docutils literal notranslate"><span class="pre">EnhancedPerformanceConfig.max_concurrent_slides</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedPerformanceConfig.image_download_timeout"><code class="docutils literal notranslate"><span class="pre">EnhancedPerformanceConfig.image_download_timeout</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedPerformanceConfig.cache_ttl_seconds"><code class="docutils literal notranslate"><span class="pre">EnhancedPerformanceConfig.cache_ttl_seconds</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedPerformanceConfig.max_slides"><code class="docutils literal notranslate"><span class="pre">EnhancedPerformanceConfig.max_slides</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedPerformanceConfig.min_slides"><code class="docutils literal notranslate"><span class="pre">EnhancedPerformanceConfig.min_slides</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedPerformanceConfig.max_image_size_mb"><code class="docutils literal notranslate"><span class="pre">EnhancedPerformanceConfig.max_image_size_mb</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedPerformanceConfig.batch_size"><code class="docutils literal notranslate"><span class="pre">EnhancedPerformanceConfig.batch_size</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedPerformanceConfig.__init__"><code class="docutils literal notranslate"><span class="pre">EnhancedPerformanceConfig.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedSecurityConfig"><code class="docutils literal notranslate"><span class="pre">EnhancedSecurityConfig</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedSecurityConfig.vpc_enabled"><code class="docutils literal notranslate"><span class="pre">EnhancedSecurityConfig.vpc_enabled</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedSecurityConfig.vpc_id"><code class="docutils literal notranslate"><span class="pre">EnhancedSecurityConfig.vpc_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedSecurityConfig.encryption_enabled"><code class="docutils literal notranslate"><span class="pre">EnhancedSecurityConfig.encryption_enabled</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedSecurityConfig.api_rate_limit"><code class="docutils literal notranslate"><span class="pre">EnhancedSecurityConfig.api_rate_limit</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedSecurityConfig.enable_rekognition"><code class="docutils literal notranslate"><span class="pre">EnhancedSecurityConfig.enable_rekognition</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedSecurityConfig.external_apis"><code class="docutils literal notranslate"><span class="pre">EnhancedSecurityConfig.external_apis</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedSecurityConfig.__init__"><code class="docutils literal notranslate"><span class="pre">EnhancedSecurityConfig.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.MonitoringConfig"><code class="docutils literal notranslate"><span class="pre">MonitoringConfig</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.MonitoringConfig.log_level"><code class="docutils literal notranslate"><span class="pre">MonitoringConfig.log_level</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.MonitoringConfig.enable_xray"><code class="docutils literal notranslate"><span class="pre">MonitoringConfig.enable_xray</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.MonitoringConfig.log_retention_days"><code class="docutils literal notranslate"><span class="pre">MonitoringConfig.log_retention_days</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.MonitoringConfig.enable_monitoring"><code class="docutils literal notranslate"><span class="pre">MonitoringConfig.enable_monitoring</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.MonitoringConfig.alert_email"><code class="docutils literal notranslate"><span class="pre">MonitoringConfig.alert_email</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.MonitoringConfig.__init__"><code class="docutils literal notranslate"><span class="pre">MonitoringConfig.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.FeatureFlagsConfig"><code class="docutils literal notranslate"><span class="pre">FeatureFlagsConfig</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.FeatureFlagsConfig.enable_speaker_notes"><code class="docutils literal notranslate"><span class="pre">FeatureFlagsConfig.enable_speaker_notes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.FeatureFlagsConfig.enable_image_generation"><code class="docutils literal notranslate"><span class="pre">FeatureFlagsConfig.enable_image_generation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.FeatureFlagsConfig.enable_image_search"><code class="docutils literal notranslate"><span class="pre">FeatureFlagsConfig.enable_image_search</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.FeatureFlagsConfig.enable_batch_processing"><code class="docutils literal notranslate"><span class="pre">FeatureFlagsConfig.enable_batch_processing</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.FeatureFlagsConfig.enable_caching"><code class="docutils literal notranslate"><span class="pre">FeatureFlagsConfig.enable_caching</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.FeatureFlagsConfig.__init__"><code class="docutils literal notranslate"><span class="pre">FeatureFlagsConfig.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.ProjectMetadata"><code class="docutils literal notranslate"><span class="pre">ProjectMetadata</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.ProjectMetadata.project_name"><code class="docutils literal notranslate"><span class="pre">ProjectMetadata.project_name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.ProjectMetadata.environment"><code class="docutils literal notranslate"><span class="pre">ProjectMetadata.environment</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.ProjectMetadata.version"><code class="docutils literal notranslate"><span class="pre">ProjectMetadata.version</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.ProjectMetadata.maintainer"><code class="docutils literal notranslate"><span class="pre">ProjectMetadata.maintainer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.ProjectMetadata.last_updated"><code class="docutils literal notranslate"><span class="pre">ProjectMetadata.last_updated</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.ProjectMetadata.__init__"><code class="docutils literal notranslate"><span class="pre">ProjectMetadata.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedConfigManager"><code class="docutils literal notranslate"><span class="pre">EnhancedConfigManager</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedConfigManager.__init__"><code class="docutils literal notranslate"><span class="pre">EnhancedConfigManager.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedConfigManager.get_value"><code class="docutils literal notranslate"><span class="pre">EnhancedConfigManager.get_value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedConfigManager.get_aws_config"><code class="docutils literal notranslate"><span class="pre">EnhancedConfigManager.get_aws_config()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedConfigManager.get_s3_config"><code class="docutils literal notranslate"><span class="pre">EnhancedConfigManager.get_s3_config()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedConfigManager.get_dynamodb_config"><code class="docutils literal notranslate"><span class="pre">EnhancedConfigManager.get_dynamodb_config()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedConfigManager.get_bedrock_config"><code class="docutils literal notranslate"><span class="pre">EnhancedConfigManager.get_bedrock_config()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedConfigManager.get_performance_config"><code class="docutils literal notranslate"><span class="pre">EnhancedConfigManager.get_performance_config()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedConfigManager.get_security_config"><code class="docutils literal notranslate"><span class="pre">EnhancedConfigManager.get_security_config()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedConfigManager.get_monitoring_config"><code class="docutils literal notranslate"><span class="pre">EnhancedConfigManager.get_monitoring_config()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedConfigManager.get_feature_flags"><code class="docutils literal notranslate"><span class="pre">EnhancedConfigManager.get_feature_flags()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedConfigManager.get_project_metadata"><code class="docutils literal notranslate"><span class="pre">EnhancedConfigManager.get_project_metadata()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedConfigManager.get_all_config"><code class="docutils literal notranslate"><span class="pre">EnhancedConfigManager.get_all_config()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedConfigManager.validate_configuration"><code class="docutils literal notranslate"><span class="pre">EnhancedConfigManager.validate_configuration()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedConfigManager.reload_configuration"><code class="docutils literal notranslate"><span class="pre">EnhancedConfigManager.reload_configuration()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.get_enhanced_config_manager"><code class="docutils literal notranslate"><span class="pre">get_enhanced_config_manager()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.get_enhanced_aws_config"><code class="docutils literal notranslate"><span class="pre">get_enhanced_aws_config()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.get_enhanced_service_config"><code class="docutils literal notranslate"><span class="pre">get_enhanced_service_config()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.get_enhanced_performance_config"><code class="docutils literal notranslate"><span class="pre">get_enhanced_performance_config()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.enhanced_config_manager.html#utils.enhanced_config_manager.log_enhanced_configuration_summary"><code class="docutils literal notranslate"><span class="pre">log_enhanced_configuration_summary()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utils.image_processor.html">utils.image_processor module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageAction"><code class="docutils literal notranslate"><span class="pre">ImageAction</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageAction.REPLACE"><code class="docutils literal notranslate"><span class="pre">ImageAction.REPLACE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageAction.REGENERATE"><code class="docutils literal notranslate"><span class="pre">ImageAction.REGENERATE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageAction.REMOVE"><code class="docutils literal notranslate"><span class="pre">ImageAction.REMOVE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageAction.REPOSITION"><code class="docutils literal notranslate"><span class="pre">ImageAction.REPOSITION</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageAction.RESIZE"><code class="docutils literal notranslate"><span class="pre">ImageAction.RESIZE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageAction.ENHANCE"><code class="docutils literal notranslate"><span class="pre">ImageAction.ENHANCE</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageFormat"><code class="docutils literal notranslate"><span class="pre">ImageFormat</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageFormat.PNG"><code class="docutils literal notranslate"><span class="pre">ImageFormat.PNG</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageFormat.JPEG"><code class="docutils literal notranslate"><span class="pre">ImageFormat.JPEG</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageFormat.WEBP"><code class="docutils literal notranslate"><span class="pre">ImageFormat.WEBP</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageMetadata"><code class="docutils literal notranslate"><span class="pre">ImageMetadata</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageMetadata.image_id"><code class="docutils literal notranslate"><span class="pre">ImageMetadata.image_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageMetadata.original_url"><code class="docutils literal notranslate"><span class="pre">ImageMetadata.original_url</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageMetadata.s3_key"><code class="docutils literal notranslate"><span class="pre">ImageMetadata.s3_key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageMetadata.format"><code class="docutils literal notranslate"><span class="pre">ImageMetadata.format</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageMetadata.width"><code class="docutils literal notranslate"><span class="pre">ImageMetadata.width</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageMetadata.height"><code class="docutils literal notranslate"><span class="pre">ImageMetadata.height</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageMetadata.file_size"><code class="docutils literal notranslate"><span class="pre">ImageMetadata.file_size</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageMetadata.created_at"><code class="docutils literal notranslate"><span class="pre">ImageMetadata.created_at</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageMetadata.alt_text"><code class="docutils literal notranslate"><span class="pre">ImageMetadata.alt_text</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageMetadata.position"><code class="docutils literal notranslate"><span class="pre">ImageMetadata.position</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageMetadata.__init__"><code class="docutils literal notranslate"><span class="pre">ImageMetadata.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageProcessingRequest"><code class="docutils literal notranslate"><span class="pre">ImageProcessingRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageProcessingRequest.action"><code class="docutils literal notranslate"><span class="pre">ImageProcessingRequest.action</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageProcessingRequest.presentation_id"><code class="docutils literal notranslate"><span class="pre">ImageProcessingRequest.presentation_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageProcessingRequest.slide_number"><code class="docutils literal notranslate"><span class="pre">ImageProcessingRequest.slide_number</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageProcessingRequest.image_data"><code class="docutils literal notranslate"><span class="pre">ImageProcessingRequest.image_data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageProcessingRequest.image_url"><code class="docutils literal notranslate"><span class="pre">ImageProcessingRequest.image_url</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageProcessingRequest.generation_prompt"><code class="docutils literal notranslate"><span class="pre">ImageProcessingRequest.generation_prompt</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageProcessingRequest.target_format"><code class="docutils literal notranslate"><span class="pre">ImageProcessingRequest.target_format</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageProcessingRequest.target_size"><code class="docutils literal notranslate"><span class="pre">ImageProcessingRequest.target_size</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageProcessingRequest.quality"><code class="docutils literal notranslate"><span class="pre">ImageProcessingRequest.quality</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageProcessingRequest.enhancement_options"><code class="docutils literal notranslate"><span class="pre">ImageProcessingRequest.enhancement_options</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageProcessingRequest.__init__"><code class="docutils literal notranslate"><span class="pre">ImageProcessingRequest.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageProcessor"><code class="docutils literal notranslate"><span class="pre">ImageProcessor</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageProcessor.__init__"><code class="docutils literal notranslate"><span class="pre">ImageProcessor.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.ImageProcessor.process_image_request"><code class="docutils literal notranslate"><span class="pre">ImageProcessor.process_image_request()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.create_image_processor"><code class="docutils literal notranslate"><span class="pre">create_image_processor()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.image_processor.html#utils.image_processor.process_visual_modification"><code class="docutils literal notranslate"><span class="pre">process_visual_modification()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utils.timeout_manager.html">utils.timeout_manager module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="utils.timeout_manager.html#utils.timeout_manager.TimeoutConfig"><code class="docutils literal notranslate"><span class="pre">TimeoutConfig</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.timeout_manager.html#utils.timeout_manager.TimeoutConfig.lambda_timeout_seconds"><code class="docutils literal notranslate"><span class="pre">TimeoutConfig.lambda_timeout_seconds</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.timeout_manager.html#utils.timeout_manager.TimeoutConfig.grace_period_seconds"><code class="docutils literal notranslate"><span class="pre">TimeoutConfig.grace_period_seconds</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.timeout_manager.html#utils.timeout_manager.TimeoutConfig.warning_threshold"><code class="docutils literal notranslate"><span class="pre">TimeoutConfig.warning_threshold</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.timeout_manager.html#utils.timeout_manager.TimeoutConfig.critical_threshold"><code class="docutils literal notranslate"><span class="pre">TimeoutConfig.critical_threshold</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.timeout_manager.html#utils.timeout_manager.TimeoutConfig.model_config"><code class="docutils literal notranslate"><span class="pre">TimeoutConfig.model_config</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.timeout_manager.html#utils.timeout_manager.TimeoutError"><code class="docutils literal notranslate"><span class="pre">TimeoutError</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.timeout_manager.html#utils.timeout_manager.TimeoutError.__init__"><code class="docutils literal notranslate"><span class="pre">TimeoutError.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.timeout_manager.html#utils.timeout_manager.OperationTimer"><code class="docutils literal notranslate"><span class="pre">OperationTimer</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.timeout_manager.html#utils.timeout_manager.OperationTimer.__init__"><code class="docutils literal notranslate"><span class="pre">OperationTimer.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.timeout_manager.html#utils.timeout_manager.OperationTimer.get_elapsed_time"><code class="docutils literal notranslate"><span class="pre">OperationTimer.get_elapsed_time()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.timeout_manager.html#utils.timeout_manager.TimeoutManager"><code class="docutils literal notranslate"><span class="pre">TimeoutManager</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.timeout_manager.html#utils.timeout_manager.TimeoutManager.__init__"><code class="docutils literal notranslate"><span class="pre">TimeoutManager.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.timeout_manager.html#utils.timeout_manager.TimeoutManager.get_remaining_time"><code class="docutils literal notranslate"><span class="pre">TimeoutManager.get_remaining_time()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.timeout_manager.html#utils.timeout_manager.TimeoutManager.get_elapsed_time"><code class="docutils literal notranslate"><span class="pre">TimeoutManager.get_elapsed_time()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.timeout_manager.html#utils.timeout_manager.TimeoutManager.is_approaching_timeout"><code class="docutils literal notranslate"><span class="pre">TimeoutManager.is_approaching_timeout()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.timeout_manager.html#utils.timeout_manager.TimeoutManager.is_near_critical_timeout"><code class="docutils literal notranslate"><span class="pre">TimeoutManager.is_near_critical_timeout()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.timeout_manager.html#utils.timeout_manager.TimeoutManager.should_abort"><code class="docutils literal notranslate"><span class="pre">TimeoutManager.should_abort()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.timeout_manager.html#utils.timeout_manager.TimeoutManager.check_timeout_status"><code class="docutils literal notranslate"><span class="pre">TimeoutManager.check_timeout_status()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.timeout_manager.html#utils.timeout_manager.TimeoutManager.record_operation"><code class="docutils literal notranslate"><span class="pre">TimeoutManager.record_operation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.timeout_manager.html#utils.timeout_manager.TimeoutManager.get_performance_summary"><code class="docutils literal notranslate"><span class="pre">TimeoutManager.get_performance_summary()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.timeout_manager.html#utils.timeout_manager.TimeoutManager.operation"><code class="docutils literal notranslate"><span class="pre">TimeoutManager.operation()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.timeout_manager.html#utils.timeout_manager.timeout_decorator"><code class="docutils literal notranslate"><span class="pre">timeout_decorator()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.timeout_manager.html#utils.timeout_manager.timeout_handler"><code class="docutils literal notranslate"><span class="pre">timeout_handler()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.timeout_manager.html#utils.timeout_manager.create_timeout_config"><code class="docutils literal notranslate"><span class="pre">create_timeout_config()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.timeout_manager.html#utils.timeout_manager.with_timeout_monitoring"><code class="docutils literal notranslate"><span class="pre">with_timeout_monitoring()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="module-utils">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-utils" title="Link to this heading"></a></h2>
+<p>Utilities Package for AI PPT Assistant
+Provides centralized access to all shared utilities and eliminates code duplication</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.get_module_info">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">get_module_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils.html#get_module_info"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#utils.get_module_info" title="Link to this definition"></a></dt>
+<dd><p>Get information about available utility modules</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, AI PPT Assistant Team。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

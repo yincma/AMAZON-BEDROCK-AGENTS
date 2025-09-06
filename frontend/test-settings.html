@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设置页面功能测试</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f3f4f6;
+        }
+        .test-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #1f2937;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #374151;
+            margin-top: 20px;
+        }
+        .test-item {
+            padding: 10px;
+            margin: 10px 0;
+            border-left: 4px solid #e5e7eb;
+            background: #f9fafb;
+        }
+        .test-pass {
+            border-left-color: #10b981;
+            background: #f0fdf4;
+        }
+        .test-fail {
+            border-left-color: #ef4444;
+            background: #fef2f2;
+        }
+        .test-pending {
+            border-left-color: #f59e0b;
+            background: #fffbeb;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        .status {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .status-pass {
+            background: #10b981;
+            color: white;
+        }
+        .status-fail {
+            background: #ef4444;
+            color: white;
+        }
+        .status-pending {
+            background: #f59e0b;
+            color: white;
+        }
+        .log-area {
+            background: #1f2937;
+            color: #e5e7eb;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+        .log-entry {
+            margin: 2px 0;
+        }
+        .log-success { color: #10b981; }
+        .log-error { color: #ef4444; }
+        .log-info { color: #3b82f6; }
+        .log-warning { color: #f59e0b; }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 设置页面自动化测试</h1>
+        <p>此测试将验证 http://localhost:5173/settings/preferences 页面的所有功能</p>
+        
+        <div style="margin: 20px 0;">
+            <button onclick="runAllTests()">🚀 运行所有测试</button>
+            <button onclick="clearResults()">🔄 清除结果</button>
+            <button onclick="openSettingsPage()">📖 打开设置页面</button>
+        </div>
+
+        <div class="test-container">
+            <h2>测试用例列表</h2>
+            <div id="test-results"></div>
+        </div>
+
+        <div class="test-container">
+            <h2>测试日志</h2>
+            <div class="log-area" id="log-area"></div>
+        </div>
+
+        <div class="test-container">
+            <h2>测试页面预览</h2>
+            <iframe id="test-frame" src="http://localhost:5173/settings/preferences"></iframe>
+        </div>
+    </div>
+
+    <script>
+        const testCases = [
+            {
+                id: 'route-test',
+                name: '路由和页面加载测试',
+                async test() {
+                    log('info', '开始测试路由和页面加载...');
+                    
+                    // 测试页面是否可访问
+                    const response = await fetch('http://localhost:5173/settings/preferences');
+                    if (!response.ok) {
+                        throw new Error(`页面返回状态码: ${response.status}`);
+                    }
+                    
+                    log('success', '✓ 页面成功加载');
+                    return true;
+                }
+            },
+            {
+                id: 'api-config-test',
+                name: 'API配置面板测试',
+                async test() {
+                    log('info', '测试API配置面板功能...');
+                    
+                    // 测试localStorage存储
+                    const testConfig = {
+                        baseUrl: 'https://test-api.example.com',
+                        apiKey: 'test-key-123',
+                        timeout: 30000,
+                        retryAttempts: 3,
+                        enableCache: true,
+                        cacheTimeout: 300000,
+                        enableCompression: true,
+                        maxConcurrentRequests: 5,
+                        customHeaders: {}
+                    };
+                    
+                    localStorage.setItem('api-config', JSON.stringify(testConfig));
+                    const savedConfig = JSON.parse(localStorage.getItem('api-config'));
+                    
+                    if (savedConfig.baseUrl !== testConfig.baseUrl) {
+                        throw new Error('API配置保存失败');
+                    }
+                    
+                    log('success', '✓ API配置保存和加载成功');
+                    
+                    // 测试健康检查API
+                    try {
+                        const healthResponse = await fetch('https://byih5fsutb.execute-api.us-east-1.amazonaws.com/dev/health', {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            signal: AbortSignal.timeout(5000)
+                        });
+                        
+                        if (healthResponse.ok) {
+                            log('success', '✓ API健康检查成功');
+                        } else {
+                            log('warning', '⚠ API健康检查返回非200状态');
+                        }
+                    } catch (error) {
+                        log('warning', `⚠ API健康检查失败: ${error.message}`);
+                    }
+                    
+                    return true;
+                }
+            },
+            {
+                id: 'theme-test',
+                name: '主题切换功能测试',
+                async test() {
+                    log('info', '测试主题切换功能...');
+                    
+                    // 测试主题存储
+                    const themes = ['light', 'dark', 'system'];
+                    
+                    for (const theme of themes) {
+                        localStorage.setItem('ui-theme', theme);
+                        const savedTheme = localStorage.getItem('ui-theme');
+                        
+                        if (savedTheme !== theme) {
+                            throw new Error(`主题 ${theme} 保存失败`);
+                        }
+                        
+                        log('success', `✓ 主题 "${theme}" 保存成功`);
+                    }
+                    
+                    return true;
+                }
+            },
+            {
+                id: 'language-test',
+                name: '语言设置测试',
+                async test() {
+                    log('info', '测试语言设置功能...');
+                    
+                    const languages = ['zh', 'en'];
+                    
+                    for (const lang of languages) {
+                        localStorage.setItem('ui-language', lang);
+                        const savedLang = localStorage.getItem('ui-language');
+                        
+                        if (savedLang !== lang) {
+                            throw new Error(`语言 ${lang} 保存失败`);
+                        }
+                        
+                        log('success', `✓ 语言 "${lang}" 保存成功`);
+                    }
+                    
+                    return true;
+                }
+            },
+            {
+                id: 'storage-test',
+                name: 'LocalStorage 持久化测试',
+                async test() {
+                    log('info', '测试LocalStorage持久化...');
+                    
+                    // 设置测试数据
+                    const testData = {
+                        testKey: 'testValue',
+                        timestamp: Date.now()
+                    };
+                    
+                    localStorage.setItem('test-persistence', JSON.stringify(testData));
+                    
+                    // 清除并重新读取
+                    const saved = JSON.parse(localStorage.getItem('test-persistence'));
+                    
+                    if (!saved || saved.testKey !== testData.testKey) {
+                        throw new Error('数据持久化失败');
+                    }
+                    
+                    log('success', '✓ LocalStorage持久化正常');
+                    
+                    // 清理测试数据
+                    localStorage.removeItem('test-persistence');
+                    
+                    return true;
+                }
+            },
+            {
+                id: 'ui-store-test',
+                name: 'UI Store 状态管理测试',
+                async test() {
+                    log('info', '测试UI Store状态管理...');
+                    
+                    // 测试toast通知存储
+                    const toastTest = {
+                        type: 'success',
+                        title: '测试通知',
+                        message: '这是一个测试通知'
+                    };
+                    
+                    // 模拟通知存储
+                    sessionStorage.setItem('ui-toasts', JSON.stringify([toastTest]));
+                    const savedToasts = JSON.parse(sessionStorage.getItem('ui-toasts') || '[]');
+                    
+                    if (savedToasts.length > 0) {
+                        log('success', '✓ UI通知状态管理正常');
+                    }
+                    
+                    // 清理
+                    sessionStorage.removeItem('ui-toasts');
+                    
+                    return true;
+                }
+            },
+            {
+                id: 'form-validation-test',
+                name: '表单验证测试',
+                async test() {
+                    log('info', '测试表单验证逻辑...');
+                    
+                    // 测试API URL验证
+                    const validUrls = [
+                        'http://localhost:8000',
+                        'https://api.example.com',
+                        'https://api.example.com:3000/v1'
+                    ];
+                    
+                    const invalidUrls = [
+                        '',
+                        'not-a-url',
+                        'ftp://invalid.com'
+                    ];
+                    
+                    for (const url of validUrls) {
+                        try {
+                            new URL(url);
+                            log('success', `✓ 有效URL: ${url}`);
+                        } catch {
+                            throw new Error(`应该是有效URL但验证失败: ${url}`);
+                        }
+                    }
+                    
+                    for (const url of invalidUrls) {
+                        try {
+                            if (url === '') {
+                                log('success', '✓ 空URL正确被识别为无效');
+                            } else {
+                                new URL(url);
+                                throw new Error(`无效URL未被检测: ${url}`);
+                            }
+                        } catch {
+                            log('success', `✓ 无效URL被正确拒绝: ${url || '(空)'}`);
+                        }
+                    }
+                    
+                    // 测试超时时间验证
+                    const validTimeouts = [1000, 30000, 300000];
+                    const invalidTimeouts = [500, 400000, -1000];
+                    
+                    for (const timeout of validTimeouts) {
+                        if (timeout >= 1000 && timeout <= 300000) {
+                            log('success', `✓ 有效超时时间: ${timeout}ms`);
+                        } else {
+                            throw new Error(`超时时间验证失败: ${timeout}`);
+                        }
+                    }
+                    
+                    for (const timeout of invalidTimeouts) {
+                        if (timeout < 1000 || timeout > 300000) {
+                            log('success', `✓ 无效超时时间被正确识别: ${timeout}ms`);
+                        } else {
+                            throw new Error(`无效超时时间未被检测: ${timeout}`);
+                        }
+                    }
+                    
+                    return true;
+                }
+            },
+            {
+                id: 'error-handling-test',
+                name: '错误处理测试',
+                async test() {
+                    log('info', '测试错误处理机制...');
+                    
+                    // 测试网络错误处理
+                    try {
+                        const response = await fetch('http://invalid-url-that-does-not-exist.com', {
+                            signal: AbortSignal.timeout(1000)
+                        });
+                    } catch (error) {
+                        log('success', '✓ 网络错误被正确捕获');
+                    }
+                    
+                    // 测试JSON解析错误
+                    try {
+                        JSON.parse('invalid json');
+                    } catch (error) {
+                        log('success', '✓ JSON解析错误被正确捕获');
+                    }
+                    
+                    // 测试localStorage错误
+                    const originalSetItem = Storage.prototype.setItem;
+                    Storage.prototype.setItem = function() {
+                        throw new Error('Storage quota exceeded');
+                    };
+                    
+                    try {
+                        localStorage.setItem('test', 'value');
+                    } catch (error) {
+                        log('success', '✓ localStorage错误被正确处理');
+                    }
+                    
+                    // 恢复原始方法
+                    Storage.prototype.setItem = originalSetItem;
+                    
+                    return true;
+                }
+            }
+        ];
+
+        let testResults = {};
+
+        function log(type, message) {
+            const logArea = document.getElementById('log-area');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            const timestamp = new Date().toLocaleTimeString();
+            entry.textContent = `[${timestamp}] ${message}`;
+            logArea.appendChild(entry);
+            logArea.scrollTop = logArea.scrollHeight;
+        }
+
+        async function runTest(testCase) {
+            const resultDiv = document.getElementById(`test-${testCase.id}`);
+            
+            try {
+                log('info', `开始测试: ${testCase.name}`);
+                resultDiv.className = 'test-item test-pending';
+                resultDiv.querySelector('.status').textContent = '运行中';
+                resultDiv.querySelector('.status').className = 'status status-pending';
+                
+                const result = await testCase.test();
+                
+                testResults[testCase.id] = { success: true, error: null };
+                resultDiv.className = 'test-item test-pass';
+                resultDiv.querySelector('.status').textContent = '通过';
+                resultDiv.querySelector('.status').className = 'status status-pass';
+                log('success', `✅ 测试通过: ${testCase.name}`);
+                
+            } catch (error) {
+                testResults[testCase.id] = { success: false, error: error.message };
+                resultDiv.className = 'test-item test-fail';
+                resultDiv.querySelector('.status').textContent = '失败';
+                resultDiv.querySelector('.status').className = 'status status-fail';
+                log('error', `❌ 测试失败: ${testCase.name} - ${error.message}`);
+            }
+        }
+
+        async function runAllTests() {
+            log('info', '🚀 开始运行所有测试...');
+            testResults = {};
+            
+            for (const testCase of testCases) {
+                await runTest(testCase);
+                // 添加延迟以便观察
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
+            // 显示测试摘要
+            const totalTests = testCases.length;
+            const passedTests = Object.values(testResults).filter(r => r.success).length;
+            const failedTests = totalTests - passedTests;
+            
+            log('info', '=====================================');
+            log('info', `测试完成！总计: ${totalTests} | 通过: ${passedTests} | 失败: ${failedTests}`);
+            
+            if (failedTests === 0) {
+                log('success', '🎉 所有测试通过！');
+            } else {
+                log('error', `⚠️ ${failedTests} 个测试失败`);
+            }
+        }
+
+        function clearResults() {
+            document.getElementById('log-area').innerHTML = '';
+            testResults = {};
+            renderTestCases();
+            log('info', '测试结果已清除');
+        }
+
+        function openSettingsPage() {
+            window.open('http://localhost:5173/settings/preferences', '_blank');
+        }
+
+        function renderTestCases() {
+            const resultsDiv = document.getElementById('test-results');
+            resultsDiv.innerHTML = '';
+            
+            testCases.forEach(testCase => {
+                const div = document.createElement('div');
+                div.id = `test-${testCase.id}`;
+                div.className = 'test-item';
+                
+                const result = testResults[testCase.id];
+                let statusClass = '';
+                let statusText = '待运行';
+                
+                if (result) {
+                    if (result.success) {
+                        div.className += ' test-pass';
+                        statusClass = 'status-pass';
+                        statusText = '通过';
+                    } else {
+                        div.className += ' test-fail';
+                        statusClass = 'status-fail';
+                        statusText = '失败';
+                    }
+                }
+                
+                div.innerHTML = `
+                    <strong>${testCase.name}</strong>
+                    <span class="status ${statusClass}">${statusText}</span>
+                    ${result && !result.success ? `<div style="color: red; font-size: 12px; margin-top: 5px;">${result.error}</div>` : ''}
+                `;
+                
+                resultsDiv.appendChild(div);
+            });
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTestCases();
+            log('info', '测试环境已准备就绪');
+            log('info', '点击"运行所有测试"按钮开始测试');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,295 @@
+name: Security Scan
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # 每天UTC时间2点运行 (北京时间10点)
+    - cron: '0 2 * * *'
+
+jobs:
+  security-scan:
+    name: Security Vulnerability Scan
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        python-version: [3.11]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        # 获取完整历史记录，用于secrets扫描
+        fetch-depth: 0
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-security-${{ hashFiles('security/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-security-
+          ${{ runner.os }}-pip-
+    
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y git
+    
+    - name: Create virtual environment
+      run: |
+        python -m venv .venv
+        echo "${{ github.workspace }}/.venv/bin" >> $GITHUB_PATH
+    
+    - name: Install project dependencies
+      run: |
+        source .venv/bin/activate
+        pip install --upgrade pip
+        make install
+    
+    - name: Install security tools
+      run: |
+        source .venv/bin/activate
+        make security-install
+    
+    - name: Run security scan
+      run: |
+        source .venv/bin/activate
+        # 运行安全扫描但不立即失败，先生成报告
+        python3 security/scan.py --scan all --format json --output-dir security/reports || true
+        python3 security/scan.py --scan all --format html --output-dir security/reports || true
+    
+    - name: Run CI security check
+      run: |
+        source .venv/bin/activate
+        # 这个步骤会在发现高危问题时失败
+        make security-scan-ci
+    
+    - name: Upload security reports
+      uses: actions/upload-artifact@v3
+      if: always()  # 即使安全扫描失败也上传报告
+      with:
+        name: security-reports-${{ github.sha }}
+        path: security/reports/
+        retention-days: 30
+    
+    - name: Parse security results
+      if: always()
+      id: security-results
+      run: |
+        source .venv/bin/activate
+        # 查找最新的JSON报告
+        LATEST_REPORT=$(ls -t security/reports/security_report_*.json | head -1)
+        if [ -f "$LATEST_REPORT" ]; then
+          # 提取安全统计信息
+          TOTAL_ISSUES=$(python3 -c "import json; data=json.load(open('$LATEST_REPORT')); print(data['summary']['total_issues'])")
+          CRITICAL_ISSUES=$(python3 -c "import json; data=json.load(open('$LATEST_REPORT')); print(data['summary']['critical'])")
+          HIGH_ISSUES=$(python3 -c "import json; data=json.load(open('$LATEST_REPORT')); print(data['summary']['high'])")
+          MEDIUM_ISSUES=$(python3 -c "import json; data=json.load(open('$LATEST_REPORT')); print(data['summary']['medium'])")
+          LOW_ISSUES=$(python3 -c "import json; data=json.load(open('$LATEST_REPORT')); print(data['summary']['low'])")
+          
+          echo "total_issues=$TOTAL_ISSUES" >> $GITHUB_OUTPUT
+          echo "critical_issues=$CRITICAL_ISSUES" >> $GITHUB_OUTPUT
+          echo "high_issues=$HIGH_ISSUES" >> $GITHUB_OUTPUT
+          echo "medium_issues=$MEDIUM_ISSUES" >> $GITHUB_OUTPUT
+          echo "low_issues=$LOW_ISSUES" >> $GITHUB_OUTPUT
+          
+          # 生成摘要
+          {
+            echo "## 🛡️ Security Scan Results"
+            echo ""
+            echo "| Severity | Count |"
+            echo "|----------|-------|"
+            echo "| 🔴 Critical | $CRITICAL_ISSUES |"
+            echo "| 🟠 High | $HIGH_ISSUES |"
+            echo "| 🟡 Medium | $MEDIUM_ISSUES |"
+            echo "| 🟢 Low | $LOW_ISSUES |"
+            echo "| **Total** | **$TOTAL_ISSUES** |"
+            echo ""
+            if [ "$CRITICAL_ISSUES" -gt 0 ] || [ "$HIGH_ISSUES" -gt 0 ]; then
+              echo "⚠️ **Action Required**: Critical or high-severity security issues found!"
+              echo ""
+              echo "Please review the security report and address these issues before deploying."
+            else
+              echo "✅ **Good News**: No critical or high-severity security issues found!"
+            fi
+            echo ""
+            echo "📊 [View Detailed Report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+          } >> security_summary.md
+          
+          echo "security_summary<<EOF" >> $GITHUB_OUTPUT
+          cat security_summary.md >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+        else
+          echo "total_issues=0" >> $GITHUB_OUTPUT
+          echo "security_summary=Security scan report not found" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Comment security results on PR
+      uses: actions/github-script@v7
+      if: github.event_name == 'pull_request' && always()
+      with:
+        script: |
+          const summary = `${{ steps.security-results.outputs.security_summary }}`;
+          const totalIssues = ${{ steps.security-results.outputs.total_issues || 0 }};
+          const criticalIssues = ${{ steps.security-results.outputs.critical_issues || 0 }};
+          const highIssues = ${{ steps.security-results.outputs.high_issues || 0 }};
+          
+          // 查找现有的安全扫描评论
+          const { data: comments } = await github.rest.issues.listComments({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+          });
+          
+          const botComment = comments.find(comment => 
+            comment.user.type === 'Bot' && 
+            comment.body.includes('Security Scan Results')
+          );
+          
+          const commentBody = summary + '\n\n---\n*Security scan powered by AI PPT Assistant*';
+          
+          if (botComment) {
+            // 更新现有评论
+            await github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: botComment.id,
+              body: commentBody
+            });
+          } else {
+            // 创建新评论
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: commentBody
+            });
+          }
+    
+    - name: Create security issue
+      uses: actions/github-script@v7
+      if: steps.security-results.outputs.critical_issues > 0 && github.event_name == 'schedule'
+      with:
+        script: |
+          const criticalIssues = ${{ steps.security-results.outputs.critical_issues }};
+          const highIssues = ${{ steps.security-results.outputs.high_issues }};
+          
+          const title = `🚨 Critical Security Issues Found - ${criticalIssues} Critical, ${highIssues} High`;
+          const body = `
+          ## 🛡️ Automated Security Alert
+          
+          The scheduled security scan has detected critical security issues that require immediate attention.
+          
+          **Summary:**
+          - 🔴 Critical Issues: ${criticalIssues}
+          - 🟠 High Issues: ${highIssues}
+          
+          **Action Required:**
+          1. Review the [security scan results](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          2. Address critical and high-severity issues immediately
+          3. Update dependencies and fix code vulnerabilities
+          4. Re-run security scan to verify fixes
+          
+          **Next Steps:**
+          - Download the detailed security report from the workflow artifacts
+          - Follow the remediation guidance provided in the report
+          - Consider implementing additional security measures
+          
+          ---
+          *This issue was created automatically by the security scan workflow*
+          `;
+          
+          await github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: title,
+            body: body,
+            labels: ['security', 'critical', 'automated']
+          });
+    
+    - name: Set job status
+      if: failure()
+      run: |
+        echo "Security scan failed with critical or high-severity issues"
+        exit 1
+
+  # 依赖检查作业
+  dependency-check:
+    name: Dependency Vulnerability Check
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.11
+    
+    - name: Install pip-audit
+      run: |
+        python -m pip install --upgrade pip
+        pip install pip-audit
+    
+    - name: Run pip-audit on all requirements files
+      run: |
+        echo "## Dependency Vulnerability Report" > dependency_report.md
+        echo "" >> dependency_report.md
+        
+        # 查找所有requirements文件
+        find . -name "requirements*.txt" -not -path "./.venv/*" -not -path "./lambdas/layers/build/*" | while read req_file; do
+          echo "### Scanning $req_file" >> dependency_report.md
+          echo "" >> dependency_report.md
+          
+          if pip-audit -r "$req_file" --format=json --output audit_result.json; then
+            echo "✅ No vulnerabilities found in $req_file" >> dependency_report.md
+          else
+            echo "⚠️ Vulnerabilities found in $req_file:" >> dependency_report.md
+            echo "" >> dependency_report.md
+            
+            # 将JSON结果转换为Markdown表格
+            python3 -c "
+import json
+import sys
+try:
+    with open('audit_result.json', 'r') as f:
+        data = json.load(f)
+    
+    if data.get('vulnerabilities'):
+        print('| Package | Version | Vulnerability | Severity |')
+        print('|---------|---------|---------------|----------|')
+        for vuln in data['vulnerabilities']:
+            package = vuln.get('package', 'N/A')
+            version = vuln.get('installed_version', 'N/A')  
+            vuln_id = vuln.get('id', 'N/A')
+            severity = vuln.get('fix_versions', [{}])[0].get('severity', 'N/A') if vuln.get('fix_versions') else 'N/A'
+            print(f'| {package} | {version} | {vuln_id} | {severity} |')
+except Exception as e:
+    print(f'Error parsing audit results: {e}')
+" >> dependency_report.md
+            echo "" >> dependency_report.md
+          fi
+        done
+        
+        # 上传依赖检查报告
+        if [ -f dependency_report.md ]; then
+          echo "Dependency check completed. Report generated."
+        fi
+    
+    - name: Upload dependency report
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: dependency-report-${{ github.sha }}
+        path: dependency_report.md
+        retention-days: 30

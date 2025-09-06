@@ -1,0 +1,151 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Security Scan Report (Demo)</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 5px; margin-bottom: 20px; }
+        .demo-badge { background: #ff6b6b; color: white; padding: 5px 15px; border-radius: 20px; font-size: 14px; display: inline-block; margin-bottom: 10px; }
+        .summary { margin: 20px 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .summary-card { background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center; border-left: 4px solid #007bff; }
+        .critical { border-left-color: #dc3545 !important; }
+        .high { border-left-color: #fd7e14 !important; }
+        .medium { border-left-color: #ffc107 !important; }
+        .low { border-left-color: #28a745 !important; }
+        .critical-text { color: #dc3545; font-weight: bold; }
+        .high-text { color: #fd7e14; font-weight: bold; }
+        .medium-text { color: #ffc107; font-weight: bold; }
+        .low-text { color: #28a745; font-weight: bold; }
+        .section { margin: 30px 0; background: white; border: 1px solid #e9ecef; border-radius: 8px; overflow: hidden; }
+        .section-header { background: #f8f9fa; padding: 15px 20px; border-bottom: 1px solid #e9ecef; font-weight: bold; }
+        .section-content { padding: 20px; }
+        .issues { margin: 10px 0; }
+        table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+        th, td { border: 1px solid #dee2e6; padding: 12px 8px; text-align: left; }
+        th { background-color: #f8f9fa; font-weight: bold; }
+        .status-completed { color: #28a745; font-weight: bold; }
+        .status-failed { color: #dc3545; font-weight: bold; }
+        .footer { margin-top: 40px; padding-top: 20px; border-top: 2px solid #e9ecef; color: #6c757d; text-align: center; }
+        .recommendation { background: #e7f3ff; border: 1px solid #b8daff; border-radius: 5px; padding: 15px; margin: 15px 0; }
+        .recommendation h4 { color: #0066cc; margin-top: 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="demo-badge">DEMO VERSION</div>
+            <h1>Security Scan Report</h1>
+            <p><strong>Project:</strong> AI PPT Assistant</p>
+            <p><strong>Timestamp:</strong> 2025-09-06T05:27:53.813816+00:00</p>
+        </div>
+        
+        <div class="summary">
+            <div class="summary-card">
+                <h3>Total Issues</h3>
+                <h2>3</h2>
+            </div>
+            <div class="summary-card critical">
+                <h3>Critical</h3>
+                <h2 class="critical-text">1</h2>
+            </div>
+            <div class="summary-card high">
+                <h3>High</h3>
+                <h2 class="high-text">2</h2>
+            </div>
+            <div class="summary-card medium">
+                <h3>Medium</h3>
+                <h2 class="medium-text">0</h2>
+            </div>
+            <div class="summary-card low">
+                <h3>Low</h3>
+                <h2 class="low-text">0</h2>
+            </div>
+        </div>
+        
+        <div class="recommendation">
+            <h4>🛡️ Security Recommendations</h4>
+            <ul>
+                <li><strong>Critical & High Issues:</strong> Address immediately before deployment</li>
+                <li><strong>Medium Issues:</strong> Fix in the next development cycle</li>
+                <li><strong>Low Issues:</strong> Address during routine maintenance</li>
+                <li><strong>Best Practice:</strong> Run security scans regularly and integrate into CI/CD pipeline</li>
+            </ul>
+        </div>
+        
+        
+        <div class="section">
+            <div class="section-header">
+                Bandit Scan Results
+            </div>
+            <div class="section-content">
+                <p><strong>Status:</strong> <span class="status-completed">Completed</span></p>
+                <p><strong>Issues Found:</strong> 0</p>
+                <p style='color: #28a745;'>✅ No issues found</p>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-header">
+                Safety Scan Results
+            </div>
+            <div class="section-content">
+                <p><strong>Status:</strong> <span class="status-completed">Completed</span></p>
+                <p><strong>Issues Found:</strong> 1</p>
+                <table><thead><tr><th>File</th><th>Line</th><th>Severity</th><th>Issue</th></tr></thead><tbody>
+                <tr>
+                    <td>tests/requirements.txt</td>
+                    <td>N/A</td>
+                    <td><span class="high-text">HIGH</span></td>
+                    <td>urllib3 before 1.26.5 does not remove the HTTP request body when an HTTP redirect response is receiv...</td>
+                </tr>
+                </tbody></table>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-header">
+                Secrets Scan Results
+            </div>
+            <div class="section-content">
+                <p><strong>Status:</strong> <span class="status-completed">Completed</span></p>
+                <p><strong>Issues Found:</strong> 1</p>
+                <table><thead><tr><th>File</th><th>Line</th><th>Severity</th><th>Issue</th></tr></thead><tbody>
+                <tr>
+                    <td>config/example.env</td>
+                    <td>12</td>
+                    <td><span class="high-text">HIGH</span></td>
+                    <td>AWS Access Key</td>
+                </tr>
+                </tbody></table>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-header">
+                Aws Scan Results
+            </div>
+            <div class="section-content">
+                <p><strong>Status:</strong> <span class="status-completed">Completed</span></p>
+                <p><strong>Issues Found:</strong> 1</p>
+                <table><thead><tr><th>File</th><th>Line</th><th>Severity</th><th>Issue</th></tr></thead><tbody>
+                <tr>
+                    <td>infrastructure/main.tf</td>
+                    <td>N/A</td>
+                    <td><span class="critical-text">CRITICAL</span></td>
+                    <td>Ensure S3 bucket does not allow public read-write access</td>
+                </tr>
+                </tbody></table>
+            </div>
+        </div>
+        
+        
+        <div class="footer">
+            <p><strong>Note:</strong> This is a demonstration report showing the capabilities of the AI PPT Assistant security scanning system.</p>
+            <p>Powered by: Bandit, Safety, detect-secrets, Checkov</p>
+        </div>
+    </div>
+</body>
+</html>
+    

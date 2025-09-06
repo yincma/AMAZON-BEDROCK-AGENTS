@@ -1,0 +1,421 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>factories.presentation_factory &mdash; AI PPT Assistant 1.0.0 文档</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=3bd3f67c" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=34088549"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=fd10adb8"></script>
+      <script src="../../_static/translations.js?v=beaddf03"></script>
+      <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs"></script>
+      <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs"></script>
+      <script type="module">mermaid.initialize({startOnLoad:true});</script>
+      <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+      <script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs";
+window.addEventListener("load", () => mermaid.run());
+</script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="搜索" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AI PPT Assistant
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">用户指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/installation.html">安装指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/quickstart.html">快速开始</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">架构设计</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/architecture.html">系统架构</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">现有文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/api.html">API文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/api.html#ai-ppt-assistant-api-documentation">AI PPT Assistant API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/deployment.html">部署文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/deployment.html#ai-ppt-assistant-deployment-guide">AI PPT Assistant - Deployment Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/deployment-checklist.html">部署检查清单</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/deployment-checklist.html#ai-ppt-assistant-deployment-checklist">AI PPT Assistant - Deployment Checklist</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/config-migration.html">配置迁移指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/config-migration.html#config">🔧 环境变量到Config文件迁移指南</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AI PPT Assistant</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">模块代码</a></li>
+      <li class="breadcrumb-item active">factories.presentation_factory</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>factories.presentation_factory 源代码</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Presentation Factory - Dependency Injection Factory for MVC Components</span>
+<span class="sd">Creates and configures MVC layer instances with proper dependency injection</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="c1"># Add parent directory to path for imports</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))))</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">controllers.compile_pptx</span><span class="w"> </span><span class="kn">import</span> <span class="n">PresentationCompiler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">interfaces.presentation_controller_interface</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">IPresentationCompiler</span><span class="p">,</span>
+    <span class="n">IPresentationControllerFactory</span><span class="p">,</span>
+    <span class="n">IPresentationOrchestrator</span><span class="p">,</span>
+    <span class="n">IQualityController</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Import interfaces</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">interfaces.presentation_model_interface</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">IPresentationCache</span><span class="p">,</span>
+    <span class="n">IPresentationModel</span><span class="p">,</span>
+    <span class="n">IPresentationModelFactory</span><span class="p">,</span>
+    <span class="n">IPresentationValidator</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">interfaces.presentation_view_interface</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">IPresentationTemplate</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">interfaces.presentation_view_interface</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">IPresentationValidator</span> <span class="k">as</span> <span class="n">IViewValidator</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">interfaces.presentation_view_interface</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">IPresentationView</span><span class="p">,</span>
+    <span class="n">IPresentationViewFactory</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Import concrete implementations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">models.presentation_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">presentation_model</span>
+
+<span class="c1"># Import utilities</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">views.presentation_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_styled_presentation</span>
+
+
+<div class="viewcode-block" id="PresentationModelFactory">
+<a class="viewcode-back" href="../../api/factories.presentation_factory.html#factories.presentation_factory.PresentationModelFactory">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">PresentationModelFactory</span><span class="p">(</span><span class="n">IPresentationModelFactory</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Factory for creating model layer instances&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PresentationModelFactory.create_model">
+<a class="viewcode-back" href="../../api/factories.presentation_factory.html#factories.presentation_factory.PresentationModelFactory.create_model">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IPresentationModel</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a presentation model instance&quot;&quot;&quot;</span>
+        <span class="c1"># For now, use the singleton instance, but this can be extended</span>
+        <span class="c1"># to support different model configurations</span>
+        <span class="k">return</span> <span class="n">presentation_model</span></div>
+
+
+<div class="viewcode-block" id="PresentationModelFactory.create_cache">
+<a class="viewcode-back" href="../../api/factories.presentation_factory.html#factories.presentation_factory.PresentationModelFactory.create_cache">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IPresentationCache</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a cache instance&quot;&quot;&quot;</span>
+        <span class="c1"># This would be implemented when cache functionality is needed</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Cache implementation not yet available&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PresentationModelFactory.create_validator">
+<a class="viewcode-back" href="../../api/factories.presentation_factory.html#factories.presentation_factory.PresentationModelFactory.create_validator">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_validator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IPresentationValidator</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a validator instance&quot;&quot;&quot;</span>
+        <span class="c1"># This would be implemented when validation functionality is needed</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Validator implementation not yet available&quot;</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="PresentationViewFactory">
+<a class="viewcode-back" href="../../api/factories.presentation_factory.html#factories.presentation_factory.PresentationViewFactory">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">PresentationViewFactory</span><span class="p">(</span><span class="n">IPresentationViewFactory</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Factory for creating view layer instances&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PresentationViewFactory.create_view">
+<a class="viewcode-back" href="../../api/factories.presentation_factory.html#factories.presentation_factory.PresentationViewFactory.create_view">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">style</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IPresentationView</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a presentation view instance&quot;&quot;&quot;</span>
+        <span class="n">template_data</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;template_data&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">create_styled_presentation</span><span class="p">(</span><span class="n">style</span><span class="p">,</span> <span class="n">template_data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PresentationViewFactory.create_template_manager">
+<a class="viewcode-back" href="../../api/factories.presentation_factory.html#factories.presentation_factory.PresentationViewFactory.create_template_manager">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_template_manager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IPresentationTemplate</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a template manager instance&quot;&quot;&quot;</span>
+        <span class="c1"># This would be implemented when template manager is needed</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Template manager implementation not yet available&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PresentationViewFactory.create_validator">
+<a class="viewcode-back" href="../../api/factories.presentation_factory.html#factories.presentation_factory.PresentationViewFactory.create_validator">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_validator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IViewValidator</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a presentation validator instance&quot;&quot;&quot;</span>
+        <span class="c1"># This would be implemented when validation functionality is needed</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;View validator implementation not yet available&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PresentationViewFactory.get_supported_styles">
+<a class="viewcode-back" href="../../api/factories.presentation_factory.html#factories.presentation_factory.PresentationViewFactory.get_supported_styles">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_supported_styles</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get list of supported presentation styles&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;professional&quot;</span><span class="p">,</span> <span class="s2">&quot;creative&quot;</span><span class="p">,</span> <span class="s2">&quot;minimalist&quot;</span><span class="p">,</span> <span class="s2">&quot;technical&quot;</span><span class="p">]</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="PresentationControllerFactory">
+<a class="viewcode-back" href="../../api/factories.presentation_factory.html#factories.presentation_factory.PresentationControllerFactory">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">PresentationControllerFactory</span><span class="p">(</span><span class="n">IPresentationControllerFactory</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Factory for creating controller layer instances&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PresentationControllerFactory.__init__">
+<a class="viewcode-back" href="../../api/factories.presentation_factory.html#factories.presentation_factory.PresentationControllerFactory.__init__">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_factory</span> <span class="o">=</span> <span class="n">PresentationModelFactory</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view_factory</span> <span class="o">=</span> <span class="n">PresentationViewFactory</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="PresentationControllerFactory.create_compiler">
+<a class="viewcode-back" href="../../api/factories.presentation_factory.html#factories.presentation_factory.PresentationControllerFactory.create_compiler">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_compiler</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">IPresentationModel</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">view</span><span class="p">:</span> <span class="n">IPresentationView</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IPresentationCompiler</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a presentation compiler instance&quot;&quot;&quot;</span>
+        <span class="c1"># Use provided instances or create new ones</span>
+        <span class="k">if</span> <span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_factory</span><span class="o">.</span><span class="n">create_model</span><span class="p">(</span><span class="o">**</span><span class="n">config</span><span class="p">)</span>
+
+        <span class="c1"># Note: view is typically created during compilation based on style</span>
+        <span class="k">return</span> <span class="n">PresentationCompiler</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">view</span><span class="o">=</span><span class="n">view</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PresentationControllerFactory.create_orchestrator">
+<a class="viewcode-back" href="../../api/factories.presentation_factory.html#factories.presentation_factory.PresentationControllerFactory.create_orchestrator">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_orchestrator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IPresentationOrchestrator</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an orchestrator instance&quot;&quot;&quot;</span>
+        <span class="c1"># This would be implemented when orchestrator functionality is needed</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Orchestrator implementation not yet available&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PresentationControllerFactory.create_quality_controller">
+<a class="viewcode-back" href="../../api/factories.presentation_factory.html#factories.presentation_factory.PresentationControllerFactory.create_quality_controller">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_quality_controller</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IQualityController</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a quality controller instance&quot;&quot;&quot;</span>
+        <span class="c1"># This would be implemented when quality control functionality is needed</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Quality controller implementation not yet available&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PresentationControllerFactory.create_async_compiler">
+<a class="viewcode-back" href="../../api/factories.presentation_factory.html#factories.presentation_factory.PresentationControllerFactory.create_async_compiler">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_async_compiler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an async compiler instance&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Async compiler implementation not yet available&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PresentationControllerFactory.create_batch_compiler">
+<a class="viewcode-back" href="../../api/factories.presentation_factory.html#factories.presentation_factory.PresentationControllerFactory.create_batch_compiler">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_batch_compiler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a batch compiler instance&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Batch compiler implementation not yet available&quot;</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="PresentationServiceProvider">
+<a class="viewcode-back" href="../../api/factories.presentation_factory.html#factories.presentation_factory.PresentationServiceProvider">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">PresentationServiceProvider</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main service provider for dependency injection&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PresentationServiceProvider.__init__">
+<a class="viewcode-back" href="../../api/factories.presentation_factory.html#factories.presentation_factory.PresentationServiceProvider.__init__">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_factory</span> <span class="o">=</span> <span class="n">PresentationModelFactory</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view_factory</span> <span class="o">=</span> <span class="n">PresentationViewFactory</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controller_factory</span> <span class="o">=</span> <span class="n">PresentationControllerFactory</span><span class="p">()</span>
+
+        <span class="c1"># Cache instances to support singleton pattern where needed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model_instance</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cached_views</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+
+<div class="viewcode-block" id="PresentationServiceProvider.get_model">
+<a class="viewcode-back" href="../../api/factories.presentation_factory.html#factories.presentation_factory.PresentationServiceProvider.get_model">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IPresentationModel</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get model instance (singleton)&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_model_instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_factory</span><span class="o">.</span><span class="n">create_model</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_instance</span></div>
+
+
+<div class="viewcode-block" id="PresentationServiceProvider.get_view">
+<a class="viewcode-back" href="../../api/factories.presentation_factory.html#factories.presentation_factory.PresentationServiceProvider.get_view">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_view</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">style</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">template_data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IPresentationView</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get view instance (cached by style)&quot;&quot;&quot;</span>
+        <span class="n">cache_key</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">style</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="nb">hash</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">template_data</span><span class="p">))</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">template_data</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;default&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">cache_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cached_views</span><span class="p">:</span>
+            <span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">template_data</span><span class="p">:</span>
+                <span class="n">config</span><span class="p">[</span><span class="s2">&quot;template_data&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">template_data</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cached_views</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">view_factory</span><span class="o">.</span><span class="n">create_view</span><span class="p">(</span>
+                <span class="n">style</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cached_views</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="PresentationServiceProvider.get_compiler">
+<a class="viewcode-back" href="../../api/factories.presentation_factory.html#factories.presentation_factory.PresentationServiceProvider.get_compiler">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_compiler</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">IPresentationModel</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">view</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">IPresentationView</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IPresentationCompiler</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get compiler instance&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller_factory</span><span class="o">.</span><span class="n">create_compiler</span><span class="p">(</span>
+            <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">view</span><span class="o">=</span><span class="n">view</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PresentationServiceProvider.create_configured_compiler">
+<a class="viewcode-back" href="../../api/factories.presentation_factory.html#factories.presentation_factory.PresentationServiceProvider.create_configured_compiler">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_configured_compiler</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">style</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;professional&quot;</span><span class="p">,</span>
+        <span class="n">template_data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IPresentationCompiler</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a fully configured compiler with all dependencies&quot;&quot;&quot;</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+        <span class="n">view</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_view</span><span class="p">(</span><span class="n">style</span><span class="p">,</span> <span class="n">template_data</span><span class="p">)</span>
+        <span class="n">compiler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_compiler</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">)</span>
+        <span class="n">compiler</span><span class="o">.</span><span class="n">set_view</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">compiler</span></div>
+
+
+<div class="viewcode-block" id="PresentationServiceProvider.cleanup">
+<a class="viewcode-back" href="../../api/factories.presentation_factory.html#factories.presentation_factory.PresentationServiceProvider.cleanup">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Cleanup cached instances&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cached_views</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_instance</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model_instance</span><span class="p">,</span> <span class="s2">&quot;cleanup&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_model_instance</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span></div>
+</div>
+
+
+
+<span class="c1"># Global service provider instance for backward compatibility</span>
+<span class="n">_service_provider</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="get_service_provider">
+<a class="viewcode-back" href="../../api/factories.presentation_factory.html#factories.presentation_factory.get_service_provider">[文档]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_service_provider</span><span class="p">(</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PresentationServiceProvider</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get global service provider instance&quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">_service_provider</span>
+    <span class="k">if</span> <span class="n">_service_provider</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_service_provider</span> <span class="o">=</span> <span class="n">PresentationServiceProvider</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_service_provider</span></div>
+
+
+
+<div class="viewcode-block" id="create_compiler_with_di">
+<a class="viewcode-back" href="../../api/factories.presentation_factory.html#factories.presentation_factory.create_compiler_with_di">[文档]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_compiler_with_di</span><span class="p">(</span>
+    <span class="n">style</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;professional&quot;</span><span class="p">,</span>
+    <span class="n">template_data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IPresentationCompiler</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convenience function to create compiler with dependency injection&quot;&quot;&quot;</span>
+    <span class="n">provider</span> <span class="o">=</span> <span class="n">get_service_provider</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">provider</span><span class="o">.</span><span class="n">create_configured_compiler</span><span class="p">(</span><span class="n">style</span><span class="p">,</span> <span class="n">template_data</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, AI PPT Assistant Team。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

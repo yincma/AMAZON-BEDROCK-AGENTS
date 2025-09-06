@@ -1,0 +1,913 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>utils.enhanced_config_manager &mdash; AI PPT Assistant 1.0.0 文档</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=3bd3f67c" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=34088549"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=fd10adb8"></script>
+      <script src="../../_static/translations.js?v=beaddf03"></script>
+      <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs"></script>
+      <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs"></script>
+      <script type="module">mermaid.initialize({startOnLoad:true});</script>
+      <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+      <script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs";
+window.addEventListener("load", () => mermaid.run());
+</script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="搜索" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AI PPT Assistant
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">用户指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/installation.html">安装指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/quickstart.html">快速开始</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">架构设计</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/architecture.html">系统架构</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">现有文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/api.html">API文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/api.html#ai-ppt-assistant-api-documentation">AI PPT Assistant API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/deployment.html">部署文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/deployment.html#ai-ppt-assistant-deployment-guide">AI PPT Assistant - Deployment Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/deployment-checklist.html">部署检查清单</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/deployment-checklist.html#ai-ppt-assistant-deployment-checklist">AI PPT Assistant - Deployment Checklist</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/config-migration.html">配置迁移指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/config-migration.html#config">🔧 环境变量到Config文件迁移指南</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AI PPT Assistant</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">模块代码</a></li>
+          <li class="breadcrumb-item"><a href="../utils.html">utils</a></li>
+      <li class="breadcrumb-item active">utils.enhanced_config_manager</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>utils.enhanced_config_manager 源代码</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Enhanced Configuration Manager - AI PPT Assistant</span>
+<span class="sd">Supports both YAML configuration files and environment variables</span>
+<span class="sd">Provides seamless migration path from env vars to config files</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">asdict</span><span class="p">,</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">boto3</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">aws_lambda_powertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+
+    <span class="n">YAML_AVAILABLE</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">YAML_AVAILABLE</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PyYAML not installed. Run: pip install PyYAML&quot;</span><span class="p">)</span>
+
+<span class="c1"># Add parent directory to path for imports</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))))</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ConfigSource">
+<a class="viewcode-back" href="../../api/utils.enhanced_config_manager.html#utils.enhanced_config_manager.ConfigSource">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConfigSource</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration source types&quot;&quot;&quot;</span>
+
+    <span class="n">CONFIG_FILE</span> <span class="o">=</span> <span class="s2">&quot;config_file&quot;</span>
+    <span class="n">ENVIRONMENT</span> <span class="o">=</span> <span class="s2">&quot;environment&quot;</span>
+    <span class="n">SSM</span> <span class="o">=</span> <span class="s2">&quot;ssm&quot;</span>
+    <span class="n">SECRETS_MANAGER</span> <span class="o">=</span> <span class="s2">&quot;secrets_manager&quot;</span>
+    <span class="n">DEFAULT</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="EnhancedAWSConfig">
+<a class="viewcode-back" href="../../api/utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedAWSConfig">[文档]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EnhancedAWSConfig</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enhanced AWS configuration&quot;&quot;&quot;</span>
+
+    <span class="n">region</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;us-east-1&quot;</span>
+    <span class="n">profile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">role_arn</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="S3Config">
+<a class="viewcode-back" href="../../api/utils.enhanced_config_manager.html#utils.enhanced_config_manager.S3Config">[文档]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">S3Config</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;S3 service configuration&quot;&quot;&quot;</span>
+
+    <span class="n">bucket</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">templates_bucket</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">lifecycle</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;transition_to_ia_days&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+            <span class="s2">&quot;transition_to_glacier_days&quot;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span>
+            <span class="s2">&quot;expiration_days&quot;</span><span class="p">:</span> <span class="mi">365</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="DynamoDBConfig">
+<a class="viewcode-back" href="../../api/utils.enhanced_config_manager.html#utils.enhanced_config_manager.DynamoDBConfig">[文档]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DynamoDBConfig</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;DynamoDB service configuration&quot;&quot;&quot;</span>
+
+    <span class="n">table</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">checkpoints_table</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">billing_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;PAY_PER_REQUEST&quot;</span>
+    <span class="n">ttl_days</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span></div>
+
+
+
+<div class="viewcode-block" id="BedrockConfig">
+<a class="viewcode-back" href="../../api/utils.enhanced_config_manager.html#utils.enhanced_config_manager.BedrockConfig">[文档]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BedrockConfig</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Bedrock AI service configuration&quot;&quot;&quot;</span>
+
+    <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;anthropic.claude-4-0&quot;</span>
+    <span class="n">nova_model_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;amazon.nova-canvas-v1:0&quot;</span>
+    <span class="n">orchestrator_agent_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">content_agent_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">visual_agent_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">compiler_agent_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="LambdaConfig">
+<a class="viewcode-back" href="../../api/utils.enhanced_config_manager.html#utils.enhanced_config_manager.LambdaConfig">[文档]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LambdaConfig</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Lambda function configuration&quot;&quot;&quot;</span>
+
+    <span class="n">memory_sizes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;create_outline&quot;</span><span class="p">:</span> <span class="mi">1024</span><span class="p">,</span>
+            <span class="s2">&quot;generate_content&quot;</span><span class="p">:</span> <span class="mi">2048</span><span class="p">,</span>
+            <span class="s2">&quot;generate_image&quot;</span><span class="p">:</span> <span class="mi">1024</span><span class="p">,</span>
+            <span class="s2">&quot;compile_pptx&quot;</span><span class="p">:</span> <span class="mi">2048</span><span class="p">,</span>
+            <span class="s2">&quot;api_endpoints&quot;</span><span class="p">:</span> <span class="mi">512</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">timeouts</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;create_outline&quot;</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>
+            <span class="s2">&quot;generate_content&quot;</span><span class="p">:</span> <span class="mi">120</span><span class="p">,</span>
+            <span class="s2">&quot;generate_image&quot;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span>
+            <span class="s2">&quot;compile_pptx&quot;</span><span class="p">:</span> <span class="mi">180</span><span class="p">,</span>
+            <span class="s2">&quot;api_endpoints&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">reserved_concurrency</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;create_outline&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="s2">&quot;generate_content&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+            <span class="s2">&quot;generate_image&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+            <span class="s2">&quot;compile_pptx&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="s2">&quot;api_endpoints&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="EnhancedPerformanceConfig">
+<a class="viewcode-back" href="../../api/utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedPerformanceConfig">[文档]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EnhancedPerformanceConfig</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enhanced performance configuration&quot;&quot;&quot;</span>
+
+    <span class="n">lambda_config</span><span class="p">:</span> <span class="n">LambdaConfig</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">LambdaConfig</span><span class="p">)</span>
+    <span class="n">max_concurrent_downloads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">max_concurrent_images</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">max_concurrent_slides</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">image_download_timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span>
+    <span class="n">cache_ttl_seconds</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3600</span>
+    <span class="n">max_slides</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="n">min_slides</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">max_image_size_mb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span></div>
+
+
+
+<div class="viewcode-block" id="EnhancedSecurityConfig">
+<a class="viewcode-back" href="../../api/utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedSecurityConfig">[文档]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EnhancedSecurityConfig</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enhanced security configuration&quot;&quot;&quot;</span>
+
+    <span class="n">vpc_enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">vpc_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">encryption_enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">api_rate_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span>
+    <span class="n">enable_rekognition</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">external_apis</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;pexels_api_key&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;pixabay_api_key&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;unsplash_access_key&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="MonitoringConfig">
+<a class="viewcode-back" href="../../api/utils.enhanced_config_manager.html#utils.enhanced_config_manager.MonitoringConfig">[文档]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MonitoringConfig</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Monitoring and observability configuration&quot;&quot;&quot;</span>
+
+    <span class="n">log_level</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;INFO&quot;</span>
+    <span class="n">enable_xray</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">log_retention_days</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span>
+    <span class="n">enable_monitoring</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">alert_email</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="FeatureFlagsConfig">
+<a class="viewcode-back" href="../../api/utils.enhanced_config_manager.html#utils.enhanced_config_manager.FeatureFlagsConfig">[文档]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FeatureFlagsConfig</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Feature flags configuration&quot;&quot;&quot;</span>
+
+    <span class="n">enable_speaker_notes</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">enable_image_generation</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">enable_image_search</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">enable_batch_processing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">enable_caching</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+
+
+<div class="viewcode-block" id="ProjectMetadata">
+<a class="viewcode-back" href="../../api/utils.enhanced_config_manager.html#utils.enhanced_config_manager.ProjectMetadata">[文档]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ProjectMetadata</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Project metadata&quot;&quot;&quot;</span>
+
+    <span class="n">project_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ai-ppt-assistant&quot;</span>
+    <span class="n">environment</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;dev&quot;</span>
+    <span class="n">version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;1.0.0&quot;</span>
+    <span class="n">maintainer</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ai-team&quot;</span>
+    <span class="n">last_updated</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="EnhancedConfigManager">
+<a class="viewcode-back" href="../../api/utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedConfigManager">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EnhancedConfigManager</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enhanced Configuration Manager supporting YAML files and environment variables</span>
+
+<span class="sd">    Features:</span>
+<span class="sd">    - YAML configuration file support with environment-specific overrides</span>
+<span class="sd">    - Backward compatibility with environment variables</span>
+<span class="sd">    - SSM Parameter Store and Secrets Manager integration</span>
+<span class="sd">    - Variable interpolation (${ENV:VAR}, ${SSM:path}, ${SECRET:name})</span>
+<span class="sd">    - Configuration validation and type conversion</span>
+<span class="sd">    - Caching for performance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EnhancedConfigManager.__init__">
+<a class="viewcode-back" href="../../api/utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedConfigManager.__init__">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environment</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;dev&quot;</span><span class="p">,</span> <span class="n">config_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">environment</span> <span class="o">=</span> <span class="n">environment</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config_dir</span> <span class="o">=</span> <span class="n">config_dir</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_config_directory</span><span class="p">()</span>
+
+        <span class="c1"># AWS clients for remote config sources</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aws_region</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;AWS_REGION&quot;</span><span class="p">,</span> <span class="s2">&quot;us-east-1&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ssm_client</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s2">&quot;ssm&quot;</span><span class="p">,</span> <span class="n">region_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">aws_region</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">secrets_client</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span>
+            <span class="s2">&quot;secretsmanager&quot;</span><span class="p">,</span> <span class="n">region_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">aws_region</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Configuration cache</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Load configuration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_configuration</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_find_config_directory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find configuration directory relative to the project root&quot;&quot;&quot;</span>
+        <span class="n">current_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span>
+        <span class="n">config_path</span> <span class="o">=</span> <span class="n">current_path</span> <span class="o">/</span> <span class="s2">&quot;config&quot;</span>
+
+        <span class="k">if</span> <span class="n">config_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">config_path</span><span class="p">)</span>
+
+        <span class="c1"># Fallback to creating config directory</span>
+        <span class="n">config_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">config_path</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load configuration from YAML files with environment override&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">YAML_AVAILABLE</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;YAML support not available, falling back to environment variables only&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">config_data</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Load default configuration</span>
+        <span class="n">default_config_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config_dir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;default.yaml&quot;</span>
+        <span class="k">if</span> <span class="n">default_config_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">default_config_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">default_config</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">default_config</span><span class="p">:</span>
+                    <span class="n">config_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deep_merge</span><span class="p">(</span><span class="n">config_data</span><span class="p">,</span> <span class="n">default_config</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Loaded default configuration from </span><span class="si">{</span><span class="n">default_config_path</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+
+        <span class="c1"># Load environment-specific configuration</span>
+        <span class="n">env_config_path</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config_dir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;environments&quot;</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">environment</span><span class="si">}</span><span class="s2">.yaml&quot;</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">env_config_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">env_config_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">env_config</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">env_config</span><span class="p">:</span>
+                    <span class="n">config_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deep_merge</span><span class="p">(</span><span class="n">config_data</span><span class="p">,</span> <span class="n">env_config</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Loaded environment configuration from </span><span class="si">{</span><span class="n">env_config_path</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+
+        <span class="c1"># Interpolate variables (${ENV:VAR}, ${SSM:path}, ${SECRET:name})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interpolate_variables</span><span class="p">(</span><span class="n">config_data</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Configuration loaded for environment: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">environment</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_deep_merge</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">base</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">override</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Deep merge two dictionaries, with override taking precedence&quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">override</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">key</span> <span class="ow">in</span> <span class="n">result</span>
+                <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">dict</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deep_merge</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">value</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_interpolate_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Interpolate variables in configuration values&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interpolate_variables</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_interpolate_variables</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">config</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interpolate_string</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">config</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_interpolate_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Interpolate variables in a string value&quot;&quot;&quot;</span>
+        <span class="c1"># Environment variable pattern: ${ENV:VARIABLE_NAME}</span>
+        <span class="n">env_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\$\{ENV:([^}]+)\}&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">env_pattern</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="n">value</span><span class="p">)</span>
+
+        <span class="c1"># SSM parameter pattern: ${SSM:/path/to/parameter}</span>
+        <span class="n">ssm_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\$\{SSM:([^}]+)\}&quot;</span>
+        <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">ssm_pattern</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+            <span class="n">ssm_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_ssm_parameter</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">ssm_value</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">ssm_value</span><span class="p">)</span>
+
+        <span class="c1"># Secrets Manager pattern: ${SECRET:secret-name}</span>
+        <span class="n">secret_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\$\{SECRET:([^}]+)\}&quot;</span>
+        <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">secret_pattern</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+            <span class="n">secret_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_secret</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">secret_value</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">secret_value</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">value</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_ssm_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameter_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get parameter from SSM Parameter Store&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ssm_client</span><span class="o">.</span><span class="n">get_parameter</span><span class="p">(</span>
+                <span class="n">Name</span><span class="o">=</span><span class="n">parameter_path</span><span class="p">,</span> <span class="n">WithDecryption</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;Parameter&quot;</span><span class="p">][</span><span class="s2">&quot;Value&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not retrieve SSM parameter </span><span class="si">{</span><span class="n">parameter_path</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_secret</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">secret_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get secret from AWS Secrets Manager&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">secrets_client</span><span class="o">.</span><span class="n">get_secret_value</span><span class="p">(</span><span class="n">SecretId</span><span class="o">=</span><span class="n">secret_name</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;SecretString&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not retrieve secret </span><span class="si">{</span><span class="n">secret_name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="EnhancedConfigManager.get_value">
+<a class="viewcode-back" href="../../api/utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedConfigManager.get_value">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_value</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">fallback_env_var</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get configuration value by dot-notation path</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path: Dot-notation path (e.g., &#39;aws.region&#39;, &#39;services.s3.bucket&#39;)</span>
+<span class="sd">            default: Default value if not found</span>
+<span class="sd">            fallback_env_var: Environment variable to check if config value not found</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Configuration value or default</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Try config file first</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config_data</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">value</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+            <span class="k">pass</span>
+
+        <span class="c1"># Fallback to environment variable</span>
+        <span class="k">if</span> <span class="n">fallback_env_var</span><span class="p">:</span>
+            <span class="n">env_value</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fallback_env_var</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">env_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">env_value</span>
+
+        <span class="k">return</span> <span class="n">default</span></div>
+
+
+<div class="viewcode-block" id="EnhancedConfigManager.get_aws_config">
+<a class="viewcode-back" href="../../api/utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedConfigManager.get_aws_config">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_aws_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EnhancedAWSConfig</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get AWS configuration&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;aws_config&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;aws_config&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">EnhancedAWSConfig</span><span class="p">(</span>
+                <span class="n">region</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;aws.region&quot;</span><span class="p">,</span> <span class="n">fallback_env_var</span><span class="o">=</span><span class="s2">&quot;AWS_REGION&quot;</span><span class="p">)</span>
+                <span class="ow">or</span> <span class="s2">&quot;us-east-1&quot;</span><span class="p">,</span>
+                <span class="n">profile</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;aws.profile&quot;</span><span class="p">,</span> <span class="n">fallback_env_var</span><span class="o">=</span><span class="s2">&quot;AWS_PROFILE&quot;</span><span class="p">),</span>
+                <span class="n">role_arn</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;aws.role_arn&quot;</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;aws_config&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="EnhancedConfigManager.get_s3_config">
+<a class="viewcode-back" href="../../api/utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedConfigManager.get_s3_config">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_s3_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">S3Config</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get S3 configuration&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;s3_config&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;s3_config&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">S3Config</span><span class="p">(</span>
+                <span class="n">bucket</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="s2">&quot;services.s3.bucket&quot;</span><span class="p">,</span> <span class="n">fallback_env_var</span><span class="o">=</span><span class="s2">&quot;S3_BUCKET&quot;</span>
+                <span class="p">)</span>
+                <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="n">templates_bucket</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="s2">&quot;services.s3.templates_bucket&quot;</span><span class="p">,</span> <span class="n">fallback_env_var</span><span class="o">=</span><span class="s2">&quot;TEMPLATES_BUCKET&quot;</span>
+                <span class="p">)</span>
+                <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="n">lifecycle</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;services.s3.lifecycle&quot;</span><span class="p">,</span> <span class="p">{}),</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;s3_config&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="EnhancedConfigManager.get_dynamodb_config">
+<a class="viewcode-back" href="../../api/utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedConfigManager.get_dynamodb_config">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_dynamodb_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DynamoDBConfig</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get DynamoDB configuration&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;dynamodb_config&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;dynamodb_config&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">DynamoDBConfig</span><span class="p">(</span>
+                <span class="n">table</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="s2">&quot;services.dynamodb.table&quot;</span><span class="p">,</span> <span class="n">fallback_env_var</span><span class="o">=</span><span class="s2">&quot;DYNAMODB_TABLE&quot;</span>
+                <span class="p">)</span>
+                <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="n">checkpoints_table</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="s2">&quot;services.dynamodb.checkpoints_table&quot;</span><span class="p">,</span>
+                    <span class="n">fallback_env_var</span><span class="o">=</span><span class="s2">&quot;CHECKPOINTS_TABLE&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="n">billing_mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="s2">&quot;services.dynamodb.billing_mode&quot;</span><span class="p">,</span> <span class="s2">&quot;PAY_PER_REQUEST&quot;</span>
+                <span class="p">),</span>
+                <span class="n">ttl_days</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;services.dynamodb.ttl_days&quot;</span><span class="p">,</span> <span class="mi">30</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;dynamodb_config&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="EnhancedConfigManager.get_bedrock_config">
+<a class="viewcode-back" href="../../api/utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedConfigManager.get_bedrock_config">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_bedrock_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BedrockConfig</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get Bedrock configuration&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;bedrock_config&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;bedrock_config&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">BedrockConfig</span><span class="p">(</span>
+                <span class="n">model_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="s2">&quot;services.bedrock.model_id&quot;</span><span class="p">,</span> <span class="n">fallback_env_var</span><span class="o">=</span><span class="s2">&quot;BEDROCK_MODEL_ID&quot;</span>
+                <span class="p">)</span>
+                <span class="ow">or</span> <span class="s2">&quot;anthropic.claude-4-0&quot;</span><span class="p">,</span>
+                <span class="n">nova_model_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="s2">&quot;services.bedrock.nova_model_id&quot;</span><span class="p">,</span> <span class="n">fallback_env_var</span><span class="o">=</span><span class="s2">&quot;NOVA_MODEL_ID&quot;</span>
+                <span class="p">)</span>
+                <span class="ow">or</span> <span class="s2">&quot;amazon.nova-canvas-v1:0&quot;</span><span class="p">,</span>
+                <span class="n">orchestrator_agent_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="s2">&quot;services.bedrock.orchestrator_agent_id&quot;</span><span class="p">,</span>
+                    <span class="n">fallback_env_var</span><span class="o">=</span><span class="s2">&quot;ORCHESTRATOR_AGENT_ID&quot;</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">content_agent_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="s2">&quot;services.bedrock.content_agent_id&quot;</span><span class="p">,</span>
+                    <span class="n">fallback_env_var</span><span class="o">=</span><span class="s2">&quot;CONTENT_AGENT_ID&quot;</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">visual_agent_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="s2">&quot;services.bedrock.visual_agent_id&quot;</span><span class="p">,</span>
+                    <span class="n">fallback_env_var</span><span class="o">=</span><span class="s2">&quot;VISUAL_AGENT_ID&quot;</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">compiler_agent_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="s2">&quot;services.bedrock.compiler_agent_id&quot;</span><span class="p">,</span>
+                    <span class="n">fallback_env_var</span><span class="o">=</span><span class="s2">&quot;COMPILER_AGENT_ID&quot;</span><span class="p">,</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;bedrock_config&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="EnhancedConfigManager.get_performance_config">
+<a class="viewcode-back" href="../../api/utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedConfigManager.get_performance_config">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_performance_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EnhancedPerformanceConfig</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get performance configuration&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;performance_config&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">:</span>
+            <span class="n">lambda_config</span> <span class="o">=</span> <span class="n">LambdaConfig</span><span class="p">(</span>
+                <span class="n">memory_sizes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;performance.lambda.memory_sizes&quot;</span><span class="p">,</span> <span class="p">{}),</span>
+                <span class="n">timeouts</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;performance.lambda.timeouts&quot;</span><span class="p">,</span> <span class="p">{}),</span>
+                <span class="n">reserved_concurrency</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="s2">&quot;performance.lambda.reserved_concurrency&quot;</span><span class="p">,</span> <span class="p">{}</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;performance_config&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">EnhancedPerformanceConfig</span><span class="p">(</span>
+                <span class="n">lambda_config</span><span class="o">=</span><span class="n">lambda_config</span><span class="p">,</span>
+                <span class="n">max_concurrent_downloads</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="s2">&quot;performance.max_concurrent_downloads&quot;</span><span class="p">,</span>
+                    <span class="n">fallback_env_var</span><span class="o">=</span><span class="s2">&quot;MAX_CONCURRENT_DOWNLOADS&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="ow">or</span> <span class="mi">5</span><span class="p">,</span>
+                <span class="n">max_concurrent_images</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="s2">&quot;performance.max_concurrent_images&quot;</span><span class="p">,</span>
+                    <span class="n">fallback_env_var</span><span class="o">=</span><span class="s2">&quot;MAX_CONCURRENT_IMAGES&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="ow">or</span> <span class="mi">3</span><span class="p">,</span>
+                <span class="n">max_concurrent_slides</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="s2">&quot;performance.max_concurrent_slides&quot;</span><span class="p">,</span>
+                    <span class="n">fallback_env_var</span><span class="o">=</span><span class="s2">&quot;MAX_CONCURRENT_SLIDES&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="ow">or</span> <span class="mi">5</span><span class="p">,</span>
+                <span class="n">image_download_timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="s2">&quot;performance.image_download_timeout&quot;</span><span class="p">,</span>
+                    <span class="n">fallback_env_var</span><span class="o">=</span><span class="s2">&quot;IMAGE_DOWNLOAD_TIMEOUT&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="ow">or</span> <span class="mi">30</span><span class="p">,</span>
+                <span class="n">cache_ttl_seconds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="s2">&quot;performance.cache_ttl_seconds&quot;</span><span class="p">,</span>
+                    <span class="n">fallback_env_var</span><span class="o">=</span><span class="s2">&quot;CACHE_TTL_SECONDS&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="ow">or</span> <span class="mi">3600</span><span class="p">,</span>
+                <span class="n">max_slides</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="s2">&quot;performance.max_slides&quot;</span><span class="p">,</span> <span class="n">fallback_env_var</span><span class="o">=</span><span class="s2">&quot;MAX_SLIDES&quot;</span>
+                <span class="p">)</span>
+                <span class="ow">or</span> <span class="mi">20</span><span class="p">,</span>
+                <span class="n">min_slides</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="s2">&quot;performance.min_slides&quot;</span><span class="p">,</span> <span class="n">fallback_env_var</span><span class="o">=</span><span class="s2">&quot;MIN_SLIDES&quot;</span>
+                <span class="p">)</span>
+                <span class="ow">or</span> <span class="mi">5</span><span class="p">,</span>
+                <span class="n">max_image_size_mb</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="s2">&quot;performance.max_image_size_mb&quot;</span><span class="p">,</span>
+                    <span class="n">fallback_env_var</span><span class="o">=</span><span class="s2">&quot;MAX_IMAGE_SIZE_MB&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="ow">or</span> <span class="mi">10</span><span class="p">,</span>
+                <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="s2">&quot;performance.batch_size&quot;</span><span class="p">,</span> <span class="n">fallback_env_var</span><span class="o">=</span><span class="s2">&quot;BATCH_SIZE&quot;</span>
+                <span class="p">)</span>
+                <span class="ow">or</span> <span class="mi">3</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;performance_config&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="EnhancedConfigManager.get_security_config">
+<a class="viewcode-back" href="../../api/utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedConfigManager.get_security_config">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_security_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EnhancedSecurityConfig</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get security configuration&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;security_config&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;security_config&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">EnhancedSecurityConfig</span><span class="p">(</span>
+                <span class="n">vpc_enabled</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="s2">&quot;security.vpc_enabled&quot;</span><span class="p">,</span> <span class="n">fallback_env_var</span><span class="o">=</span><span class="s2">&quot;VPC_ENABLED&quot;</span>
+                <span class="p">)</span>
+                <span class="ow">or</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="n">vpc_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;security.vpc_id&quot;</span><span class="p">,</span> <span class="n">fallback_env_var</span><span class="o">=</span><span class="s2">&quot;VPC_ID&quot;</span><span class="p">),</span>
+                <span class="n">encryption_enabled</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;security.encryption_enabled&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+                <span class="n">api_rate_limit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="s2">&quot;security.api_rate_limit&quot;</span><span class="p">,</span> <span class="n">fallback_env_var</span><span class="o">=</span><span class="s2">&quot;API_RATE_LIMIT&quot;</span>
+                <span class="p">)</span>
+                <span class="ow">or</span> <span class="mi">100</span><span class="p">,</span>
+                <span class="n">enable_rekognition</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="s2">&quot;security.enable_rekognition&quot;</span><span class="p">,</span> <span class="n">fallback_env_var</span><span class="o">=</span><span class="s2">&quot;ENABLE_REKOGNITION&quot;</span>
+                <span class="p">)</span>
+                <span class="ow">or</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">external_apis</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;security.external_apis&quot;</span><span class="p">,</span> <span class="p">{}),</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;security_config&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="EnhancedConfigManager.get_monitoring_config">
+<a class="viewcode-back" href="../../api/utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedConfigManager.get_monitoring_config">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_monitoring_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MonitoringConfig</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get monitoring configuration&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;monitoring_config&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;monitoring_config&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">MonitoringConfig</span><span class="p">(</span>
+                <span class="n">log_level</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="s2">&quot;monitoring.log_level&quot;</span><span class="p">,</span> <span class="n">fallback_env_var</span><span class="o">=</span><span class="s2">&quot;LOG_LEVEL&quot;</span>
+                <span class="p">)</span>
+                <span class="ow">or</span> <span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
+                <span class="n">enable_xray</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;monitoring.enable_xray&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+                <span class="n">log_retention_days</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;monitoring.log_retention_days&quot;</span><span class="p">,</span> <span class="mi">30</span><span class="p">),</span>
+                <span class="n">enable_monitoring</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;monitoring.enable_monitoring&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+                <span class="n">alert_email</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="s2">&quot;monitoring.alert_email&quot;</span><span class="p">,</span> <span class="n">fallback_env_var</span><span class="o">=</span><span class="s2">&quot;ALERT_EMAIL&quot;</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;monitoring_config&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="EnhancedConfigManager.get_feature_flags">
+<a class="viewcode-back" href="../../api/utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedConfigManager.get_feature_flags">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_feature_flags</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FeatureFlagsConfig</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get feature flags configuration&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;feature_flags&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;feature_flags&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FeatureFlagsConfig</span><span class="p">(</span>
+                <span class="n">enable_speaker_notes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="s2">&quot;features.enable_speaker_notes&quot;</span><span class="p">,</span> <span class="kc">True</span>
+                <span class="p">),</span>
+                <span class="n">enable_image_generation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="s2">&quot;features.enable_image_generation&quot;</span><span class="p">,</span> <span class="kc">True</span>
+                <span class="p">),</span>
+                <span class="n">enable_image_search</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="s2">&quot;features.enable_image_search&quot;</span><span class="p">,</span> <span class="kc">True</span>
+                <span class="p">),</span>
+                <span class="n">enable_batch_processing</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="s2">&quot;features.enable_batch_processing&quot;</span><span class="p">,</span> <span class="kc">True</span>
+                <span class="p">),</span>
+                <span class="n">enable_caching</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;features.enable_caching&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;feature_flags&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="EnhancedConfigManager.get_project_metadata">
+<a class="viewcode-back" href="../../api/utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedConfigManager.get_project_metadata">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_project_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProjectMetadata</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get project metadata&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;project_metadata&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;project_metadata&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ProjectMetadata</span><span class="p">(</span>
+                <span class="n">project_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="s2">&quot;metadata.project_name&quot;</span><span class="p">,</span> <span class="n">fallback_env_var</span><span class="o">=</span><span class="s2">&quot;PROJECT_NAME&quot;</span>
+                <span class="p">)</span>
+                <span class="ow">or</span> <span class="s2">&quot;ai-ppt-assistant&quot;</span><span class="p">,</span>
+                <span class="n">environment</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">environment</span><span class="p">,</span>
+                <span class="n">version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;metadata.version&quot;</span><span class="p">,</span> <span class="s2">&quot;1.0.0&quot;</span><span class="p">),</span>
+                <span class="n">maintainer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;metadata.maintainer&quot;</span><span class="p">,</span> <span class="s2">&quot;ai-team&quot;</span><span class="p">),</span>
+                <span class="n">last_updated</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;metadata.last_updated&quot;</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;project_metadata&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="EnhancedConfigManager.get_all_config">
+<a class="viewcode-back" href="../../api/utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedConfigManager.get_all_config">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_all_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get complete configuration as dictionary&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;aws&quot;</span><span class="p">:</span> <span class="n">asdict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_aws_config</span><span class="p">()),</span>
+            <span class="s2">&quot;s3&quot;</span><span class="p">:</span> <span class="n">asdict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_s3_config</span><span class="p">()),</span>
+            <span class="s2">&quot;dynamodb&quot;</span><span class="p">:</span> <span class="n">asdict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_dynamodb_config</span><span class="p">()),</span>
+            <span class="s2">&quot;bedrock&quot;</span><span class="p">:</span> <span class="n">asdict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_bedrock_config</span><span class="p">()),</span>
+            <span class="s2">&quot;performance&quot;</span><span class="p">:</span> <span class="n">asdict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_performance_config</span><span class="p">()),</span>
+            <span class="s2">&quot;security&quot;</span><span class="p">:</span> <span class="n">asdict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_security_config</span><span class="p">()),</span>
+            <span class="s2">&quot;monitoring&quot;</span><span class="p">:</span> <span class="n">asdict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_monitoring_config</span><span class="p">()),</span>
+            <span class="s2">&quot;features&quot;</span><span class="p">:</span> <span class="n">asdict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_feature_flags</span><span class="p">()),</span>
+            <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="n">asdict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_project_metadata</span><span class="p">()),</span>
+        <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="EnhancedConfigManager.validate_configuration">
+<a class="viewcode-back" href="../../api/utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedConfigManager.validate_configuration">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate all configuration and return validation report&quot;&quot;&quot;</span>
+        <span class="n">report</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;valid&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;warnings&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+
+        <span class="c1"># Validate required configurations</span>
+        <span class="n">aws_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_aws_config</span><span class="p">()</span>
+        <span class="n">s3_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_s3_config</span><span class="p">()</span>
+        <span class="n">dynamodb_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_dynamodb_config</span><span class="p">()</span>
+        <span class="n">bedrock_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_bedrock_config</span><span class="p">()</span>
+
+        <span class="c1"># AWS Region validation</span>
+        <span class="k">if</span> <span class="n">aws_config</span><span class="o">.</span><span class="n">region</span><span class="p">:</span>
+            <span class="n">report</span><span class="p">[</span><span class="s2">&quot;valid&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AWS Region: </span><span class="si">{</span><span class="n">aws_config</span><span class="o">.</span><span class="n">region</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">report</span><span class="p">[</span><span class="s2">&quot;errors&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;AWS Region is required&quot;</span><span class="p">)</span>
+
+        <span class="c1"># S3 bucket validation</span>
+        <span class="k">if</span> <span class="n">s3_config</span><span class="o">.</span><span class="n">bucket</span><span class="p">:</span>
+            <span class="n">report</span><span class="p">[</span><span class="s2">&quot;valid&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;S3 Bucket: </span><span class="si">{</span><span class="n">s3_config</span><span class="o">.</span><span class="n">bucket</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">report</span><span class="p">[</span><span class="s2">&quot;errors&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;S3 bucket name is required&quot;</span><span class="p">)</span>
+
+        <span class="c1"># DynamoDB table validation</span>
+        <span class="k">if</span> <span class="n">dynamodb_config</span><span class="o">.</span><span class="n">table</span><span class="p">:</span>
+            <span class="n">report</span><span class="p">[</span><span class="s2">&quot;valid&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DynamoDB Table: </span><span class="si">{</span><span class="n">dynamodb_config</span><span class="o">.</span><span class="n">table</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">report</span><span class="p">[</span><span class="s2">&quot;errors&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;DynamoDB table name is required&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Bedrock model validation</span>
+        <span class="k">if</span> <span class="n">bedrock_config</span><span class="o">.</span><span class="n">model_id</span><span class="p">:</span>
+            <span class="n">report</span><span class="p">[</span><span class="s2">&quot;valid&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Bedrock Model: </span><span class="si">{</span><span class="n">bedrock_config</span><span class="o">.</span><span class="n">model_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">report</span><span class="p">[</span><span class="s2">&quot;warnings&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;Bedrock model ID not specified, using default&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">report</span></div>
+
+
+<div class="viewcode-block" id="EnhancedConfigManager.reload_configuration">
+<a class="viewcode-back" href="../../api/utils.enhanced_config_manager.html#utils.enhanced_config_manager.EnhancedConfigManager.reload_configuration">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reload_configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reload configuration from files&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config_data</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_configuration</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Configuration reloaded&quot;</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="c1"># Global enhanced configuration manager instance</span>
+<span class="n">_enhanced_config_manager</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">EnhancedConfigManager</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="get_enhanced_config_manager">
+<a class="viewcode-back" href="../../api/utils.enhanced_config_manager.html#utils.enhanced_config_manager.get_enhanced_config_manager">[文档]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_enhanced_config_manager</span><span class="p">(</span>
+    <span class="n">environment</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">config_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EnhancedConfigManager</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get global enhanced configuration manager instance&quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">_enhanced_config_manager</span>
+
+    <span class="k">if</span> <span class="n">_enhanced_config_manager</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">environment</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">env</span> <span class="o">=</span> <span class="n">environment</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ENVIRONMENT&quot;</span><span class="p">,</span> <span class="s2">&quot;dev&quot;</span><span class="p">)</span>
+        <span class="n">_enhanced_config_manager</span> <span class="o">=</span> <span class="n">EnhancedConfigManager</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">config_dir</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_enhanced_config_manager</span></div>
+
+
+
+<span class="c1"># Convenience functions for backward compatibility</span>
+
+
+<div class="viewcode-block" id="get_enhanced_aws_config">
+<a class="viewcode-back" href="../../api/utils.enhanced_config_manager.html#utils.enhanced_config_manager.get_enhanced_aws_config">[文档]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_enhanced_aws_config</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">EnhancedAWSConfig</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get AWS configuration&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">get_enhanced_config_manager</span><span class="p">()</span><span class="o">.</span><span class="n">get_aws_config</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="get_enhanced_service_config">
+<a class="viewcode-back" href="../../api/utils.enhanced_config_manager.html#utils.enhanced_config_manager.get_enhanced_service_config">[文档]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_enhanced_service_config</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get all service configurations&quot;&quot;&quot;</span>
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">get_enhanced_config_manager</span><span class="p">()</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;s3&quot;</span><span class="p">:</span> <span class="n">manager</span><span class="o">.</span><span class="n">get_s3_config</span><span class="p">(),</span>
+        <span class="s2">&quot;dynamodb&quot;</span><span class="p">:</span> <span class="n">manager</span><span class="o">.</span><span class="n">get_dynamodb_config</span><span class="p">(),</span>
+        <span class="s2">&quot;bedrock&quot;</span><span class="p">:</span> <span class="n">manager</span><span class="o">.</span><span class="n">get_bedrock_config</span><span class="p">(),</span>
+    <span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="get_enhanced_performance_config">
+<a class="viewcode-back" href="../../api/utils.enhanced_config_manager.html#utils.enhanced_config_manager.get_enhanced_performance_config">[文档]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_enhanced_performance_config</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">EnhancedPerformanceConfig</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get performance configuration&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">get_enhanced_config_manager</span><span class="p">()</span><span class="o">.</span><span class="n">get_performance_config</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="log_enhanced_configuration_summary">
+<a class="viewcode-back" href="../../api/utils.enhanced_config_manager.html#utils.enhanced_config_manager.log_enhanced_configuration_summary">[文档]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">log_enhanced_configuration_summary</span><span class="p">(</span>
+    <span class="n">logger_instance</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Log enhanced configuration summary for debugging&quot;&quot;&quot;</span>
+    <span class="n">log</span> <span class="o">=</span> <span class="n">logger_instance</span> <span class="ow">or</span> <span class="n">logger</span>
+    <span class="n">all_config</span> <span class="o">=</span> <span class="n">get_enhanced_config_manager</span><span class="p">()</span><span class="o">.</span><span class="n">get_all_config</span><span class="p">()</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Enhanced Configuration Summary&quot;</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;config_summary&quot;</span><span class="p">:</span> <span class="n">all_config</span><span class="p">})</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, AI PPT Assistant Team。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

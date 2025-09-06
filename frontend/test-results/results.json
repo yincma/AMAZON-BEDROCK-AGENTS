@@ -1,0 +1,414 @@
+{
+  "config": {
+    "configFile": "/Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/frontend/playwright.config.ts",
+    "rootDir": "/Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/frontend/e2e",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": "/Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/frontend/e2e/global-setup.ts",
+    "globalTeardown": "/Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/frontend/e2e/global-teardown.ts",
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 5
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "playwright-report"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/results.json"
+        }
+      ],
+      [
+        "junit",
+        {
+          "outputFile": "test-results/junit.xml"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/frontend/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 5
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/frontend/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/frontend/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 5
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/frontend/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/frontend/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 5
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "/Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/frontend/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/frontend/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 5
+        },
+        "id": "Mobile Chrome",
+        "name": "Mobile Chrome",
+        "testDir": "/Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/frontend/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/frontend/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 5
+        },
+        "id": "Mobile Safari",
+        "name": "Mobile Safari",
+        "testDir": "/Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/frontend/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.55.0",
+    "workers": 5,
+    "webServer": {
+      "command": "npm run dev",
+      "url": "http://localhost:5173",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "tests/00-smoke.spec.ts",
+      "file": "tests/00-smoke.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Smoke Tests - 基础功能验证",
+          "file": "tests/00-smoke.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "应用程序能够正常启动",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 10653,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveTitle\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: \u001b[32m/AI PPT Generator/\u001b[39m\nReceived string:  \u001b[31m\"Vite + React + TS\"\u001b[39m\nTimeout: 10000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveTitle\" with timeout 10000ms\u001b[22m\n\u001b[2m    14 × unexpected value \"Vite + React + TS\"\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveTitle\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: \u001b[32m/AI PPT Generator/\u001b[39m\nReceived string:  \u001b[31m\"Vite + React + TS\"\u001b[39m\nTimeout: 10000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveTitle\" with timeout 10000ms\u001b[22m\n\u001b[2m    14 × unexpected value \"Vite + React + TS\"\u001b[22m\n\n    at /Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/frontend/e2e/tests/00-smoke.spec.ts:9:24",
+                        "location": {
+                          "file": "/Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/frontend/e2e/tests/00-smoke.spec.ts",
+                          "column": 24,
+                          "line": 9
+                        },
+                        "snippet": "   7 |\n   8 |     // 验证页面标题\n>  9 |     await expect(page).toHaveTitle(/AI PPT Generator/);\n     |                        ^\n  10 |\n  11 |     // 验证主要布局元素存在\n  12 |     const mainContent = page.locator('main, [role=\"main\"], #root, #app');"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/frontend/e2e/tests/00-smoke.spec.ts",
+                            "column": 24,
+                            "line": 9
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveTitle\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: \u001b[32m/AI PPT Generator/\u001b[39m\nReceived string:  \u001b[31m\"Vite + React + TS\"\u001b[39m\nTimeout: 10000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveTitle\" with timeout 10000ms\u001b[22m\n\u001b[2m    14 × unexpected value \"Vite + React + TS\"\u001b[22m\n\n\n   7 |\n   8 |     // 验证页面标题\n>  9 |     await expect(page).toHaveTitle(/AI PPT Generator/);\n     |                        ^\n  10 |\n  11 |     // 验证主要布局元素存在\n  12 |     const mainContent = page.locator('main, [role=\"main\"], #root, #app');\n    at /Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/frontend/e2e/tests/00-smoke.spec.ts:9:24"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-05T16:43:19.502Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/frontend/test-results/tests-00-smoke-Smoke-Tests---基础功能验证-应用程序能够正常启动-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/frontend/test-results/tests-00-smoke-Smoke-Tests---基础功能验证-应用程序能够正常启动-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/frontend/test-results/tests-00-smoke-Smoke-Tests---基础功能验证-应用程序能够正常启动-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/frontend/e2e/tests/00-smoke.spec.ts",
+                        "column": 24,
+                        "line": 9
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "8e2121c3dd59da7c8315-d89a30d57d5880eee9d5",
+              "file": "tests/00-smoke.spec.ts",
+              "line": 4,
+              "column": 3
+            },
+            {
+              "title": "基本导航和交互功能正常",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 919,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-05T16:43:19.523Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8e2121c3dd59da7c8315-bbc2727510bdfd342b72",
+              "file": "tests/00-smoke.spec.ts",
+              "line": 29,
+              "column": 3
+            },
+            {
+              "title": "响应式布局在不同设备上正常工作",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "failed",
+                      "duration": 11142,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('main, [role=\"main\"], #root, #app').first()\nExpected: visible\nReceived: hidden\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('main, [role=\"main\"], #root, #app').first()\u001b[22m\n\u001b[2m    14 × locator resolved to <div id=\"root\"></div>\u001b[22m\n\u001b[2m       - unexpected value \"hidden\"\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('main, [role=\"main\"], #root, #app').first()\nExpected: visible\nReceived: hidden\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('main, [role=\"main\"], #root, #app').first()\u001b[22m\n\u001b[2m    14 × locator resolved to <div id=\"root\"></div>\u001b[22m\n\u001b[2m       - unexpected value \"hidden\"\u001b[22m\n\n    at /Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/frontend/e2e/tests/00-smoke.spec.ts:50:39",
+                        "location": {
+                          "file": "/Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/frontend/e2e/tests/00-smoke.spec.ts",
+                          "column": 39,
+                          "line": 50
+                        },
+                        "snippet": "  48 |     \n  49 |     let mainContent = page.locator('main, [role=\"main\"], #root, #app');\n> 50 |     await expect(mainContent.first()).toBeVisible();\n     |                                       ^\n  51 |\n  52 |     // 测试平板尺寸\n  53 |     await page.setViewportSize({ width: 768, height: 1024 });"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/frontend/e2e/tests/00-smoke.spec.ts",
+                            "column": 39,
+                            "line": 50
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('main, [role=\"main\"], #root, #app').first()\nExpected: visible\nReceived: hidden\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('main, [role=\"main\"], #root, #app').first()\u001b[22m\n\u001b[2m    14 × locator resolved to <div id=\"root\"></div>\u001b[22m\n\u001b[2m       - unexpected value \"hidden\"\u001b[22m\n\n\n  48 |     \n  49 |     let mainContent = page.locator('main, [role=\"main\"], #root, #app');\n> 50 |     await expect(mainContent.first()).toBeVisible();\n     |                                       ^\n  51 |\n  52 |     // 测试平板尺寸\n  53 |     await page.setViewportSize({ width: 768, height: 1024 });\n    at /Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/frontend/e2e/tests/00-smoke.spec.ts:50:39"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-05T16:43:19.535Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/frontend/test-results/tests-00-smoke-Smoke-Tests---基础功能验证-响应式布局在不同设备上正常工作-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/frontend/test-results/tests-00-smoke-Smoke-Tests---基础功能验证-响应式布局在不同设备上正常工作-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/frontend/test-results/tests-00-smoke-Smoke-Tests---基础功能验证-响应式布局在不同设备上正常工作-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents/frontend/e2e/tests/00-smoke.spec.ts",
+                        "column": 39,
+                        "line": 50
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "8e2121c3dd59da7c8315-786e97d41fc790e5032f",
+              "file": "tests/00-smoke.spec.ts",
+              "line": 43,
+              "column": 3
+            },
+            {
+              "title": "页面加载性能满足基本要求",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 958,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-05T16:43:19.509Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8e2121c3dd59da7c8315-8bc5f2638e48a9d67701",
+              "file": "tests/00-smoke.spec.ts",
+              "line": 63,
+              "column": 3
+            },
+            {
+              "title": "基本的可访问性要求",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 4,
+                      "status": "passed",
+                      "duration": 919,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-05T16:43:19.507Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8e2121c3dd59da7c8315-ecd0bcc59987efce7101",
+              "file": "tests/00-smoke.spec.ts",
+              "line": 78,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-09-05T16:43:17.886Z",
+    "duration": 12920.352,
+    "expected": 3,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}

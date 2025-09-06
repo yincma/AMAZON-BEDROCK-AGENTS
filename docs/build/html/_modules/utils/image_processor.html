@@ -1,0 +1,710 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>utils.image_processor &mdash; AI PPT Assistant 1.0.0 文档</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=3bd3f67c" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=34088549"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=fd10adb8"></script>
+      <script src="../../_static/translations.js?v=beaddf03"></script>
+      <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs"></script>
+      <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs"></script>
+      <script type="module">mermaid.initialize({startOnLoad:true});</script>
+      <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+      <script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs";
+window.addEventListener("load", () => mermaid.run());
+</script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="搜索" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AI PPT Assistant
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">用户指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/installation.html">安装指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/quickstart.html">快速开始</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">架构设计</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/architecture.html">系统架构</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">现有文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/api.html">API文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/api.html#ai-ppt-assistant-api-documentation">AI PPT Assistant API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/deployment.html">部署文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/deployment.html#ai-ppt-assistant-deployment-guide">AI PPT Assistant - Deployment Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/deployment-checklist.html">部署检查清单</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/deployment-checklist.html#ai-ppt-assistant-deployment-checklist">AI PPT Assistant - Deployment Checklist</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/config-migration.html">配置迁移指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../existing/config-migration.html#config">🔧 环境变量到Config文件迁移指南</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AI PPT Assistant</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">模块代码</a></li>
+          <li class="breadcrumb-item"><a href="../utils.html">utils</a></li>
+      <li class="breadcrumb-item active">utils.image_processor</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>utils.image_processor 源代码</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Image Processing Utilities for AI PPT Assistant</span>
+<span class="sd">Handles image validation, processing, and management operations</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">base64</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">contextlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">io</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">urllib.parse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">boto3</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">aws_lambda_powertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span><span class="p">,</span> <span class="n">Metrics</span><span class="p">,</span> <span class="n">Tracer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">botocore.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClientError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PIL</span><span class="w"> </span><span class="kn">import</span> <span class="n">Image</span>
+
+<span class="c1"># Add parent directory to path for imports</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))))</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">utils.enhanced_config_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_enhanced_config_manager</span>
+
+<span class="c1"># Import timeout management</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">utils.timeout_manager</span><span class="w"> </span><span class="kn">import</span> <span class="ne">TimeoutError</span><span class="p">,</span> <span class="n">TimeoutManager</span>
+
+<span class="n">config_manager</span> <span class="o">=</span> <span class="n">get_enhanced_config_manager</span><span class="p">()</span>
+<span class="n">get_config</span> <span class="o">=</span> <span class="n">config_manager</span><span class="o">.</span><span class="n">get_value</span>
+
+<span class="c1"># Initialize AWS Lambda Powertools</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">()</span>
+<span class="n">tracer</span> <span class="o">=</span> <span class="n">Tracer</span><span class="p">()</span>
+<span class="n">metrics</span> <span class="o">=</span> <span class="n">Metrics</span><span class="p">()</span>
+
+<span class="c1"># Initialize AWS clients</span>
+<span class="n">s3</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s2">&quot;s3&quot;</span><span class="p">)</span>
+<span class="n">bedrock_runtime</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span>
+    <span class="s2">&quot;bedrock-runtime&quot;</span><span class="p">,</span> <span class="n">region_name</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;AWS_REGION&quot;</span><span class="p">,</span> <span class="s2">&quot;us-west-2&quot;</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="c1"># Environment variables</span>
+<span class="n">S3_BUCKET</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;S3_BUCKET&quot;</span><span class="p">,</span> <span class="n">get_config</span><span class="p">(</span><span class="s2">&quot;aws.s3.bucket&quot;</span><span class="p">))</span>
+<span class="n">NOVA_MODEL_ID</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;NOVA_MODEL_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;amazon.nova-canvas-v1:0&quot;</span><span class="p">)</span>
+<span class="n">MAX_IMAGE_SIZE_MB</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;MAX_IMAGE_SIZE_MB&quot;</span><span class="p">,</span> <span class="s2">&quot;10&quot;</span><span class="p">))</span>
+<span class="n">SUPPORTED_IMAGE_FORMATS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;PNG&quot;</span><span class="p">,</span> <span class="s2">&quot;JPEG&quot;</span><span class="p">,</span> <span class="s2">&quot;JPG&quot;</span><span class="p">,</span> <span class="s2">&quot;GIF&quot;</span><span class="p">,</span> <span class="s2">&quot;BMP&quot;</span><span class="p">,</span> <span class="s2">&quot;TIFF&quot;</span><span class="p">]</span>
+<span class="n">DEFAULT_IMAGE_SIZE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1920</span><span class="p">,</span> <span class="mi">1080</span><span class="p">)</span>  <span class="c1"># Default slide dimensions</span>
+
+
+<div class="viewcode-block" id="ImageAction">
+<a class="viewcode-back" href="../../api/utils.image_processor.html#utils.image_processor.ImageAction">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ImageAction</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Supported image actions&quot;&quot;&quot;</span>
+
+    <span class="n">REPLACE</span> <span class="o">=</span> <span class="s2">&quot;replace&quot;</span>
+    <span class="n">REGENERATE</span> <span class="o">=</span> <span class="s2">&quot;regenerate&quot;</span>
+    <span class="n">REMOVE</span> <span class="o">=</span> <span class="s2">&quot;remove&quot;</span>
+    <span class="n">REPOSITION</span> <span class="o">=</span> <span class="s2">&quot;reposition&quot;</span>
+    <span class="n">RESIZE</span> <span class="o">=</span> <span class="s2">&quot;resize&quot;</span>
+    <span class="n">ENHANCE</span> <span class="o">=</span> <span class="s2">&quot;enhance&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="ImageFormat">
+<a class="viewcode-back" href="../../api/utils.image_processor.html#utils.image_processor.ImageFormat">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ImageFormat</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Supported image formats&quot;&quot;&quot;</span>
+
+    <span class="n">PNG</span> <span class="o">=</span> <span class="s2">&quot;PNG&quot;</span>
+    <span class="n">JPEG</span> <span class="o">=</span> <span class="s2">&quot;JPEG&quot;</span>
+    <span class="n">WEBP</span> <span class="o">=</span> <span class="s2">&quot;WEBP&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="ImageMetadata">
+<a class="viewcode-back" href="../../api/utils.image_processor.html#utils.image_processor.ImageMetadata">[文档]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ImageMetadata</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Image metadata structure&quot;&quot;&quot;</span>
+
+    <span class="n">image_id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">original_url</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">s3_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="nb">format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;PNG&quot;</span>
+    <span class="n">width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">file_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">created_at</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">alt_text</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">position</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s2">&quot;height&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="ImageProcessingRequest">
+<a class="viewcode-back" href="../../api/utils.image_processor.html#utils.image_processor.ImageProcessingRequest">[文档]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ImageProcessingRequest</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Image processing request structure&quot;&quot;&quot;</span>
+
+    <span class="n">action</span><span class="p">:</span> <span class="n">ImageAction</span>
+    <span class="n">presentation_id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">slide_number</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">image_data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">image_url</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">generation_prompt</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">target_format</span><span class="p">:</span> <span class="n">ImageFormat</span> <span class="o">=</span> <span class="n">ImageFormat</span><span class="o">.</span><span class="n">PNG</span>
+    <span class="n">target_size</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEFAULT_IMAGE_SIZE</span>
+    <span class="n">quality</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">95</span>
+    <span class="n">enhancement_options</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">enhancement_options</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">enhancement_options</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+
+
+<div class="viewcode-block" id="ImageProcessor">
+<a class="viewcode-back" href="../../api/utils.image_processor.html#utils.image_processor.ImageProcessor">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ImageProcessor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main image processing class with comprehensive functionality&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ImageProcessor.__init__">
+<a class="viewcode-back" href="../../api/utils.image_processor.html#utils.image_processor.ImageProcessor.__init__">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout_manager</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TimeoutManager</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeout_manager</span> <span class="o">=</span> <span class="n">timeout_manager</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s3_client</span> <span class="o">=</span> <span class="n">s3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bedrock_client</span> <span class="o">=</span> <span class="n">bedrock_runtime</span></div>
+
+
+<div class="viewcode-block" id="ImageProcessor.process_image_request">
+<a class="viewcode-back" href="../../api/utils.image_processor.html#utils.image_processor.ImageProcessor.process_image_request">[文档]</a>
+    <span class="nd">@tracer</span><span class="o">.</span><span class="n">capture_method</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_image_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">ImageProcessingRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Process image modification request&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout_manager</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timeout_manager</span><span class="o">.</span><span class="n">check_timeout_status</span><span class="p">(</span><span class="s2">&quot;image_processing&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">timeout_manager</span><span class="o">.</span><span class="n">operation</span><span class="p">(</span><span class="s2">&quot;image_request_processing&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout_manager</span>
+                <span class="k">else</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">nullcontext</span><span class="p">()</span>
+            <span class="p">):</span>
+                <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="n">ImageAction</span><span class="o">.</span><span class="n">REPLACE</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_image_replacement</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">request</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="n">ImageAction</span><span class="o">.</span><span class="n">REGENERATE</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_image_regeneration</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">request</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="n">ImageAction</span><span class="o">.</span><span class="n">REMOVE</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_image_removal</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">request</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="n">ImageAction</span><span class="o">.</span><span class="n">REPOSITION</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_image_repositioning</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">request</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="n">ImageAction</span><span class="o">.</span><span class="n">RESIZE</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_image_resizing</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">request</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="n">ImageAction</span><span class="o">.</span><span class="n">ENHANCE</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_image_enhancement</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported image action: </span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">action</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">TimeoutError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Timeout during image processing: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;Image processing timeout&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;details&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span>
+            <span class="p">}</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error processing image request: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}</span></div>
+
+
+    <span class="nd">@tracer</span><span class="o">.</span><span class="n">capture_method</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_handle_image_replacement</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">ImageProcessingRequest</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle image replacement with uploaded or URL-based image&quot;&quot;&quot;</span>
+
+        <span class="n">image_data</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">image_data</span><span class="p">:</span>
+            <span class="n">image_data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">image_data</span>
+        <span class="k">elif</span> <span class="n">request</span><span class="o">.</span><span class="n">image_url</span><span class="p">:</span>
+            <span class="n">image_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_download_image_from_url</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">image_url</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;No image data or URL provided for replacement&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+
+        <span class="c1"># Validate and process image</span>
+        <span class="n">processed_image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_and_process_image</span><span class="p">(</span>
+            <span class="n">image_data</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">target_format</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">target_size</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">quality</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">processed_image</span><span class="p">[</span><span class="s2">&quot;success&quot;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">processed_image</span>
+
+        <span class="c1"># Generate S3 key and upload</span>
+        <span class="n">s3_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_s3_key</span><span class="p">(</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">presentation_id</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">slide_number</span><span class="p">,</span> <span class="s2">&quot;image&quot;</span>
+        <span class="p">)</span>
+        <span class="n">upload_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upload_to_s3</span><span class="p">(</span><span class="n">processed_image</span><span class="p">[</span><span class="s2">&quot;image_data&quot;</span><span class="p">],</span> <span class="n">s3_key</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">upload_result</span><span class="p">[</span><span class="s2">&quot;success&quot;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">upload_result</span>
+
+        <span class="c1"># Create metadata</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">ImageMetadata</span><span class="p">(</span>
+            <span class="n">image_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()),</span>
+            <span class="n">s3_key</span><span class="o">=</span><span class="n">s3_key</span><span class="p">,</span>
+            <span class="nb">format</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">target_format</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="n">width</span><span class="o">=</span><span class="n">processed_image</span><span class="p">[</span><span class="s2">&quot;width&quot;</span><span class="p">],</span>
+            <span class="n">height</span><span class="o">=</span><span class="n">processed_image</span><span class="p">[</span><span class="s2">&quot;height&quot;</span><span class="p">],</span>
+            <span class="n">file_size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">processed_image</span><span class="p">[</span><span class="s2">&quot;image_data&quot;</span><span class="p">]),</span>
+            <span class="n">created_at</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;replace&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;image_metadata&quot;</span><span class="p">:</span> <span class="n">metadata</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">,</span>
+            <span class="s2">&quot;s3_url&quot;</span><span class="p">:</span> <span class="n">upload_result</span><span class="p">[</span><span class="s2">&quot;s3_url&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Image successfully replaced&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="nd">@tracer</span><span class="o">.</span><span class="n">capture_method</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_handle_image_regeneration</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">ImageProcessingRequest</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle image regeneration using AWS Bedrock Nova&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">generation_prompt</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;Generation prompt required for image regeneration&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+
+        <span class="c1"># Generate image using Nova Canvas</span>
+        <span class="n">generated_image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_image_with_nova</span><span class="p">(</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">generation_prompt</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">target_size</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">generated_image</span><span class="p">[</span><span class="s2">&quot;success&quot;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">generated_image</span>
+
+        <span class="c1"># Process generated image</span>
+        <span class="n">processed_image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_and_process_image</span><span class="p">(</span>
+            <span class="n">generated_image</span><span class="p">[</span><span class="s2">&quot;image_data&quot;</span><span class="p">],</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">target_format</span><span class="p">,</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">target_size</span><span class="p">,</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">quality</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">processed_image</span><span class="p">[</span><span class="s2">&quot;success&quot;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">processed_image</span>
+
+        <span class="c1"># Upload to S3</span>
+        <span class="n">s3_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_s3_key</span><span class="p">(</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">presentation_id</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">slide_number</span><span class="p">,</span> <span class="s2">&quot;generated&quot;</span>
+        <span class="p">)</span>
+        <span class="n">upload_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upload_to_s3</span><span class="p">(</span><span class="n">processed_image</span><span class="p">[</span><span class="s2">&quot;image_data&quot;</span><span class="p">],</span> <span class="n">s3_key</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">upload_result</span><span class="p">[</span><span class="s2">&quot;success&quot;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">upload_result</span>
+
+        <span class="c1"># Create metadata</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">ImageMetadata</span><span class="p">(</span>
+            <span class="n">image_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()),</span>
+            <span class="n">s3_key</span><span class="o">=</span><span class="n">s3_key</span><span class="p">,</span>
+            <span class="nb">format</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">target_format</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="n">width</span><span class="o">=</span><span class="n">processed_image</span><span class="p">[</span><span class="s2">&quot;width&quot;</span><span class="p">],</span>
+            <span class="n">height</span><span class="o">=</span><span class="n">processed_image</span><span class="p">[</span><span class="s2">&quot;height&quot;</span><span class="p">],</span>
+            <span class="n">file_size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">processed_image</span><span class="p">[</span><span class="s2">&quot;image_data&quot;</span><span class="p">]),</span>
+            <span class="n">created_at</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+            <span class="n">alt_text</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Generated: </span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">generation_prompt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;regenerate&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;image_metadata&quot;</span><span class="p">:</span> <span class="n">metadata</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">,</span>
+            <span class="s2">&quot;s3_url&quot;</span><span class="p">:</span> <span class="n">upload_result</span><span class="p">[</span><span class="s2">&quot;s3_url&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;generation_prompt&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">generation_prompt</span><span class="p">,</span>
+            <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Image successfully regenerated&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="nd">@tracer</span><span class="o">.</span><span class="n">capture_method</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_handle_image_removal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">ImageProcessingRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle image removal from slide&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;remove&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Image removed from slide&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;slide_layout_update&quot;</span><span class="p">:</span> <span class="s2">&quot;content_only&quot;</span><span class="p">,</span>  <span class="c1"># Update layout to content-only</span>
+        <span class="p">}</span>
+
+    <span class="nd">@tracer</span><span class="o">.</span><span class="n">capture_method</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_handle_image_repositioning</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">ImageProcessingRequest</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle image repositioning within slide&quot;&quot;&quot;</span>
+
+        <span class="c1"># This would integrate with the slide layout system</span>
+        <span class="n">position_data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">enhancement_options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;position&quot;</span><span class="p">,</span> <span class="p">{})</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;reposition&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="n">position_data</span><span class="p">,</span>
+            <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Image position updated&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="nd">@tracer</span><span class="o">.</span><span class="n">capture_method</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_handle_image_resizing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">ImageProcessingRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle image resizing&quot;&quot;&quot;</span>
+
+        <span class="c1"># Get current image from slide data (this would need integration)</span>
+        <span class="c1"># For now, return success with resize parameters</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;resize&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;target_size&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">target_size</span><span class="p">,</span>
+            <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Image resized successfully&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="nd">@tracer</span><span class="o">.</span><span class="n">capture_method</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_handle_image_enhancement</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">ImageProcessingRequest</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle image enhancement (brightness, contrast, etc.)&quot;&quot;&quot;</span>
+
+        <span class="n">enhancement_options</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">enhancement_options</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;enhance&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;enhancements&quot;</span><span class="p">:</span> <span class="n">enhancement_options</span><span class="p">,</span>
+            <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Image enhanced successfully&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="nd">@tracer</span><span class="o">.</span><span class="n">capture_method</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_download_image_from_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Download image from URL with validation&quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Validate URL</span>
+            <span class="n">parsed_url</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlparse</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">parsed_url</span><span class="o">.</span><span class="n">scheme</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">parsed_url</span><span class="o">.</span><span class="n">netloc</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid URL provided&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Download with timeout</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="n">url</span><span class="p">,</span>
+                <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+                <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;User-Agent&quot;</span><span class="p">:</span> <span class="s2">&quot;AI-PPT-Assistant/1.0&quot;</span><span class="p">},</span>
+                <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+
+            <span class="c1"># Check content type</span>
+            <span class="n">content_type</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;content-type&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">content_type</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;image/&quot;</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;URL does not point to an image: </span><span class="si">{</span><span class="n">content_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Check file size</span>
+            <span class="n">content_length</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;content-length&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">content_length</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">content_length</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">MAX_IMAGE_SIZE_MB</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Image too large: </span><span class="si">{</span><span class="n">content_length</span><span class="si">}</span><span class="s2"> bytes&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Download in chunks</span>
+            <span class="n">image_data</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">iter_content</span><span class="p">(</span><span class="n">chunk_size</span><span class="o">=</span><span class="mi">8192</span><span class="p">):</span>
+                <span class="n">image_data</span> <span class="o">+=</span> <span class="n">chunk</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">image_data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">MAX_IMAGE_SIZE_MB</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Image too large&quot;</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">image_data</span>
+
+        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error downloading image from URL: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to download image: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="nd">@tracer</span><span class="o">.</span><span class="n">capture_method</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_and_process_image</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">image_data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span>
+        <span class="n">target_format</span><span class="p">:</span> <span class="n">ImageFormat</span><span class="p">,</span>
+        <span class="n">target_size</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">quality</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate and process image data&quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Open and validate image</span>
+            <span class="k">with</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">image_data</span><span class="p">))</span> <span class="k">as</span> <span class="n">img</span><span class="p">:</span>
+                <span class="c1"># Validate format</span>
+                <span class="k">if</span> <span class="n">img</span><span class="o">.</span><span class="n">format</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">SUPPORTED_IMAGE_FORMATS</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="p">{</span>
+                        <span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                        <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Unsupported format: </span><span class="si">{</span><span class="n">img</span><span class="o">.</span><span class="n">format</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="p">}</span>
+
+                <span class="c1"># Convert to RGB if necessary</span>
+                <span class="k">if</span> <span class="n">img</span><span class="o">.</span><span class="n">mode</span> <span class="o">!=</span> <span class="s2">&quot;RGB&quot;</span> <span class="ow">and</span> <span class="n">target_format</span> <span class="ow">in</span> <span class="p">[</span><span class="n">ImageFormat</span><span class="o">.</span><span class="n">JPEG</span><span class="p">]:</span>
+                    <span class="n">img</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s2">&quot;RGB&quot;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">img</span><span class="o">.</span><span class="n">mode</span> <span class="o">!=</span> <span class="s2">&quot;RGBA&quot;</span> <span class="ow">and</span> <span class="n">target_format</span> <span class="o">==</span> <span class="n">ImageFormat</span><span class="o">.</span><span class="n">PNG</span><span class="p">:</span>
+                    <span class="n">img</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s2">&quot;RGBA&quot;</span><span class="p">)</span>
+
+                <span class="c1"># Resize if needed</span>
+                <span class="n">original_size</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">size</span>
+                <span class="k">if</span> <span class="n">target_size</span> <span class="ow">and</span> <span class="n">target_size</span> <span class="o">!=</span> <span class="n">original_size</span><span class="p">:</span>
+                    <span class="c1"># Use high-quality resampling</span>
+                    <span class="n">img</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">target_size</span><span class="p">,</span> <span class="n">Image</span><span class="o">.</span><span class="n">Resampling</span><span class="o">.</span><span class="n">LANCZOS</span><span class="p">)</span>
+
+                <span class="c1"># Save processed image</span>
+                <span class="n">output_buffer</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">()</span>
+                <span class="n">save_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="n">target_format</span><span class="o">.</span><span class="n">value</span><span class="p">}</span>
+
+                <span class="k">if</span> <span class="n">target_format</span> <span class="o">==</span> <span class="n">ImageFormat</span><span class="o">.</span><span class="n">JPEG</span><span class="p">:</span>
+                    <span class="n">save_kwargs</span><span class="p">[</span><span class="s2">&quot;quality&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">quality</span>
+                    <span class="n">save_kwargs</span><span class="p">[</span><span class="s2">&quot;optimize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">elif</span> <span class="n">target_format</span> <span class="o">==</span> <span class="n">ImageFormat</span><span class="o">.</span><span class="n">PNG</span><span class="p">:</span>
+                    <span class="n">save_kwargs</span><span class="p">[</span><span class="s2">&quot;optimize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+                <span class="n">img</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_buffer</span><span class="p">,</span> <span class="o">**</span><span class="n">save_kwargs</span><span class="p">)</span>
+                <span class="n">processed_data</span> <span class="o">=</span> <span class="n">output_buffer</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+
+                <span class="k">return</span> <span class="p">{</span>
+                    <span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="s2">&quot;image_data&quot;</span><span class="p">:</span> <span class="n">processed_data</span><span class="p">,</span>
+                    <span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="n">img</span><span class="o">.</span><span class="n">width</span><span class="p">,</span>
+                    <span class="s2">&quot;height&quot;</span><span class="p">:</span> <span class="n">img</span><span class="o">.</span><span class="n">height</span><span class="p">,</span>
+                    <span class="s2">&quot;original_size&quot;</span><span class="p">:</span> <span class="n">original_size</span><span class="p">,</span>
+                    <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="n">target_format</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="p">}</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error processing image: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Image processing failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}</span>
+
+    <span class="nd">@tracer</span><span class="o">.</span><span class="n">capture_method</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_image_with_nova</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate image using Amazon Nova Canvas&quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Prepare request for Nova Canvas</span>
+            <span class="n">request_body</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;taskType&quot;</span><span class="p">:</span> <span class="s2">&quot;TEXT_IMAGE&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;textToImageParams&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">prompt</span><span class="p">,</span>
+                    <span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                    <span class="s2">&quot;height&quot;</span><span class="p">:</span> <span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                    <span class="s2">&quot;cfgScale&quot;</span><span class="p">:</span> <span class="mf">8.0</span><span class="p">,</span>  <span class="c1"># Guidance scale</span>
+                    <span class="s2">&quot;seed&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># Random seed</span>
+                    <span class="s2">&quot;numberOfImages&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">}</span>
+
+            <span class="c1"># Call Bedrock Nova Canvas</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bedrock_client</span><span class="o">.</span><span class="n">invoke_model</span><span class="p">(</span>
+                <span class="n">modelId</span><span class="o">=</span><span class="n">NOVA_MODEL_ID</span><span class="p">,</span>
+                <span class="n">contentType</span><span class="o">=</span><span class="s2">&quot;application/json&quot;</span><span class="p">,</span>
+                <span class="n">accept</span><span class="o">=</span><span class="s2">&quot;application/json&quot;</span><span class="p">,</span>
+                <span class="n">body</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">request_body</span><span class="p">),</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Parse response</span>
+            <span class="n">response_body</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;body&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+            <span class="k">if</span> <span class="s2">&quot;images&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">response_body</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">response_body</span><span class="p">[</span><span class="s2">&quot;images&quot;</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;No images generated&quot;</span><span class="p">}</span>
+
+            <span class="c1"># Get first generated image</span>
+            <span class="n">image_base64</span> <span class="o">=</span> <span class="n">response_body</span><span class="p">[</span><span class="s2">&quot;images&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">image_data</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span><span class="n">image_base64</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s2">&quot;image_data&quot;</span><span class="p">:</span> <span class="n">image_data</span><span class="p">,</span>
+                <span class="s2">&quot;generation_model&quot;</span><span class="p">:</span> <span class="n">NOVA_MODEL_ID</span><span class="p">,</span>
+                <span class="s2">&quot;prompt&quot;</span><span class="p">:</span> <span class="n">prompt</span><span class="p">,</span>
+            <span class="p">}</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error generating image with Nova: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Image generation failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}</span>
+
+    <span class="nd">@tracer</span><span class="o">.</span><span class="n">capture_method</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_upload_to_s3</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">s3_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Upload image to S3&quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">s3_client</span><span class="o">.</span><span class="n">put_object</span><span class="p">(</span>
+                <span class="n">Bucket</span><span class="o">=</span><span class="n">S3_BUCKET</span><span class="p">,</span>
+                <span class="n">Key</span><span class="o">=</span><span class="n">s3_key</span><span class="p">,</span>
+                <span class="n">Body</span><span class="o">=</span><span class="n">image_data</span><span class="p">,</span>
+                <span class="n">ContentType</span><span class="o">=</span><span class="s2">&quot;image/png&quot;</span><span class="p">,</span>  <span class="c1"># Default to PNG</span>
+                <span class="n">Metadata</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;uploaded_at&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+                    <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="n">get_config</span><span class="p">(</span><span class="s2">&quot;metadata.project_name&quot;</span><span class="p">,</span> <span class="s2">&quot;ai-ppt-assistant&quot;</span><span class="p">),</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+
+            <span class="n">s3_url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;s3://</span><span class="si">{</span><span class="n">S3_BUCKET</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">s3_key</span><span class="si">}</span><span class="s2">&quot;</span>
+
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;s3_key&quot;</span><span class="p">:</span> <span class="n">s3_key</span><span class="p">,</span> <span class="s2">&quot;s3_url&quot;</span><span class="p">:</span> <span class="n">s3_url</span><span class="p">}</span>
+
+        <span class="k">except</span> <span class="n">ClientError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error uploading to S3: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;S3 upload failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_s3_key</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">presentation_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slide_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">image_type</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate S3 key for image storage&quot;&quot;&quot;</span>
+
+        <span class="n">timestamp</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y/%m/</span><span class="si">%d</span><span class="s2">/%H%M%S&quot;</span><span class="p">)</span>
+        <span class="n">image_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())[:</span><span class="mi">8</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;presentations/</span><span class="si">{</span><span class="n">presentation_id</span><span class="si">}</span><span class="s2">/slides/</span><span class="si">{</span><span class="n">slide_number</span><span class="si">}</span><span class="s2">/images/</span><span class="si">{</span><span class="n">timestamp</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">image_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">image_id</span><span class="si">}</span><span class="s2">.png&quot;</span></div>
+
+
+
+<span class="c1"># Utility functions</span>
+<div class="viewcode-block" id="create_image_processor">
+<a class="viewcode-back" href="../../api/utils.image_processor.html#utils.image_processor.create_image_processor">[文档]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_image_processor</span><span class="p">(</span>
+    <span class="n">timeout_manager</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TimeoutManager</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ImageProcessor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create image processor instance&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">ImageProcessor</span><span class="p">(</span><span class="n">timeout_manager</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="process_visual_modification">
+<a class="viewcode-back" href="../../api/utils.image_processor.html#utils.image_processor.process_visual_modification">[文档]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">process_visual_modification</span><span class="p">(</span>
+    <span class="n">presentation_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">slide_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">visual_modifications</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">timeout_manager</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TimeoutManager</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Process visual modifications for slide&quot;&quot;&quot;</span>
+
+    <span class="n">processor</span> <span class="o">=</span> <span class="n">create_image_processor</span><span class="p">(</span><span class="n">timeout_manager</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">visual_modifications</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;action&quot;</span><span class="p">,</span> <span class="s2">&quot;replace&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Create processing request</span>
+        <span class="n">request</span> <span class="o">=</span> <span class="n">ImageProcessingRequest</span><span class="p">(</span>
+            <span class="n">action</span><span class="o">=</span><span class="n">ImageAction</span><span class="p">(</span><span class="n">action</span><span class="p">),</span>
+            <span class="n">presentation_id</span><span class="o">=</span><span class="n">presentation_id</span><span class="p">,</span>
+            <span class="n">slide_number</span><span class="o">=</span><span class="n">slide_number</span><span class="p">,</span>
+            <span class="n">image_url</span><span class="o">=</span><span class="n">visual_modifications</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;image_url&quot;</span><span class="p">),</span>
+            <span class="n">generation_prompt</span><span class="o">=</span><span class="n">visual_modifications</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prompt&quot;</span><span class="p">),</span>
+            <span class="n">target_format</span><span class="o">=</span><span class="n">ImageFormat</span><span class="o">.</span><span class="n">PNG</span><span class="p">,</span>
+            <span class="n">enhancement_options</span><span class="o">=</span><span class="n">visual_modifications</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;options&quot;</span><span class="p">,</span> <span class="p">{}),</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">processor</span><span class="o">.</span><span class="n">process_image_request</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error processing visual modification: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, AI PPT Assistant Team。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

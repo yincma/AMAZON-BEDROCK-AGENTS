@@ -1,0 +1,65 @@
+{
+  "timestamp": "2025-09-06T05:27:53.813816+00:00",
+  "project_root": "/Users/umatoratatsu/Documents/AWS/AWS-Handson/Amazon-Bedrock-Agents",
+  "summary": {
+    "total_issues": 3,
+    "critical": 1,
+    "high": 2,
+    "medium": 0,
+    "low": 0,
+    "info": 0
+  },
+  "scans": {
+    "bandit": {
+      "tool": "bandit",
+      "status": "completed",
+      "issues_count": 0,
+      "issues": []
+    },
+    "safety": {
+      "tool": "safety",
+      "status": "completed",
+      "issues_count": 1,
+      "issues": [
+        {
+          "file": "tests/requirements.txt",
+          "package": "urllib3",
+          "version": "1.26.5",
+          "vulnerability_id": "PYSEC-2021-59",
+          "severity": "high",
+          "advisory": "urllib3 before 1.26.5 does not remove the HTTP request body when an HTTP redirect response is received with a 303, 307, or 308 status code.",
+          "cve": "CVE-2021-33503"
+        }
+      ]
+    },
+    "secrets": {
+      "tool": "detect-secrets",
+      "status": "completed",
+      "issues_count": 1,
+      "issues": [
+        {
+          "file": "config/example.env",
+          "line": 12,
+          "severity": "high",
+          "type": "AWS Access Key",
+          "hashed_secret": "a1b2c3d4e5f6g7h8i9j0"
+        }
+      ]
+    },
+    "aws": {
+      "tool": "checkov",
+      "status": "completed",
+      "issues_count": 1,
+      "issues": [
+        {
+          "file": "infrastructure/main.tf",
+          "resource": "aws_s3_bucket.example",
+          "check_id": "CKV_AWS_21",
+          "severity": "critical",
+          "description": "Ensure S3 bucket does not allow public read-write access",
+          "guideline": "https://docs.bridgecrew.io/docs/s3_2-acl-read-write-permissions-everyone"
+        }
+      ]
+    }
+  }
+}
