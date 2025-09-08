@@ -11,8 +11,8 @@ variable "environment" {
 variable "lifecycle_rules" {
   description = "S3 lifecycle rules configuration"
   type = object({
-    transition_to_ia_days       = number
-    noncurrent_expiration_days  = number
+    transition_to_ia_days      = number
+    noncurrent_expiration_days = number
   })
   default = {
     transition_to_ia_days      = 30

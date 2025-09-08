@@ -22,12 +22,12 @@ variable "dynamodb_table_arn" {
 
 variable "lambda_function_arns" {
   description = "Map of Lambda function ARNs for each agent"
-  type = map(map(string))
+  type        = map(map(string))
   default = {
     orchestrator = {}
-    content     = {}
-    visual      = {}
-    compiler    = {}
+    content      = {}
+    visual       = {}
+    compiler     = {}
   }
 }
 

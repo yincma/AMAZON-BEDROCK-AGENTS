@@ -43,13 +43,13 @@ output "vpc_endpoints_security_group_id" {
 output "vpc_endpoint_ids" {
   description = "VPC endpoint IDs"
   value = var.enable_vpc_endpoints ? {
-    s3                  = length(aws_vpc_endpoint.s3) > 0 ? aws_vpc_endpoint.s3[0].id : null
-    dynamodb            = length(aws_vpc_endpoint.dynamodb) > 0 ? aws_vpc_endpoint.dynamodb[0].id : null
-    bedrock_runtime     = length(aws_vpc_endpoint.bedrock_runtime) > 0 ? aws_vpc_endpoint.bedrock_runtime[0].id : null
+    s3                    = length(aws_vpc_endpoint.s3) > 0 ? aws_vpc_endpoint.s3[0].id : null
+    dynamodb              = length(aws_vpc_endpoint.dynamodb) > 0 ? aws_vpc_endpoint.dynamodb[0].id : null
+    bedrock_runtime       = length(aws_vpc_endpoint.bedrock_runtime) > 0 ? aws_vpc_endpoint.bedrock_runtime[0].id : null
     bedrock_agent_runtime = length(aws_vpc_endpoint.bedrock_agent_runtime) > 0 ? aws_vpc_endpoint.bedrock_agent_runtime[0].id : null
-    lambda              = length(aws_vpc_endpoint.lambda) > 0 ? aws_vpc_endpoint.lambda[0].id : null
-    cloudwatch_logs     = length(aws_vpc_endpoint.cloudwatch_logs) > 0 ? aws_vpc_endpoint.cloudwatch_logs[0].id : null
-    sqs                 = var.enable_sqs_endpoint && length(aws_vpc_endpoint.sqs) > 0 ? aws_vpc_endpoint.sqs[0].id : null
+    lambda                = length(aws_vpc_endpoint.lambda) > 0 ? aws_vpc_endpoint.lambda[0].id : null
+    cloudwatch_logs       = length(aws_vpc_endpoint.cloudwatch_logs) > 0 ? aws_vpc_endpoint.cloudwatch_logs[0].id : null
+    sqs                   = var.enable_sqs_endpoint && length(aws_vpc_endpoint.sqs) > 0 ? aws_vpc_endpoint.sqs[0].id : null
   } : {}
 }
 

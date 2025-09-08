@@ -27,7 +27,7 @@ get_config = config_manager.get_value
 # Initialize AWS Lambda Powertools
 logger = Logger()
 tracer = Tracer()
-metrics = Metrics()
+metrics = Metrics(namespace="AIPPTAssistant")
 
 # Initialize AWS clients
 s3 = boto3.client("s3")

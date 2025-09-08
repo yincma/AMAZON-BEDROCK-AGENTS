@@ -91,6 +91,21 @@ variable "log_level" {
   default     = "INFO"
 }
 
+variable "bedrock_model_id" {
+  description = "Bedrock model ID for Claude content generation (Claude 4.0)"
+  type        = string
+}
+
+variable "bedrock_orchestrator_model_id" {
+  description = "Bedrock model ID for Orchestrator Agent (Claude 4.1)"
+  type        = string
+}
+
+variable "nova_model_id" {
+  description = "Amazon Nova model ID for image generation"
+  type        = string
+}
+
 variable "tags" {
   description = "Tags to apply to resources"
   type        = map(string)
@@ -120,4 +135,25 @@ variable "enable_vpc_config" {
   type        = bool
   description = "Enable VPC configuration for Lambda functions"
   default     = false
+}
+
+# Performance Optimization Variables
+variable "enable_provisioned_concurrency" {
+  type        = bool
+  description = "Enable provisioned concurrency for high-frequency Lambda functions"
+  default     = true
+}
+
+variable "provisioned_concurrency_config" {
+  type = map(object({
+    provisioned_concurrent_executions = number
+    qualifier                         = string
+  }))
+  description = "Provisioned concurrency configuration for Lambda functions"
+  default = {
+    api_presentation_status   = { provisioned_concurrent_executions = 5, qualifier = "$LATEST" }
+    api_generate_presentation = { provisioned_concurrent_executions = 3, qualifier = "$LATEST" }
+    api_presentation_download = { provisioned_concurrent_executions = 2, qualifier = "$LATEST" }
+    api_modify_slide          = { provisioned_concurrent_executions = 2, qualifier = "$LATEST" }
+  }
 }

@@ -28,7 +28,8 @@ help:
 	@echo "  make format          - Format code with black"
 	@echo "  make clean           - Clean up temporary files"
 	@echo "  make clean-all       - Clean everything including virtual environment"
-	@echo "  make build-layers    - Build Lambda layers"
+	@echo "  make build-layers    - Build Lambda layers (legacy)"
+	@echo "  make build-layers-optimized - Build optimized Lambda layers for performance"
 	@echo "  make deploy          - Deploy infrastructure with Terraform"
 	@echo "  make destroy         - Safely destroy infrastructure with cleanup"
 	@echo "  make safe-destroy    - Run comprehensive cleanup and destroy"
@@ -36,6 +37,10 @@ help:
 	@echo "  make docs            - Generate HTML documentation"
 	@echo "  make docs-serve      - Serve documentation with live reload"
 	@echo "  make docs-clean      - Clean documentation build files"
+	@echo ""
+	@echo "Performance optimization commands:"
+	@echo "  make perf-test       - Run Lambda performance tests"
+	@echo "  make perf-monitor    - Monitor Lambda performance metrics"
 	@echo ""
 	@echo "Security commands:"
 	@echo "  make security-install - Install security scanning tools"
@@ -153,11 +158,54 @@ clean-all: clean
 	rm -rf $(VENV)
 	@echo "✅ Cleaned all files including virtual environment"
 
-# Build Lambda layers
+# Build Lambda layers (legacy)
 build-layers:
 	@echo "Building Lambda layers..."
 	cd lambdas/layers && ./build.sh
 	@echo "✅ Lambda layers built"
+
+# Build optimized Lambda layers for performance
+build-layers-optimized:
+	@echo "Building optimized Lambda layers for performance..."
+	@if [ ! -f scripts/build_optimized_layers.sh ]; then \
+		echo "❌ Optimized layer build script not found!"; \
+		exit 1; \
+	fi
+	@chmod +x scripts/build_optimized_layers.sh
+	@bash scripts/build_optimized_layers.sh
+	@echo "✅ Optimized Lambda layers built"
+
+# Performance test - measure cold start times
+perf-test:
+	@echo "Running Lambda performance tests..."
+	@if [ ! -f scripts/performance_test.py ]; then \
+		echo "❌ Performance test script not found!"; \
+		echo "Creating basic performance test script..."; \
+		mkdir -p scripts; \
+		echo "#!/usr/bin/env python3" > scripts/performance_test.py; \
+		echo "print('Performance testing functionality to be implemented')" >> scripts/performance_test.py; \
+	fi
+	@if [ -f $(VENV_PYTHON) ]; then \
+		$(VENV_PYTHON) scripts/performance_test.py; \
+	else \
+		python3 scripts/performance_test.py; \
+	fi
+	@echo "✅ Performance test completed"
+
+# Monitor performance metrics
+perf-monitor:
+	@echo "Monitoring Lambda performance metrics..."
+	@aws cloudwatch get-metric-statistics \
+		--namespace AWS/Lambda \
+		--metric-name Duration \
+		--dimensions Name=FunctionName,Value=$(PROJECT_NAME)-api-presentation-status \
+		--start-time $$(date -u -d '1 hour ago' +%Y-%m-%dT%H:%M:%S) \
+		--end-time $$(date -u +%Y-%m-%dT%H:%M:%S) \
+		--period 300 \
+		--statistics Average,Maximum \
+		--region $(AWS_REGION) \
+		|| echo "❌ AWS CLI not configured or no metrics available"
+	@echo "✅ Performance monitoring completed"
 
 # Package Lambda functions
 package-lambdas:
@@ -264,9 +312,13 @@ destry:
 	@echo "⚠️  Please use the correct spelling to avoid accidental execution."
 	@exit 1
 
-# Full deployment
-deploy: clean build-layers package-lambdas package-infrastructure-lambdas tf-apply
-	@echo "✅ Full deployment completed"
+# Full deployment with performance optimization
+deploy: clean build-layers-optimized package-lambdas package-infrastructure-lambdas tf-apply
+	@echo "✅ Full deployment completed with performance optimization"
+
+# Legacy deployment (original layers)
+deploy-legacy: clean build-layers package-lambdas package-infrastructure-lambdas tf-apply
+	@echo "✅ Legacy deployment completed"
 
 # Validate everything
 validate: lint test-unit

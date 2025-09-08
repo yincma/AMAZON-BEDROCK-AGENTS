@@ -112,9 +112,9 @@ variable "dynamodb_write_capacity" {
 
 # API Gateway Configuration
 variable "stage_name" {
-  description = "API Gateway stage name"
+  description = "API Gateway stage name (legacy - for backward compatibility)"
   type        = string
-  default     = "v1"
+  default     = "legacy"
 }
 
 variable "api_throttle_rate_limit" {
@@ -252,9 +252,21 @@ variable "bedrock_region" {
 }
 
 variable "bedrock_model_id" {
-  description = "Bedrock model ID"
+  description = "Default Bedrock model ID for general Lambda functions (Claude 4.0)"
   type        = string
-  default     = "anthropic.claude-4-0"
+  default     = "us.anthropic.claude-opus-4-20250514-v1:0"
+}
+
+variable "bedrock_orchestrator_model_id" {
+  description = "Bedrock model ID for Orchestrator Agent (Claude 4.1)"
+  type        = string
+  default     = "us.anthropic.claude-opus-4-1-20250805-v1:0"
+}
+
+variable "nova_model_id" {
+  description = "Amazon Nova model ID for image generation"
+  type        = string
+  default     = "amazon.nova-canvas-v1:0"
 }
 
 variable "bedrock_model_version" {
@@ -338,18 +350,7 @@ variable "log_retention_days" {
   default     = 30
 }
 
-# Monitoring and Alerting
-variable "enable_monitoring" {
-  description = "Enable CloudWatch monitoring and alarms"
-  type        = bool
-  default     = true
-}
-
-variable "alert_email" {
-  description = "Email address for CloudWatch alarms"
-  type        = string
-  default     = ""
-}
+# Monitoring and Alerting (moved to dedicated section below)
 
 # Cost Optimization
 variable "enable_cost_optimization" {
@@ -407,6 +408,58 @@ variable "vpc_flow_log_retention_days" {
   default     = 30
 }
 
+# ============================================================================
+# Monitoring and Alerting Configuration
+# ============================================================================
+
+variable "enable_monitoring" {
+  description = "Enable CloudWatch monitoring and alerting"
+  type        = bool
+  default     = true
+}
+
+variable "alert_email_addresses" {
+  description = "List of email addresses to receive alerts"
+  type        = list(string)
+  default     = []
+}
+
+variable "lambda_error_threshold" {
+  description = "Threshold for Lambda function error count alarm"
+  type        = number
+  default     = 5
+}
+
+variable "lambda_duration_threshold" {
+  description = "Threshold for Lambda function duration in milliseconds"
+  type        = number
+  default     = 25000
+}
+
+variable "api_latency_threshold" {
+  description = "Threshold for API Gateway latency in milliseconds"
+  type        = number
+  default     = 10000
+}
+
+variable "api_4xx_threshold" {
+  description = "Threshold for API Gateway 4XX error count"
+  type        = number
+  default     = 10
+}
+
+variable "api_5xx_threshold" {
+  description = "Threshold for API Gateway 5XX error count"
+  type        = number
+  default     = 5
+}
+
+variable "enable_dynamodb_monitoring" {
+  description = "Enable DynamoDB monitoring alarms"
+  type        = bool
+  default     = true
+}
+
 # Tags
 variable "tags" {
   description = "Common tags to apply to all resources"
@@ -418,4 +471,53 @@ variable "additional_tags" {
   description = "Additional tags to apply to all resources"
   type        = map(string)
   default     = {}
+}
+
+# API Documentation Configuration
+variable "enable_api_documentation" {
+  description = "Enable automatic API documentation generation and hosting"
+  type        = bool
+  default     = true
+}
+
+variable "documentation_retention_days" {
+  description = "Number of days to retain documentation logs"
+  type        = number
+  default     = 30
+}
+
+variable "documentation_lambda_memory" {
+  description = "Memory allocation for documentation generation Lambda function (MB)"
+  type        = number
+  default     = 512
+  validation {
+    condition     = var.documentation_lambda_memory >= 128 && var.documentation_lambda_memory <= 3008
+    error_message = "Lambda memory must be between 128 MB and 3,008 MB"
+  }
+}
+
+variable "documentation_lambda_timeout" {
+  description = "Timeout for documentation generation Lambda function (seconds)"
+  type        = number
+  default     = 300
+  validation {
+    condition     = var.documentation_lambda_timeout >= 30 && var.documentation_lambda_timeout <= 900
+    error_message = "Lambda timeout must be between 30 and 900 seconds"
+  }
+}
+
+variable "enable_documentation_cdn" {
+  description = "Enable CloudFront CDN for API documentation"
+  type        = bool
+  default     = true
+}
+
+variable "documentation_price_class" {
+  description = "CloudFront price class for documentation CDN"
+  type        = string
+  default     = "PriceClass_100"
+  validation {
+    condition     = contains(["PriceClass_All", "PriceClass_200", "PriceClass_100"], var.documentation_price_class)
+    error_message = "Price class must be one of: PriceClass_All, PriceClass_200, PriceClass_100"
+  }
 }

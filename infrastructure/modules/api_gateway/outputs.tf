@@ -94,13 +94,13 @@ output "usage_plan_name" {
 output "resource_ids" {
   description = "Map of API Gateway resource IDs"
   value = {
-    presentations     = aws_api_gateway_resource.presentations.id
-    presentation_id   = aws_api_gateway_resource.presentation_id.id
-    sessions         = aws_api_gateway_resource.sessions.id
-    session_id       = aws_api_gateway_resource.session_id.id
-    agents           = aws_api_gateway_resource.agents.id
-    agent_name       = aws_api_gateway_resource.agent_name.id
-    agent_execute    = aws_api_gateway_resource.agent_execute.id
+    presentations   = aws_api_gateway_resource.presentations.id
+    presentation_id = aws_api_gateway_resource.presentation_id.id
+    sessions        = aws_api_gateway_resource.sessions.id
+    session_id      = aws_api_gateway_resource.session_id.id
+    agents          = aws_api_gateway_resource.agents.id
+    agent_name      = aws_api_gateway_resource.agent_name.id
+    agent_execute   = aws_api_gateway_resource.agent_execute.id
   }
 }
 
@@ -108,12 +108,12 @@ output "resource_ids" {
 output "resource_paths" {
   description = "Map of API Gateway resource paths"
   value = {
-    presentations     = aws_api_gateway_resource.presentations.path
-    presentation_id   = aws_api_gateway_resource.presentation_id.path
-    sessions         = aws_api_gateway_resource.sessions.path
-    session_id       = aws_api_gateway_resource.session_id.path
-    agents           = aws_api_gateway_resource.agents.path
-    agent_execute    = aws_api_gateway_resource.agent_execute.path
+    presentations   = aws_api_gateway_resource.presentations.path
+    presentation_id = aws_api_gateway_resource.presentation_id.path
+    sessions        = aws_api_gateway_resource.sessions.path
+    session_id      = aws_api_gateway_resource.session_id.path
+    agents          = aws_api_gateway_resource.agents.path
+    agent_execute   = aws_api_gateway_resource.agent_execute.path
   }
 }
 
@@ -122,33 +122,33 @@ output "methods" {
   description = "Map of API Gateway method configurations"
   value = {
     create_presentation = {
-      resource_id = aws_api_gateway_method.create_presentation.resource_id
-      http_method = aws_api_gateway_method.create_presentation.http_method
+      resource_id      = aws_api_gateway_method.create_presentation.resource_id
+      http_method      = aws_api_gateway_method.create_presentation.http_method
       api_key_required = aws_api_gateway_method.create_presentation.api_key_required
     }
     get_presentation = {
-      resource_id = aws_api_gateway_method.get_presentation.resource_id
-      http_method = aws_api_gateway_method.get_presentation.http_method
+      resource_id      = aws_api_gateway_method.get_presentation.resource_id
+      http_method      = aws_api_gateway_method.get_presentation.http_method
       api_key_required = aws_api_gateway_method.get_presentation.api_key_required
     }
     list_presentations = {
-      resource_id = aws_api_gateway_method.list_presentations.resource_id
-      http_method = aws_api_gateway_method.list_presentations.http_method
+      resource_id      = aws_api_gateway_method.list_presentations.resource_id
+      http_method      = aws_api_gateway_method.list_presentations.http_method
       api_key_required = aws_api_gateway_method.list_presentations.api_key_required
     }
     create_session = {
-      resource_id = aws_api_gateway_method.create_session.resource_id
-      http_method = aws_api_gateway_method.create_session.http_method
+      resource_id      = aws_api_gateway_method.create_session.resource_id
+      http_method      = aws_api_gateway_method.create_session.http_method
       api_key_required = aws_api_gateway_method.create_session.api_key_required
     }
     get_session = {
-      resource_id = aws_api_gateway_method.get_session.resource_id
-      http_method = aws_api_gateway_method.get_session.http_method
+      resource_id      = aws_api_gateway_method.get_session.resource_id
+      http_method      = aws_api_gateway_method.get_session.http_method
       api_key_required = aws_api_gateway_method.get_session.api_key_required
     }
     execute_agent = {
-      resource_id = aws_api_gateway_method.execute_agent.resource_id
-      http_method = aws_api_gateway_method.execute_agent.http_method
+      resource_id      = aws_api_gateway_method.execute_agent.resource_id
+      http_method      = aws_api_gateway_method.execute_agent.http_method
       api_key_required = aws_api_gateway_method.execute_agent.api_key_required
     }
   }
@@ -169,7 +169,7 @@ output "cloudwatch_log_group_arn" {
 output "endpoint_configuration" {
   description = "The endpoint configuration of the REST API"
   value = {
-    types = aws_api_gateway_rest_api.main.endpoint_configuration[0].types
+    types            = aws_api_gateway_rest_api.main.endpoint_configuration[0].types
     vpc_endpoint_ids = try(aws_api_gateway_rest_api.main.endpoint_configuration[0].vpc_endpoint_ids, [])
   }
 }
@@ -225,15 +225,15 @@ output "request_validators" {
 output "integration_config" {
   description = "Configuration for Lambda integrations"
   value = {
-    rest_api_id = aws_api_gateway_rest_api.main.id
+    rest_api_id   = aws_api_gateway_rest_api.main.id
     execution_arn = aws_api_gateway_rest_api.main.execution_arn
-    stage_name = var.create_deployment ? aws_api_gateway_stage.main[0].stage_name : var.stage_name
+    stage_name    = var.create_deployment ? aws_api_gateway_stage.main[0].stage_name : var.stage_name
     resource_ids = {
       presentations   = aws_api_gateway_resource.presentations.id
       presentation_id = aws_api_gateway_resource.presentation_id.id
-      sessions       = aws_api_gateway_resource.sessions.id
-      session_id     = aws_api_gateway_resource.session_id.id
-      agent_execute  = aws_api_gateway_resource.agent_execute.id
+      sessions        = aws_api_gateway_resource.sessions.id
+      session_id      = aws_api_gateway_resource.session_id.id
+      agent_execute   = aws_api_gateway_resource.agent_execute.id
     }
   }
 }
@@ -242,12 +242,12 @@ output "integration_config" {
 output "module_metadata" {
   description = "Module configuration metadata"
   value = {
-    environment         = var.environment
-    project_name       = var.project_name
-    api_key_required   = var.api_key_required
-    xray_enabled       = var.enable_xray_tracing
-    detailed_metrics   = var.enable_detailed_metrics
-    endpoint_type      = var.endpoint_type
-    created_at         = timestamp()
+    environment      = var.environment
+    project_name     = var.project_name
+    api_key_required = var.api_key_required
+    xray_enabled     = var.enable_xray_tracing
+    detailed_metrics = var.enable_detailed_metrics
+    endpoint_type    = var.endpoint_type
+    created_at       = timestamp()
   }
 }

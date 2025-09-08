@@ -39,7 +39,7 @@ from utils.timeout_manager import (
 # Initialize AWS Lambda Powertools
 logger = Logger()
 tracer = Tracer()
-metrics = Metrics()
+metrics = Metrics(namespace="AIPPTAssistant")
 
 # Configuration initialization (Enhanced Config Manager)
 config_manager = get_enhanced_config_manager()

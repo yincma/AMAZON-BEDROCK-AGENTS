@@ -4,6 +4,10 @@
 # Data sources
 data "aws_region" "current" {}
 
+# ============================================================================
+# API Gateway REST API
+# ============================================================================
+
 # REST API
 resource "aws_api_gateway_rest_api" "main" {
   name        = "${var.project_name}-${var.environment}-api"
@@ -32,10 +36,235 @@ resource "aws_api_gateway_rest_api" "main" {
   )
 }
 
+# ============================================================================
+# JSON Schema 验证模型
+# ============================================================================
+
+# 演示文稿生成请求的 JSON Schema 模型
+resource "aws_api_gateway_model" "generate_presentation_request" {
+  rest_api_id  = aws_api_gateway_rest_api.main.id
+  name         = "GeneratePresentationRequest"
+  content_type = "application/json"
+
+  schema = jsonencode({
+    "$schema" = "http://json-schema.org/draft-04/schema#"
+    "title"   = "Generate Presentation Request"
+    "type"    = "object"
+    "required" = ["title", "topic"]
+    
+    "properties" = {
+      "title" = {
+        "type"      = "string"
+        "minLength" = 1
+        "maxLength" = 200
+        "description" = "演示文稿标题"
+      }
+      "topic" = {
+        "type"      = "string"
+        "minLength" = 1
+        "maxLength" = 1000
+        "description" = "演示文稿主题"
+      }
+      "audience" = {
+        "type"    = "string"
+        "default" = "general"
+        "enum"    = ["general", "technical", "executive", "academic", "student"]
+        "description" = "目标受众"
+      }
+      "duration" = {
+        "type"    = "integer"
+        "minimum" = 5
+        "maximum" = 120
+        "default" = 20
+        "description" = "演示时长（分钟）"
+      }
+      "slide_count" = {
+        "type"    = "integer"
+        "minimum" = 5
+        "maximum" = 100
+        "default" = 15
+        "description" = "幻灯片数量"
+      }
+      "language" = {
+        "type"    = "string"
+        "default" = "en"
+        "enum"    = ["en", "ja", "zh", "es", "fr", "de", "pt", "ko"]
+        "description" = "演示语言"
+      }
+      "style" = {
+        "type"    = "string"
+        "default" = "professional"
+        "enum"    = ["professional", "creative", "minimalist", "technical", "academic"]
+        "description" = "演示风格"
+      }
+      "template" = {
+        "type"    = "string"
+        "default" = "default"
+        "enum"    = ["default", "executive_summary", "technology_showcase", "sales_pitch", "educational"]
+        "description" = "演示模板"
+      }
+      "include_speaker_notes" = {
+        "type"    = "boolean"
+        "default" = true
+        "description" = "是否包含演讲备注"
+      }
+      "include_images" = {
+        "type"    = "boolean"
+        "default" = true
+        "description" = "是否包含图片"
+      }
+      "session_id" = {
+        "type"    = "string"
+        "pattern" = "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+        "description" = "会话ID（UUID格式）"
+      }
+      "metadata" = {
+        "type" = "object"
+        "additionalProperties" = true
+        "description" = "额外的元数据"
+      }
+      "preferences" = {
+        "type" = "object"
+        "additionalProperties" = true
+        "description" = "用户偏好设置"
+      }
+    }
+    
+    "additionalProperties" = false
+  })
+}
+
+# 创建会话请求的 JSON Schema 模型
+resource "aws_api_gateway_model" "create_session_request" {
+  rest_api_id  = aws_api_gateway_rest_api.main.id
+  name         = "CreateSessionRequest"
+  content_type = "application/json"
+
+  schema = jsonencode({
+    "$schema" = "http://json-schema.org/draft-04/schema#"
+    "title"   = "Create Session Request"
+    "type"    = "object"
+    "required" = ["user_id"]
+    
+    "properties" = {
+      "user_id" = {
+        "type"      = "string"
+        "minLength" = 1
+        "maxLength" = 50
+        "pattern"   = "^[a-zA-Z0-9_-]+$"
+        "description" = "用户ID"
+      }
+      "session_name" = {
+        "type"      = "string"
+        "minLength" = 1
+        "maxLength" = 100
+        "description" = "会话名称"
+      }
+      "metadata" = {
+        "type" = "object"
+        "additionalProperties" = true
+        "description" = "会话元数据"
+      }
+    }
+    
+    "additionalProperties" = false
+  })
+}
+
+# 执行代理请求的 JSON Schema 模型
+resource "aws_api_gateway_model" "execute_agent_request" {
+  rest_api_id  = aws_api_gateway_rest_api.main.id
+  name         = "ExecuteAgentRequest"
+  content_type = "application/json"
+
+  schema = jsonencode({
+    "$schema" = "http://json-schema.org/draft-04/schema#"
+    "title"   = "Execute Agent Request"
+    "type"    = "object"
+    "required" = ["input"]
+    
+    "properties" = {
+      "input" = {
+        "type"      = "string"
+        "minLength" = 1
+        "maxLength" = 2000
+        "description" = "代理输入文本"
+      }
+      "session_id" = {
+        "type"    = "string"
+        "pattern" = "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+        "description" = "会话ID（UUID格式）"
+      }
+      "enable_trace" = {
+        "type"    = "boolean"
+        "default" = false
+        "description" = "是否启用跟踪"
+      }
+      "parameters" = {
+        "type" = "object"
+        "additionalProperties" = true
+        "description" = "代理参数"
+      }
+    }
+    
+    "additionalProperties" = false
+  })
+}
+
+# 错误响应模型
+resource "aws_api_gateway_model" "error_response" {
+  rest_api_id  = aws_api_gateway_rest_api.main.id
+  name         = "ErrorResponse"
+  content_type = "application/json"
+
+  schema = jsonencode({
+    "$schema" = "http://json-schema.org/draft-04/schema#"
+    "title"   = "Error Response"
+    "type"    = "object"
+    "required" = ["error", "message"]
+    
+    "properties" = {
+      "error" = {
+        "type"        = "string"
+        "description" = "错误代码"
+      }
+      "message" = {
+        "type"        = "string"
+        "description" = "错误消息"
+      }
+      "details" = {
+        "type"        = "array"
+        "items" = {
+          "type" = "object"
+          "properties" = {
+            "field" = {"type" = "string"}
+            "code"  = {"type" = "string"}
+            "message" = {"type" = "string"}
+          }
+        }
+        "description" = "详细错误信息"
+      }
+      "request_id" = {
+        "type"        = "string"
+        "description" = "请求ID"
+      }
+      "timestamp" = {
+        "type"        = "string"
+        "format"      = "date-time"
+        "description" = "错误发生时间"
+      }
+    }
+  })
+}
+
+# ============================================================================
+# API Gateway Resources and Methods
+# ============================================================================
+
 # API Deployment (条件创建)
 resource "aws_api_gateway_deployment" "main" {
   count = var.create_deployment ? 1 : 0
-  
+
   rest_api_id = aws_api_gateway_rest_api.main.id
 
   triggers = {
@@ -77,7 +306,7 @@ resource "aws_api_gateway_deployment" "main" {
 # API Stage (条件创建)
 resource "aws_api_gateway_stage" "main" {
   count = var.create_deployment ? 1 : 0
-  
+
   deployment_id = aws_api_gateway_deployment.main[0].id
   rest_api_id   = aws_api_gateway_rest_api.main.id
   stage_name    = var.stage_name
@@ -86,17 +315,17 @@ resource "aws_api_gateway_stage" "main" {
   access_log_settings {
     destination_arn = aws_cloudwatch_log_group.api_gateway.arn
     format = jsonencode({
-      requestId      = "$context.requestId"
-      ip             = "$context.identity.sourceIp"
-      caller         = "$context.identity.caller"
-      user           = "$context.identity.user"
-      requestTime    = "$context.requestTime"
-      httpMethod     = "$context.httpMethod"
-      resourcePath   = "$context.resourcePath"
-      status         = "$context.status"
-      protocol       = "$context.protocol"
-      responseLength = "$context.responseLength"
-      error          = "$context.error.message"
+      requestId        = "$context.requestId"
+      ip               = "$context.identity.sourceIp"
+      caller           = "$context.identity.caller"
+      user             = "$context.identity.user"
+      requestTime      = "$context.requestTime"
+      httpMethod       = "$context.httpMethod"
+      resourcePath     = "$context.resourcePath"
+      status           = "$context.status"
+      protocol         = "$context.protocol"
+      responseLength   = "$context.responseLength"
+      error            = "$context.error.message"
       integrationError = "$context.integrationErrorMessage"
     })
   }
@@ -179,10 +408,10 @@ resource "aws_api_gateway_resource" "agent_execute" {
 # API Methods
 # POST /presentations - Create new presentation
 resource "aws_api_gateway_method" "create_presentation" {
-  rest_api_id   = aws_api_gateway_rest_api.main.id
-  resource_id   = aws_api_gateway_resource.presentations.id
-  http_method   = "POST"
-  authorization = var.api_key_required ? "NONE" : "NONE"
+  rest_api_id      = aws_api_gateway_rest_api.main.id
+  resource_id      = aws_api_gateway_resource.presentations.id
+  http_method      = "POST"
+  authorization    = var.api_key_required ? "NONE" : "NONE"
   api_key_required = var.api_key_required
 
   request_parameters = {
@@ -190,14 +419,19 @@ resource "aws_api_gateway_method" "create_presentation" {
   }
 
   request_validator_id = aws_api_gateway_request_validator.validate_body.id
+  
+  # 使用JSON Schema模型进行请求体验证
+  request_models = {
+    "application/json" = aws_api_gateway_model.generate_presentation_request.name
+  }
 }
 
 # GET /presentations/{id} - Get presentation by ID
 resource "aws_api_gateway_method" "get_presentation" {
-  rest_api_id   = aws_api_gateway_rest_api.main.id
-  resource_id   = aws_api_gateway_resource.presentation_id.id
-  http_method   = "GET"
-  authorization = var.api_key_required ? "NONE" : "NONE"
+  rest_api_id      = aws_api_gateway_rest_api.main.id
+  resource_id      = aws_api_gateway_resource.presentation_id.id
+  http_method      = "GET"
+  authorization    = var.api_key_required ? "NONE" : "NONE"
   api_key_required = var.api_key_required
 
   request_parameters = {
@@ -209,10 +443,10 @@ resource "aws_api_gateway_method" "get_presentation" {
 
 # GET /presentations - List presentations
 resource "aws_api_gateway_method" "list_presentations" {
-  rest_api_id   = aws_api_gateway_rest_api.main.id
-  resource_id   = aws_api_gateway_resource.presentations.id
-  http_method   = "GET"
-  authorization = var.api_key_required ? "NONE" : "NONE"
+  rest_api_id      = aws_api_gateway_rest_api.main.id
+  resource_id      = aws_api_gateway_resource.presentations.id
+  http_method      = "GET"
+  authorization    = var.api_key_required ? "NONE" : "NONE"
   api_key_required = var.api_key_required
 
   request_parameters = {
@@ -224,10 +458,10 @@ resource "aws_api_gateway_method" "list_presentations" {
 
 # POST /sessions - Create new session
 resource "aws_api_gateway_method" "create_session" {
-  rest_api_id   = aws_api_gateway_rest_api.main.id
-  resource_id   = aws_api_gateway_resource.sessions.id
-  http_method   = "POST"
-  authorization = var.api_key_required ? "NONE" : "NONE"
+  rest_api_id      = aws_api_gateway_rest_api.main.id
+  resource_id      = aws_api_gateway_resource.sessions.id
+  http_method      = "POST"
+  authorization    = var.api_key_required ? "NONE" : "NONE"
   api_key_required = var.api_key_required
 
   request_parameters = {
@@ -235,14 +469,19 @@ resource "aws_api_gateway_method" "create_session" {
   }
 
   request_validator_id = aws_api_gateway_request_validator.validate_body.id
+  
+  # 使用JSON Schema模型进行请求体验证
+  request_models = {
+    "application/json" = aws_api_gateway_model.create_session_request.name
+  }
 }
 
 # GET /sessions/{id} - Get session by ID
 resource "aws_api_gateway_method" "get_session" {
-  rest_api_id   = aws_api_gateway_rest_api.main.id
-  resource_id   = aws_api_gateway_resource.session_id.id
-  http_method   = "GET"
-  authorization = var.api_key_required ? "NONE" : "NONE"
+  rest_api_id      = aws_api_gateway_rest_api.main.id
+  resource_id      = aws_api_gateway_resource.session_id.id
+  http_method      = "GET"
+  authorization    = var.api_key_required ? "NONE" : "NONE"
   api_key_required = var.api_key_required
 
   request_parameters = {
@@ -254,18 +493,23 @@ resource "aws_api_gateway_method" "get_session" {
 
 # POST /agents/{name}/execute - Execute agent
 resource "aws_api_gateway_method" "execute_agent" {
-  rest_api_id   = aws_api_gateway_rest_api.main.id
-  resource_id   = aws_api_gateway_resource.agent_execute.id
-  http_method   = "POST"
-  authorization = var.api_key_required ? "NONE" : "NONE"
+  rest_api_id      = aws_api_gateway_rest_api.main.id
+  resource_id      = aws_api_gateway_resource.agent_execute.id
+  http_method      = "POST"
+  authorization    = var.api_key_required ? "NONE" : "NONE"
   api_key_required = var.api_key_required
 
   request_parameters = {
-    "method.request.path.name" = true
+    "method.request.path.name"           = true
     "method.request.header.Content-Type" = true
   }
 
   request_validator_id = aws_api_gateway_request_validator.validate_all.id
+  
+  # 使用JSON Schema模型进行请求体验证
+  request_models = {
+    "application/json" = aws_api_gateway_model.execute_agent_request.name
+  }
 }
 
 # Request Validators

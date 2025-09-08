@@ -1,0 +1,17 @@
+# Minimal Lambda Layer Dependencies for API functions
+# Optimized for cold start performance
+
+# Essential AWS SDK
+boto3==1.35.0
+
+# AWS Lambda Powertools - Core only
+aws-lambda-powertools[tracer,logger,metrics]==2.38.0
+
+# HTTP requests - Essential
+requests==2.32.3
+
+# JSON schema validation - Essential
+jsonschema==4.23.0
+
+# Type hints support
+typing-extensions==4.12.2

@@ -38,7 +38,10 @@ logger.setLevel(logging.INFO)
 
 def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     """
-    Main handler for presentation generation requests
+    Main handler for multiple API endpoints:
+    - POST /presentations - Create presentation
+    - POST /sessions - Create session  
+    - POST /agents/{name}/execute - Execute agent
 
     Args:
         event: API Gateway event containing the request
@@ -48,11 +51,62 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         API Gateway response
     """
     try:
+        # Extract path and HTTP method for routing
+        path = event.get("path", "")
+        resource = event.get("resource", "")
+        http_method = event.get("httpMethod", "")
+        path_parameters = event.get("pathParameters") or {}
+        
+        logger.info(f"Request: {http_method} {path}")
+        logger.info(f"Resource: {resource}")
+        logger.info(f"Path parameters: {path_parameters}")
+        
+        # Route to appropriate handler based on resource path
+        if resource == "/presentations" and http_method == "POST":
+            return handle_create_presentation(event, context)
+        elif resource == "/sessions" and http_method == "POST":
+            return handle_create_session(event, context)
+        elif resource == "/agents/{name}/execute" and http_method == "POST":
+            return handle_execute_agent(event, context)
+        # Fallback to path-based routing
+        elif path.endswith("/presentations") and http_method == "POST":
+            return handle_create_presentation(event, context)
+        elif path.endswith("/sessions") and http_method == "POST":
+            return handle_create_session(event, context)
+        elif "/agents/" in path and path.endswith("/execute") and http_method == "POST":
+            return handle_execute_agent(event, context)
+        else:
+            return create_response(
+                404,
+                {
+                    "error": "NOT_FOUND",
+                    "message": f"Endpoint {http_method} {path} not found",
+                    "request_id": context.aws_request_id,
+                },
+            )
+
+    except Exception as e:
+        logger.error(f"Error in lambda_handler: {str(e)}")
+        return create_response(
+            500,
+            {
+                "error": "INTERNAL_ERROR", 
+                "message": "Internal server error",
+                "request_id": context.aws_request_id,
+            },
+        )
+
+
+def handle_create_presentation(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
+    """
+    Handle POST /presentations requests
+    """
+    try:
         # Parse request body
         body = json.loads(event.get("body", "{}"))
 
         # Validate required parameters
-        validation_error = validate_request(body)
+        validation_error = validate_presentation_request(body)
         if validation_error:
             return create_response(
                 400,
@@ -111,7 +165,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         )
 
 
-def validate_request(body: Dict[str, Any]) -> Optional[str]:
+def validate_presentation_request(body: Dict[str, Any]) -> Optional[str]:
     """
     Validate request parameters
 
@@ -336,3 +390,235 @@ def calculate_completion_time(body: Dict[str, Any]) -> str:
 
     completion_time = datetime.utcnow() + timedelta(seconds=total_seconds)
     return completion_time.isoformat() + "Z"
+
+
+def handle_create_session(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
+    """
+    Handle POST /sessions requests - Create a new session
+    """
+    try:
+        # Parse request body
+        body = json.loads(event.get("body", "{}"))
+        
+        # Validate required parameters
+        validation_error = validate_session_request(body)
+        if validation_error:
+            return create_response(
+                400,
+                {
+                    "error": "INVALID_REQUEST",
+                    "message": validation_error,
+                    "request_id": context.aws_request_id,
+                },
+            )
+        
+        # Generate session ID
+        session_id = str(uuid.uuid4())
+        user_id = body.get("user_id")
+        session_name = body.get("session_name", f"Session for {user_id}")
+        metadata = body.get("metadata", {})
+        
+        # Create session record
+        session_data = {
+            "session_id": session_id,
+            "user_id": user_id,
+            "session_name": session_name,
+            "status": "active",
+            "created_at": datetime.utcnow().isoformat() + "Z",
+            "last_activity": datetime.utcnow().isoformat() + "Z",
+            "expires_at": (datetime.utcnow() + timedelta(hours=8)).isoformat() + "Z",
+            "metadata": metadata,
+        }
+        
+        # Store session in DynamoDB sessions table
+        table = dynamodb.Table(os.environ.get("DYNAMODB_SESSIONS_TABLE", "ai-ppt-assistant-dev-sessions"))
+        table.put_item(Item=session_data)
+        
+        logger.info(f"Created session: {session_id} for user: {user_id}")
+        
+        return create_response(
+            202,
+            {
+                "session_id": session_id,
+                "user_id": user_id,
+                "session_name": session_name,
+                "status": "active",
+                "created_at": session_data["created_at"],
+                "expires_at": session_data["expires_at"],
+                "metadata": metadata,
+            },
+        )
+    
+    except Exception as e:
+        logger.error(f"Error creating session: {str(e)}")
+        return create_response(
+            500,
+            {
+                "error": "INTERNAL_ERROR",
+                "message": "Failed to create session",
+                "request_id": context.aws_request_id,
+            },
+        )
+
+
+def handle_execute_agent(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
+    """
+    Handle POST /agents/{name}/execute requests - Execute a Bedrock agent
+    """
+    try:
+        # Parse request body and path parameters
+        body = json.loads(event.get("body", "{}"))
+        path_parameters = event.get("pathParameters") or {}
+        agent_name = path_parameters.get("name")
+        
+        # Validate request
+        validation_error = validate_agent_request(body, agent_name)
+        if validation_error:
+            return create_response(
+                400,
+                {
+                    "error": "INVALID_REQUEST", 
+                    "message": validation_error,
+                    "request_id": context.aws_request_id,
+                },
+            )
+        
+        # Extract parameters
+        input_text = body.get("input")
+        session_id = body.get("session_id", str(uuid.uuid4()))
+        enable_trace = body.get("enable_trace", False)
+        parameters = body.get("parameters", {})
+        
+        # Map agent names to agent IDs and aliases
+        agent_mapping = {
+            "orchestrator": {
+                "agent_id": ORCHESTRATOR_AGENT_ID,
+                "alias_id": ORCHESTRATOR_ALIAS_ID,
+            }
+            # Note: Other agents (content, visual, compiler) would be added here
+            # when they are configured with action groups
+        }
+        
+        if agent_name not in agent_mapping:
+            return create_response(
+                404,
+                {
+                    "error": "AGENT_NOT_FOUND",
+                    "message": f"Agent '{agent_name}' not found. Available agents: {list(agent_mapping.keys())}",
+                    "request_id": context.aws_request_id,
+                },
+            )
+        
+        agent_config = agent_mapping[agent_name]
+        
+        # Generate task ID for tracking
+        task_id = str(uuid.uuid4())
+        
+        try:
+            # Invoke Bedrock agent
+            response = bedrock_agent_runtime.invoke_agent(
+                agentId=agent_config["agent_id"],
+                agentAliasId=agent_config["alias_id"],
+                sessionId=session_id,
+                inputText=input_text,
+                enableTrace=enable_trace,
+            )
+            
+            logger.info(f"Agent {agent_name} execution started with task_id: {task_id}")
+            
+            return create_response(
+                202,
+                {
+                    "task_id": task_id,
+                    "agent_name": agent_name,
+                    "status": "processing",
+                    "session_id": session_id,
+                    "started_at": datetime.utcnow().isoformat() + "Z",
+                    "input": input_text,
+                    "enable_trace": enable_trace,
+                    "_links": {
+                        "status": f"/tasks/{task_id}",
+                        "session": f"/sessions/{session_id}",
+                    },
+                },
+            )
+            
+        except Exception as bedrock_error:
+            logger.error(f"Bedrock agent execution failed: {str(bedrock_error)}")
+            return create_response(
+                500,
+                {
+                    "error": "AGENT_EXECUTION_FAILED",
+                    "message": f"Failed to execute agent '{agent_name}': {str(bedrock_error)}",
+                    "request_id": context.aws_request_id,
+                },
+            )
+    
+    except Exception as e:
+        logger.error(f"Error executing agent: {str(e)}")
+        return create_response(
+            500,
+            {
+                "error": "INTERNAL_ERROR",
+                "message": "Failed to execute agent",
+                "request_id": context.aws_request_id,
+            },
+        )
+
+
+def validate_session_request(body: Dict[str, Any]) -> Optional[str]:
+    """
+    Validate session creation request parameters
+    
+    Args:
+        body: Request body
+        
+    Returns:
+        Error message if validation fails, None otherwise
+    """
+    # Required fields
+    if not body.get("user_id"):
+        return "user_id is required"
+    
+    # Validate user_id format
+    user_id = body.get("user_id", "")
+    if len(user_id) > 50:
+        return "user_id must be less than 50 characters"
+    
+    # Validate session_name if provided
+    session_name = body.get("session_name")
+    if session_name and len(session_name) > 100:
+        return "session_name must be less than 100 characters"
+    
+    return None
+
+
+def validate_agent_request(body: Dict[str, Any], agent_name: Optional[str]) -> Optional[str]:
+    """
+    Validate agent execution request parameters
+    
+    Args:
+        body: Request body
+        agent_name: Agent name from path parameter
+        
+    Returns:
+        Error message if validation fails, None otherwise
+    """
+    # Required fields
+    if not body.get("input"):
+        return "input is required"
+    
+    if not agent_name:
+        return "Agent name is required in path"
+    
+    # Validate input length
+    input_text = body.get("input", "")
+    if len(input_text) > 2000:
+        return "input must be less than 2000 characters"
+    
+    # Validate agent name
+    valid_agents = ["orchestrator", "content", "visual", "compiler"]
+    if agent_name not in valid_agents:
+        return f"Invalid agent name. Valid agents: {valid_agents}"
+    
+    return None

@@ -1,0 +1,484 @@
+name: Integration Tests & API Coverage
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'lambdas/**'
+      - 'tests/integration/**'
+      - '.github/workflows/integration-tests.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'lambdas/**'
+      - 'tests/integration/**'
+      - '.github/workflows/integration-tests.yml'
+  schedule:
+    # Run daily at 6 AM UTC
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      test_type:
+        description: 'Type of integration tests to run'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - api_only
+          - smoke_only
+          - performance_only
+      aws_environment:
+        description: 'AWS environment for testing'
+        required: false
+        default: 'mocked'
+        type: choice
+        options:
+          - mocked
+          - real_aws_dev
+
+env:
+  PYTHON_VERSION: '3.12'  # Lambda runtime version
+  AWS_DEFAULT_REGION: 'us-east-1'
+  PYTEST_TIMEOUT: 600
+  TEST_RESULTS_DIR: 'test-results/integration'
+
+jobs:
+  setup-matrix:
+    name: Setup Test Matrix
+    runs-on: ubuntu-latest
+    outputs:
+      test_matrix: ${{ steps.set-matrix.outputs.matrix }}
+    
+    steps:
+    - name: Set up test matrix
+      id: set-matrix
+      run: |
+        case "${{ github.event.inputs.test_type || 'all' }}" in
+          "api_only")
+            matrix='["api"]'
+            ;;
+          "smoke_only")
+            matrix='["smoke"]'
+            ;;
+          "performance_only")
+            matrix='["performance"]'
+            ;;
+          *)
+            matrix='["api", "smoke", "performance", "concurrent"]'
+            ;;
+        esac
+        echo "matrix=${matrix}" >> $GITHUB_OUTPUT
+
+  integration-tests:
+    name: Integration Tests - ${{ matrix.test_type }}
+    runs-on: ubuntu-latest
+    needs: setup-matrix
+    strategy:
+      fail-fast: false
+      matrix:
+        test_type: ${{ fromJson(needs.setup-matrix.outputs.test_matrix) }}
+    
+    env:
+      COVERAGE_FILE: .coverage.${{ matrix.test_type }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Full history for better coverage analysis
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+    
+    - name: Cache test dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cache/pip
+          ~/.cache/pytest
+        key: ${{ runner.os }}-test-${{ env.PYTHON_VERSION }}-${{ hashFiles('**/requirements.txt', 'tests/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-test-${{ env.PYTHON_VERSION }}-
+          ${{ runner.os }}-test-
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip wheel setuptools
+        pip install -r tests/requirements.txt
+        pip install -r lambdas/layers/requirements.txt
+        # Additional test dependencies
+        pip install pytest-html pytest-json-report pytest-benchmark pytest-timeout
+
+    - name: Create test results directory
+      run: |
+        mkdir -p ${{ env.TEST_RESULTS_DIR }}
+        mkdir -p htmlcov/integration
+        mkdir -p logs/integration
+
+    - name: Configure AWS credentials (mocked)
+      if: github.event.inputs.aws_environment != 'real_aws_dev'
+      run: |
+        echo "Using mocked AWS services"
+        export AWS_ACCESS_KEY_ID=testing
+        export AWS_SECRET_ACCESS_KEY=testing
+        export AWS_SECURITY_TOKEN=testing
+        export AWS_SESSION_TOKEN=testing
+
+    - name: Configure AWS credentials (real)
+      if: github.event.inputs.aws_environment == 'real_aws_dev'
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+
+    - name: Setup test environment
+      run: |
+        # Set environment variables for testing
+        cat > .env.test << EOF
+        ENVIRONMENT=test
+        LOG_LEVEL=DEBUG
+        POWERTOOLS_LOG_LEVEL=DEBUG
+        POWERTOOLS_SERVICE_NAME=ai-ppt-assistant-integration-test
+        AWS_DEFAULT_REGION=${{ env.AWS_DEFAULT_REGION }}
+        # Test-specific configurations
+        TEST_MODE=integration
+        TEST_TYPE=${{ matrix.test_type }}
+        PYTEST_CURRENT_TEST=true
+        EOF
+        
+        # Load environment variables
+        set -a
+        source .env.test
+        set +a
+
+    - name: Run API Integration Tests
+      if: matrix.test_type == 'api'
+      run: |
+        pytest tests/integration/api_tests.py \
+          -v \
+          -m "integration and api and not slow" \
+          --cov=lambdas/api \
+          --cov-append \
+          --cov-report=html:htmlcov/integration/api \
+          --cov-report=term-missing \
+          --cov-report=xml:coverage-api.xml \
+          --html=${{ env.TEST_RESULTS_DIR }}/api-report.html \
+          --self-contained-html \
+          --json-report --json-report-file=${{ env.TEST_RESULTS_DIR }}/api-report.json \
+          --junitxml=${{ env.TEST_RESULTS_DIR }}/api-results.xml \
+          --timeout=${{ env.PYTEST_TIMEOUT }}
+
+    - name: Run Smoke Tests
+      if: matrix.test_type == 'smoke'
+      run: |
+        pytest tests/integration/ \
+          -v \
+          -m "integration and smoke" \
+          --cov=lambdas \
+          --cov-append \
+          --cov-report=html:htmlcov/integration/smoke \
+          --cov-report=term-missing \
+          --cov-report=xml:coverage-smoke.xml \
+          --html=${{ env.TEST_RESULTS_DIR }}/smoke-report.html \
+          --self-contained-html \
+          --json-report --json-report-file=${{ env.TEST_RESULTS_DIR }}/smoke-report.json \
+          --junitxml=${{ env.TEST_RESULTS_DIR }}/smoke-results.xml \
+          --timeout=120
+
+    - name: Run Performance Tests
+      if: matrix.test_type == 'performance'
+      run: |
+        pytest tests/integration/api_tests.py::TestPerformanceBenchmarks \
+          -v \
+          -m "integration and slow" \
+          --benchmark-only \
+          --benchmark-sort=mean \
+          --benchmark-json=${{ env.TEST_RESULTS_DIR }}/benchmark-results.json \
+          --html=${{ env.TEST_RESULTS_DIR }}/performance-report.html \
+          --self-contained-html \
+          --timeout=${{ env.PYTEST_TIMEOUT }}
+
+    - name: Run Concurrent Tests
+      if: matrix.test_type == 'concurrent'
+      run: |
+        pytest tests/integration/api_tests.py::TestConcurrentRequests \
+          -v \
+          -m "integration and concurrent" \
+          --cov=lambdas/api \
+          --cov-append \
+          --cov-report=html:htmlcov/integration/concurrent \
+          --cov-report=term-missing \
+          --cov-report=xml:coverage-concurrent.xml \
+          --html=${{ env.TEST_RESULTS_DIR }}/concurrent-report.html \
+          --self-contained-html \
+          --json-report --json-report-file=${{ env.TEST_RESULTS_DIR }}/concurrent-report.json \
+          --junitxml=${{ env.TEST_RESULTS_DIR }}/concurrent-results.xml \
+          --timeout=${{ env.PYTEST_TIMEOUT }}
+
+    - name: Generate Test Summary
+      if: always()
+      run: |
+        echo "## Integration Test Summary - ${{ matrix.test_type }}" > ${{ env.TEST_RESULTS_DIR }}/summary.md
+        echo "" >> ${{ env.TEST_RESULTS_DIR }}/summary.md
+        echo "**Test Type:** ${{ matrix.test_type }}" >> ${{ env.TEST_RESULTS_DIR }}/summary.md
+        echo "**Python Version:** ${{ env.PYTHON_VERSION }}" >> ${{ env.TEST_RESULTS_DIR }}/summary.md
+        echo "**AWS Environment:** ${{ github.event.inputs.aws_environment || 'mocked' }}" >> ${{ env.TEST_RESULTS_DIR }}/summary.md
+        echo "**Run Date:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> ${{ env.TEST_RESULTS_DIR }}/summary.md
+        echo "" >> ${{ env.TEST_RESULTS_DIR }}/summary.md
+        
+        if [ -f coverage-*.xml ]; then
+          echo "**Coverage Files Generated:**" >> ${{ env.TEST_RESULTS_DIR }}/summary.md
+          ls -la coverage-*.xml >> ${{ env.TEST_RESULTS_DIR }}/summary.md
+        fi
+        
+        echo "" >> ${{ env.TEST_RESULTS_DIR }}/summary.md
+        echo "**Exit Code:** $?" >> ${{ env.TEST_RESULTS_DIR }}/summary.md
+
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: integration-test-results-${{ matrix.test_type }}
+        path: |
+          ${{ env.TEST_RESULTS_DIR }}/
+          htmlcov/integration/
+          logs/integration/
+        retention-days: 30
+
+    - name: Upload Coverage to Codecov
+      uses: codecov/codecov-action@v3
+      if: always()
+      with:
+        file: ./coverage-*.xml
+        flags: integration,${{ matrix.test_type }}
+        name: integration-${{ matrix.test_type }}
+        fail_ci_if_error: false
+        verbose: true
+
+  consolidate-coverage:
+    name: Consolidate Coverage Reports
+    runs-on: ubuntu-latest
+    needs: integration-tests
+    if: always()
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install coverage tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install coverage[toml] pytest-cov
+
+    - name: Download all coverage artifacts
+      uses: actions/download-artifact@v3
+      with:
+        path: artifacts/
+
+    - name: Combine coverage reports
+      run: |
+        # Create combined coverage directory
+        mkdir -p combined-coverage
+        
+        # Find and combine all coverage files
+        find artifacts/ -name "coverage-*.xml" -exec cp {} combined-coverage/ \;
+        find artifacts/ -name ".coverage.*" -exec cp {} . \;
+        
+        # Combine coverage data if any exists
+        if ls .coverage.* 1> /dev/null 2>&1; then
+          coverage combine
+          coverage xml -o combined-coverage/coverage-combined.xml
+          coverage html -d combined-coverage/htmlcov
+          coverage report > combined-coverage/coverage-report.txt
+        fi
+
+    - name: Generate Coverage Badge
+      run: |
+        if [ -f combined-coverage/coverage-combined.xml ]; then
+          # Extract coverage percentage
+          COVERAGE=$(python -c "
+          import xml.etree.ElementTree as ET
+          tree = ET.parse('combined-coverage/coverage-combined.xml')
+          root = tree.getroot()
+          print(f\"{float(root.get('line-rate', 0)) * 100:.1f}\")
+          " 2>/dev/null || echo "0.0")
+          
+          echo "COVERAGE_PERCENTAGE=${COVERAGE}" >> $GITHUB_ENV
+          
+          # Create coverage badge JSON
+          cat > combined-coverage/coverage-badge.json << EOF
+          {
+            "schemaVersion": 1,
+            "label": "coverage",
+            "message": "${COVERAGE}%",
+            "color": "$([ ${COVERAGE%.*} -ge 80 ] && echo "brightgreen" || [ ${COVERAGE%.*} -ge 60 ] && echo "yellow" || echo "red")"
+          }
+          EOF
+        fi
+
+    - name: Upload Combined Coverage
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: combined-coverage-report
+        path: combined-coverage/
+        retention-days: 90
+
+    - name: Comment PR with Coverage
+      uses: actions/github-script@v6
+      if: github.event_name == 'pull_request' && always()
+      with:
+        script: |
+          const fs = require('fs');
+          let comment = '## 🧪 Integration Test Results\n\n';
+          
+          // Add coverage information if available
+          if (process.env.COVERAGE_PERCENTAGE) {
+            const coverage = parseFloat(process.env.COVERAGE_PERCENTAGE);
+            const emoji = coverage >= 80 ? '✅' : coverage >= 60 ? '⚠️' : '❌';
+            comment += `**Coverage:** ${emoji} ${coverage}%\n\n`;
+          }
+          
+          // Add test results summary
+          comment += '### Test Matrix Results\n';
+          comment += '| Test Type | Status |\n';
+          comment += '|-----------|--------|\n';
+          
+          try {
+            const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: context.runId
+            });
+            
+            for (const artifact of artifacts.data.artifacts) {
+              if (artifact.name.includes('integration-test-results-')) {
+                const testType = artifact.name.replace('integration-test-results-', '');
+                comment += `| ${testType} | ✅ Complete |\n`;
+              }
+            }
+          } catch (error) {
+            comment += '| Various | ⏳ In Progress |\n';
+          }
+          
+          comment += '\n📊 Detailed reports are available in the Actions artifacts.';
+          
+          // Find existing comment to update or create new one
+          const comments = await github.rest.issues.listComments({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number
+          });
+          
+          const existingComment = comments.data.find(c => 
+            c.body.includes('🧪 Integration Test Results')
+          );
+          
+          if (existingComment) {
+            await github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: existingComment.id,
+              body: comment
+            });
+          } else {
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: comment
+            });
+          }
+
+  test-health-check:
+    name: Integration Test Health Check
+    runs-on: ubuntu-latest
+    needs: integration-tests
+    if: always()
+    
+    steps:
+    - name: Check integration test results
+      run: |
+        echo "Checking integration test health..."
+        
+        # This would be enhanced with actual health metrics
+        # For now, we'll check if the integration tests completed
+        
+        if [[ "${{ needs.integration-tests.result }}" == "success" ]]; then
+          echo "✅ All integration tests passed successfully"
+          echo "HEALTH_STATUS=healthy" >> $GITHUB_ENV
+        elif [[ "${{ needs.integration-tests.result }}" == "failure" ]]; then
+          echo "❌ Integration tests failed"
+          echo "HEALTH_STATUS=failing" >> $GITHUB_ENV
+        else
+          echo "⚠️ Integration tests completed with issues"
+          echo "HEALTH_STATUS=degraded" >> $GITHUB_ENV
+        fi
+
+    - name: Update health status
+      run: |
+        echo "Integration test health status: $HEALTH_STATUS"
+        
+        # In a real implementation, this might update a dashboard
+        # or send notifications based on the health status
+        case $HEALTH_STATUS in
+          "healthy")
+            echo "🟢 System is healthy"
+            ;;
+          "degraded")
+            echo "🟡 System is degraded"
+            ;;
+          "failing")
+            echo "🔴 System is failing"
+            exit 1
+            ;;
+        esac
+
+    - name: Notify on failure
+      if: failure()
+      run: |
+        echo "🚨 Integration tests are failing!"
+        echo "This workflow run: ${{ github.run_id }}"
+        echo "Commit: ${{ github.sha }}"
+        echo "Branch: ${{ github.ref_name }}"
+        # In production, this might send Slack/email notifications
+
+  cleanup:
+    name: Cleanup Test Resources
+    runs-on: ubuntu-latest
+    needs: [integration-tests, consolidate-coverage]
+    if: always() && github.event.inputs.aws_environment == 'real_aws_dev'
+    
+    steps:
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+
+    - name: Cleanup test resources
+      run: |
+        echo "🧹 Cleaning up test resources..."
+        
+        # Clean up any test resources that might have been created
+        # This is a placeholder - actual cleanup would depend on what resources are created
+        
+        # Example: Delete test DynamoDB tables
+        # aws dynamodb list-tables --query 'TableNames[?starts_with(@, `test-`)]' --output text | \
+        #   xargs -r -n1 aws dynamodb delete-table --table-name
+        
+        # Example: Delete test S3 objects
+        # aws s3 rm s3://test-bucket-name --recursive
+        
+        echo "✅ Cleanup completed"

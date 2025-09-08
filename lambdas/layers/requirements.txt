@@ -33,3 +33,7 @@ jsonschema==4.23.0
 
 # YAML processing
 PyYAML==6.0.2
+
+# Data validation - Essential for controller functions
+pydantic==2.9.2
+pydantic-core==2.23.4

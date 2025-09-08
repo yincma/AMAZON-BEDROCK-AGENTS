@@ -1,13 +1,33 @@
 # Lambda Module - All Lambda Functions for AI PPT Assistant
 
-# Lambda Layer for shared dependencies
-resource "aws_lambda_layer_version" "shared_dependencies" {
-  filename            = "${path.module}/../../../lambdas/layers/dist/ai-ppt-assistant-dependencies.zip"
-  layer_name          = "${var.project_name}-shared-deps"
-  compatible_runtimes = ["python3.12"]
+# Lambda Layer for minimal API dependencies (fast cold start)
+resource "aws_lambda_layer_version" "minimal_dependencies" {
+  filename                 = "${path.module}/../../../lambdas/layers/dist/ai-ppt-assistant-minimal.zip"
+  layer_name               = "${var.project_name}-minimal-deps"
+  compatible_runtimes      = ["python3.12"]
   compatible_architectures = ["arm64"]
-  
-  description = "Shared dependencies for all Lambda functions"
+
+  description = "Minimal dependencies for API Lambda functions (optimized for cold start)"
+}
+
+# Lambda Layer for content processing dependencies
+resource "aws_lambda_layer_version" "content_dependencies" {
+  filename                 = "${path.module}/../../../lambdas/layers/dist/ai-ppt-assistant-content.zip"
+  layer_name               = "${var.project_name}-content-deps"
+  compatible_runtimes      = ["python3.12"]
+  compatible_architectures = ["arm64"]
+
+  description = "Content processing dependencies for controller functions"
+}
+
+# Legacy layer for backward compatibility
+resource "aws_lambda_layer_version" "shared_dependencies" {
+  filename                 = "${path.module}/../../../lambdas/layers/dist/ai-ppt-assistant-dependencies.zip"
+  layer_name               = "${var.project_name}-shared-deps"
+  compatible_runtimes      = ["python3.12"]
+  compatible_architectures = ["arm64"]
+
+  description = "Shared dependencies for all Lambda functions (legacy)"
 }
 
 # IAM Role for Lambda Functions
@@ -96,9 +116,12 @@ resource "aws_iam_policy" "lambda_policy" {
       {
         Effect = "Allow"
         Action = [
-          "bedrock-runtime:InvokeAgent"
+          "bedrock:InvokeAgent"
         ]
-        Resource = "arn:aws:bedrock:${var.aws_region}:${data.aws_caller_identity.current.account_id}:agent/*"
+        Resource = [
+          "arn:aws:bedrock:${var.aws_region}:${data.aws_caller_identity.current.account_id}:agent/*",
+          "arn:aws:bedrock:${var.aws_region}:${data.aws_caller_identity.current.account_id}:agent-alias/*/*"
+        ]
       },
       {
         Effect = "Allow"
@@ -135,26 +158,26 @@ data "aws_caller_identity" "current" {}
 
 # Lambda Function: Create Outline
 resource "aws_lambda_function" "create_outline" {
-  filename         = "${path.module}/../../../lambdas/controllers/create_outline.zip"
-  function_name    = "${var.project_name}-create-outline"
-  role            = aws_iam_role.lambda_execution_role.arn
-  handler         = "create_outline.lambda_handler"
-  runtime         = "python3.12"
-  architectures   = ["arm64"]
-  timeout         = 60
-  memory_size     = 1024
+  filename      = "${path.module}/../../../lambdas/controllers/create_outline.zip"
+  function_name = "${var.project_name}-create-outline"
+  role          = aws_iam_role.lambda_execution_role.arn
+  handler       = "create_outline.lambda_handler"
+  runtime       = "python3.12"
+  architectures = ["arm64"]
+  timeout       = 60
+  memory_size   = 1536  # Optimized memory for better performance
 
-  layers = [aws_lambda_layer_version.shared_dependencies.arn]
+  layers = [aws_lambda_layer_version.content_dependencies.arn]
 
   environment {
     variables = {
-      S3_BUCKET          = var.s3_bucket_name
-      DYNAMODB_TABLE     = var.dynamodb_table_name
-      BEDROCK_MODEL_ID   = "anthropic.claude-4-0"
-      LOG_LEVEL          = var.log_level
+      S3_BUCKET        = var.s3_bucket_name
+      DYNAMODB_TABLE   = var.dynamodb_table_name
+      BEDROCK_MODEL_ID = var.bedrock_model_id
+      LOG_LEVEL        = var.log_level
     }
   }
-  
+
   # VPC configuration for enhanced security
   dynamic "vpc_config" {
     for_each = var.enable_vpc_config ? [1] : []
@@ -169,26 +192,26 @@ resource "aws_lambda_function" "create_outline" {
 
 # Lambda Function: Generate Content
 resource "aws_lambda_function" "generate_content" {
-  filename         = "${path.module}/../../../lambdas/controllers/generate_content.zip"
-  function_name    = "${var.project_name}-generate-content"
-  role            = aws_iam_role.lambda_execution_role.arn
-  handler         = "generate_content.lambda_handler"
-  runtime         = "python3.12"
-  architectures   = ["arm64"]
-  timeout         = 120
-  memory_size     = 2048
+  filename      = "${path.module}/../../../lambdas/controllers/generate_content.zip"
+  function_name = "${var.project_name}-generate-content"
+  role          = aws_iam_role.lambda_execution_role.arn
+  handler       = "generate_content.lambda_handler"
+  runtime       = "python3.12"
+  architectures = ["arm64"]
+  timeout       = 120
+  memory_size   = 2048
 
-  layers = [aws_lambda_layer_version.shared_dependencies.arn]
+  layers = [aws_lambda_layer_version.content_dependencies.arn]
 
   environment {
     variables = {
-      S3_BUCKET          = var.s3_bucket_name
-      DYNAMODB_TABLE     = var.dynamodb_table_name
-      BEDROCK_MODEL_ID   = "anthropic.claude-4-0"
-      LOG_LEVEL          = var.log_level
+      S3_BUCKET        = var.s3_bucket_name
+      DYNAMODB_TABLE   = var.dynamodb_table_name
+      BEDROCK_MODEL_ID = var.bedrock_model_id
+      LOG_LEVEL        = var.log_level
     }
   }
-  
+
   # VPC configuration for enhanced security
   dynamic "vpc_config" {
     for_each = var.enable_vpc_config ? [1] : []
@@ -203,26 +226,26 @@ resource "aws_lambda_function" "generate_content" {
 
 # Lambda Function: Generate Image
 resource "aws_lambda_function" "generate_image" {
-  filename         = "${path.module}/../../../lambdas/controllers/generate_image.zip"
-  function_name    = "${var.project_name}-generate-image"
-  role            = aws_iam_role.lambda_execution_role.arn
-  handler         = "generate_image.lambda_handler"
-  runtime         = "python3.12"
-  architectures   = ["arm64"]
-  timeout         = 90
-  memory_size     = 1024
+  filename      = "${path.module}/../../../lambdas/controllers/generate_image.zip"
+  function_name = "${var.project_name}-generate-image"
+  role          = aws_iam_role.lambda_execution_role.arn
+  handler       = "generate_image.lambda_handler"
+  runtime       = "python3.12"
+  architectures = ["arm64"]
+  timeout       = 90
+  memory_size   = 1536  # Optimized memory for image processing
 
-  layers = [aws_lambda_layer_version.shared_dependencies.arn]
+  layers = [aws_lambda_layer_version.content_dependencies.arn]
 
   environment {
     variables = {
-      S3_BUCKET          = var.s3_bucket_name
-      DYNAMODB_TABLE     = var.dynamodb_table_name
-      NOVA_MODEL_ID      = "amazon.nova-canvas-v1:0"
-      LOG_LEVEL          = var.log_level
+      S3_BUCKET      = var.s3_bucket_name
+      DYNAMODB_TABLE = var.dynamodb_table_name
+      NOVA_MODEL_ID  = var.nova_model_id
+      LOG_LEVEL      = var.log_level
     }
   }
-  
+
   # VPC configuration for enhanced security
   dynamic "vpc_config" {
     for_each = var.enable_vpc_config ? [1] : []
@@ -237,25 +260,25 @@ resource "aws_lambda_function" "generate_image" {
 
 # Lambda Function: Find Image
 resource "aws_lambda_function" "find_image" {
-  filename         = "${path.module}/../../../lambdas/controllers/find_image.zip"
-  function_name    = "${var.project_name}-find-image"
-  role            = aws_iam_role.lambda_execution_role.arn
-  handler         = "find_image.lambda_handler"
-  runtime         = "python3.12"
-  architectures   = ["arm64"]
-  timeout         = 30
-  memory_size     = 512
+  filename      = "${path.module}/../../../lambdas/controllers/find_image.zip"
+  function_name = "${var.project_name}-find-image"
+  role          = aws_iam_role.lambda_execution_role.arn
+  handler       = "find_image.lambda_handler"
+  runtime       = "python3.12"
+  architectures = ["arm64"]
+  timeout       = 30
+  memory_size   = 768   # Optimized memory for search operations
 
-  layers = [aws_lambda_layer_version.shared_dependencies.arn]
+  layers = [aws_lambda_layer_version.minimal_dependencies.arn]  # Fast cold start
 
   environment {
     variables = {
-      S3_BUCKET          = var.s3_bucket_name
-      DYNAMODB_TABLE     = var.dynamodb_table_name
-      LOG_LEVEL          = var.log_level
+      S3_BUCKET      = var.s3_bucket_name
+      DYNAMODB_TABLE = var.dynamodb_table_name
+      LOG_LEVEL      = var.log_level
     }
   }
-  
+
   # VPC configuration for enhanced security
   dynamic "vpc_config" {
     for_each = var.enable_vpc_config ? [1] : []
@@ -270,26 +293,26 @@ resource "aws_lambda_function" "find_image" {
 
 # Lambda Function: Generate Speaker Notes
 resource "aws_lambda_function" "generate_speaker_notes" {
-  filename         = "${path.module}/../../../lambdas/controllers/generate_speaker_notes.zip"
-  function_name    = "${var.project_name}-generate-speaker-notes"
-  role            = aws_iam_role.lambda_execution_role.arn
-  handler         = "generate_speaker_notes.lambda_handler"
-  runtime         = "python3.12"
-  architectures   = ["arm64"]
-  timeout         = 60
-  memory_size     = 1024
+  filename      = "${path.module}/../../../lambdas/controllers/generate_speaker_notes.zip"
+  function_name = "${var.project_name}-generate-speaker-notes"
+  role          = aws_iam_role.lambda_execution_role.arn
+  handler       = "generate_speaker_notes.lambda_handler"
+  runtime       = "python3.12"
+  architectures = ["arm64"]
+  timeout       = 60
+  memory_size   = 1536  # Optimized memory for content generation
 
-  layers = [aws_lambda_layer_version.shared_dependencies.arn]
+  layers = [aws_lambda_layer_version.content_dependencies.arn]
 
   environment {
     variables = {
-      S3_BUCKET          = var.s3_bucket_name
-      DYNAMODB_TABLE     = var.dynamodb_table_name
-      BEDROCK_MODEL_ID   = "anthropic.claude-4-0"
-      LOG_LEVEL          = var.log_level
+      S3_BUCKET        = var.s3_bucket_name
+      DYNAMODB_TABLE   = var.dynamodb_table_name
+      BEDROCK_MODEL_ID = var.bedrock_model_id
+      LOG_LEVEL        = var.log_level
     }
   }
-  
+
   # VPC configuration for enhanced security
   dynamic "vpc_config" {
     for_each = var.enable_vpc_config ? [1] : []
@@ -304,25 +327,25 @@ resource "aws_lambda_function" "generate_speaker_notes" {
 
 # Lambda Function: Compile PPTX
 resource "aws_lambda_function" "compile_pptx" {
-  filename         = "${path.module}/../../../lambdas/controllers/compile_pptx.zip"
-  function_name    = "${var.project_name}-compile-pptx"
-  role            = aws_iam_role.lambda_execution_role.arn
-  handler         = "compile_pptx.lambda_handler"
-  runtime         = "python3.12"
-  architectures   = ["arm64"]
-  timeout         = 180
-  memory_size     = 3008
+  filename      = "${path.module}/../../../lambdas/controllers/compile_pptx.zip"
+  function_name = "${var.project_name}-compile-pptx"
+  role          = aws_iam_role.lambda_execution_role.arn
+  handler       = "compile_pptx.lambda_handler"
+  runtime       = "python3.12"
+  architectures = ["arm64"]
+  timeout       = 180
+  memory_size   = 3008  # Maximum memory for PPTX compilation
 
-  layers = [aws_lambda_layer_version.shared_dependencies.arn]
+  layers = [aws_lambda_layer_version.content_dependencies.arn]
 
   environment {
     variables = {
-      S3_BUCKET          = var.s3_bucket_name
-      DYNAMODB_TABLE     = var.dynamodb_table_name
-      LOG_LEVEL          = var.log_level
+      S3_BUCKET      = var.s3_bucket_name
+      DYNAMODB_TABLE = var.dynamodb_table_name
+      LOG_LEVEL      = var.log_level
     }
   }
-  
+
   # VPC configuration for enhanced security
   dynamic "vpc_config" {
     for_each = var.enable_vpc_config ? [1] : []
@@ -339,28 +362,28 @@ resource "aws_lambda_function" "compile_pptx" {
 
 # Lambda Function: Generate Presentation API
 resource "aws_lambda_function" "api_generate_presentation" {
-  filename         = "${path.module}/../../../lambdas/api/generate_presentation.zip"
-  function_name    = "${var.project_name}-api-generate-presentation"
-  role            = aws_iam_role.lambda_execution_role.arn
-  handler         = "generate_presentation.lambda_handler"
-  runtime         = "python3.12"
-  architectures   = ["arm64"]
-  timeout         = 30
-  memory_size     = 512
+  filename      = "${path.module}/../../../lambdas/api/generate_presentation.zip"
+  function_name = "${var.project_name}-api-generate-presentation"
+  role          = aws_iam_role.lambda_execution_role.arn
+  handler       = "generate_presentation.lambda_handler"
+  runtime       = "python3.12"
+  architectures = ["arm64"]
+  timeout       = 30
+  memory_size   = 768   # Optimized memory for API operations
 
-  layers = [aws_lambda_layer_version.shared_dependencies.arn]
+  layers = [aws_lambda_layer_version.minimal_dependencies.arn]  # Fast cold start for API
 
   environment {
     variables = {
       DYNAMODB_TABLE        = var.dynamodb_table_name
-      S3_BUCKET            = var.s3_bucket_name
-      SQS_QUEUE_URL        = var.sqs_queue_url
+      S3_BUCKET             = var.s3_bucket_name
+      SQS_QUEUE_URL         = var.sqs_queue_url
       ORCHESTRATOR_AGENT_ID = var.orchestrator_agent_id
       ORCHESTRATOR_ALIAS_ID = var.orchestrator_alias_id
-      LOG_LEVEL            = var.log_level
+      LOG_LEVEL             = var.log_level
     }
   }
-  
+
   # VPC configuration for enhanced security
   dynamic "vpc_config" {
     for_each = var.enable_vpc_config ? [1] : []
@@ -375,16 +398,16 @@ resource "aws_lambda_function" "api_generate_presentation" {
 
 # Lambda Function: Presentation Status API
 resource "aws_lambda_function" "api_presentation_status" {
-  filename         = "${path.module}/../../../lambdas/api/presentation_status.zip"
-  function_name    = "${var.project_name}-api-presentation-status"
-  role            = aws_iam_role.lambda_execution_role.arn
-  handler         = "presentation_status.lambda_handler"
-  runtime         = "python3.12"
-  architectures   = ["arm64"]
-  timeout         = 10
-  memory_size     = 256
+  filename      = "${path.module}/../../../lambdas/api/presentation_status.zip"
+  function_name = "${var.project_name}-api-presentation-status"
+  role          = aws_iam_role.lambda_execution_role.arn
+  handler       = "presentation_status.lambda_handler"
+  runtime       = "python3.12"
+  architectures = ["arm64"]
+  timeout       = 10
+  memory_size   = 512   # Optimized memory for status checks
 
-  layers = [aws_lambda_layer_version.shared_dependencies.arn]
+  layers = [aws_lambda_layer_version.minimal_dependencies.arn]  # Fast cold start for status API
 
   environment {
     variables = {
@@ -392,7 +415,7 @@ resource "aws_lambda_function" "api_presentation_status" {
       LOG_LEVEL      = var.log_level
     }
   }
-  
+
   # VPC configuration for enhanced security
   dynamic "vpc_config" {
     for_each = var.enable_vpc_config ? [1] : []
@@ -407,26 +430,26 @@ resource "aws_lambda_function" "api_presentation_status" {
 
 # Lambda Function: Presentation Download API
 resource "aws_lambda_function" "api_presentation_download" {
-  filename         = "${path.module}/../../../lambdas/api/presentation_download.zip"
-  function_name    = "${var.project_name}-api-presentation-download"
-  role            = aws_iam_role.lambda_execution_role.arn
-  handler         = "presentation_download.lambda_handler"
-  runtime         = "python3.12"
-  architectures   = ["arm64"]
-  timeout         = 10
-  memory_size     = 256
+  filename      = "${path.module}/../../../lambdas/api/presentation_download.zip"
+  function_name = "${var.project_name}-api-presentation-download"
+  role          = aws_iam_role.lambda_execution_role.arn
+  handler       = "presentation_download.lambda_handler"
+  runtime       = "python3.12"
+  architectures = ["arm64"]
+  timeout       = 10
+  memory_size   = 512   # Optimized memory for download operations
 
-  layers = [aws_lambda_layer_version.shared_dependencies.arn]
+  layers = [aws_lambda_layer_version.minimal_dependencies.arn]  # Fast cold start for download API
 
   environment {
     variables = {
-      DYNAMODB_TABLE         = var.dynamodb_table_name
-      S3_BUCKET             = var.s3_bucket_name
+      DYNAMODB_TABLE          = var.dynamodb_table_name
+      S3_BUCKET               = var.s3_bucket_name
       DOWNLOAD_EXPIRY_SECONDS = "3600"
-      LOG_LEVEL             = var.log_level
+      LOG_LEVEL               = var.log_level
     }
   }
-  
+
   # VPC configuration for enhanced security
   dynamic "vpc_config" {
     for_each = var.enable_vpc_config ? [1] : []
@@ -441,32 +464,32 @@ resource "aws_lambda_function" "api_presentation_download" {
 
 # Lambda Function: Modify Slide API
 resource "aws_lambda_function" "api_modify_slide" {
-  filename         = "${path.module}/../../../lambdas/api/modify_slide.zip"
-  function_name    = "${var.project_name}-api-modify-slide"
-  role            = aws_iam_role.lambda_execution_role.arn
-  handler         = "modify_slide.lambda_handler"
-  runtime         = "python3.12"
-  architectures   = ["arm64"]
-  timeout         = 30
-  memory_size     = 512
+  filename      = "${path.module}/../../../lambdas/api/modify_slide.zip"
+  function_name = "${var.project_name}-api-modify-slide"
+  role          = aws_iam_role.lambda_execution_role.arn
+  handler       = "modify_slide.lambda_handler"
+  runtime       = "python3.12"
+  architectures = ["arm64"]
+  timeout       = 30
+  memory_size   = 768   # Optimized memory for slide modifications
 
-  layers = [aws_lambda_layer_version.shared_dependencies.arn]
+  layers = [aws_lambda_layer_version.minimal_dependencies.arn]  # Fast cold start for modify API
 
   environment {
     variables = {
       DYNAMODB_TABLE    = var.dynamodb_table_name
-      S3_BUCKET        = var.s3_bucket_name
-      SQS_QUEUE_URL    = var.sqs_queue_url
+      S3_BUCKET         = var.s3_bucket_name
+      SQS_QUEUE_URL     = var.sqs_queue_url
       CONTENT_AGENT_ID  = var.content_agent_id
       CONTENT_ALIAS_ID  = var.content_alias_id
       VISUAL_AGENT_ID   = var.visual_agent_id
       VISUAL_ALIAS_ID   = var.visual_alias_id
       COMPILER_AGENT_ID = var.compiler_agent_id
       COMPILER_ALIAS_ID = var.compiler_alias_id
-      LOG_LEVEL        = var.log_level
+      LOG_LEVEL         = var.log_level
     }
   }
-  
+
   # VPC configuration for enhanced security
   dynamic "vpc_config" {
     for_each = var.enable_vpc_config ? [1] : []
@@ -479,34 +502,131 @@ resource "aws_lambda_function" "api_modify_slide" {
   tags = var.tags
 }
 
+# =============================================================================
+# PROVISIONED CONCURRENCY CONFIGURATION
+# =============================================================================
+# Provisioned concurrency helps reduce cold start latency for high-frequency API functions
+
+# Temporarily disabled - need to create published versions first
+# resource "aws_lambda_provisioned_concurrency_config" "api_presentation_status" {
+#   count                             = var.enable_provisioned_concurrency ? 1 : 0
+#   function_name                     = aws_lambda_function.api_presentation_status.function_name
+#   provisioned_concurrent_executions = lookup(var.provisioned_concurrency_config, "api_presentation_status", { provisioned_concurrent_executions = 5, qualifier = "$LATEST" }).provisioned_concurrent_executions
+#   qualifier                         = lookup(var.provisioned_concurrency_config, "api_presentation_status", { provisioned_concurrent_executions = 5, qualifier = "$LATEST" }).qualifier
+
+#   depends_on = [aws_lambda_function.api_presentation_status]
+# }
+
+# resource "aws_lambda_provisioned_concurrency_config" "api_generate_presentation" {
+#   count                             = var.enable_provisioned_concurrency ? 1 : 0
+#   function_name                     = aws_lambda_function.api_generate_presentation.function_name
+#   provisioned_concurrent_executions = lookup(var.provisioned_concurrency_config, "api_generate_presentation", { provisioned_concurrent_executions = 3, qualifier = "$LATEST" }).provisioned_concurrent_executions
+#   qualifier                         = lookup(var.provisioned_concurrency_config, "api_generate_presentation", { provisioned_concurrent_executions = 3, qualifier = "$LATEST" }).qualifier
+
+#   depends_on = [aws_lambda_function.api_generate_presentation]
+# }
+
+# resource "aws_lambda_provisioned_concurrency_config" "api_presentation_download" {
+#   count                             = var.enable_provisioned_concurrency ? 1 : 0
+#   function_name                     = aws_lambda_function.api_presentation_download.function_name
+#   provisioned_concurrent_executions = lookup(var.provisioned_concurrency_config, "api_presentation_download", { provisioned_concurrent_executions = 2, qualifier = "$LATEST" }).provisioned_concurrent_executions
+#   qualifier                         = lookup(var.provisioned_concurrency_config, "api_presentation_download", { provisioned_concurrent_executions = 2, qualifier = "$LATEST" }).qualifier
+
+#   depends_on = [aws_lambda_function.api_presentation_download]
+# }
+
+# resource "aws_lambda_provisioned_concurrency_config" "api_modify_slide" {
+#   count                             = var.enable_provisioned_concurrency ? 1 : 0
+#   function_name                     = aws_lambda_function.api_modify_slide.function_name
+#   provisioned_concurrent_executions = lookup(var.provisioned_concurrency_config, "api_modify_slide", { provisioned_concurrent_executions = 2, qualifier = "$LATEST" }).provisioned_concurrent_executions
+#   qualifier                         = lookup(var.provisioned_concurrency_config, "api_modify_slide", { provisioned_concurrent_executions = 2, qualifier = "$LATEST" }).qualifier
+
+#   depends_on = [aws_lambda_function.api_modify_slide]
+# }
+
+# =============================================================================
+# CLOUDWATCH ALARMS FOR PERFORMANCE MONITORING  
+# =============================================================================
+# Monitor cold start duration and other performance metrics
+
+resource "aws_cloudwatch_metric_alarm" "lambda_cold_start_duration" {
+  for_each = {
+    api_presentation_status   = aws_lambda_function.api_presentation_status.function_name
+    api_generate_presentation = aws_lambda_function.api_generate_presentation.function_name
+    api_presentation_download = aws_lambda_function.api_presentation_download.function_name
+    api_modify_slide          = aws_lambda_function.api_modify_slide.function_name
+  }
+
+  alarm_name          = "${var.project_name}-${each.key}-cold-start-duration"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "Duration"
+  namespace           = "AWS/Lambda"
+  period              = "60"
+  statistic           = "Average"
+  threshold           = "1000"  # 1 second threshold
+  alarm_description   = "This metric monitors Lambda cold start duration for ${each.key}"
+  
+  dimensions = {
+    FunctionName = each.value
+  }
+
+  tags = var.tags
+}
+
+resource "aws_cloudwatch_metric_alarm" "lambda_error_rate" {
+  for_each = {
+    api_presentation_status   = aws_lambda_function.api_presentation_status.function_name
+    api_generate_presentation = aws_lambda_function.api_generate_presentation.function_name
+    api_presentation_download = aws_lambda_function.api_presentation_download.function_name
+    api_modify_slide          = aws_lambda_function.api_modify_slide.function_name
+  }
+
+  alarm_name          = "${var.project_name}-${each.key}-error-rate"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "Errors"
+  namespace           = "AWS/Lambda"
+  period              = "300"
+  statistic           = "Sum"
+  threshold           = "5"
+  alarm_description   = "This metric monitors Lambda error rate for ${each.key}"
+  
+  dimensions = {
+    FunctionName = each.value
+  }
+
+  tags = var.tags
+}
+
 # Outputs
 output "lambda_function_arns" {
   value = {
-    create_outline           = aws_lambda_function.create_outline.arn
-    generate_content        = aws_lambda_function.generate_content.arn
-    generate_image          = aws_lambda_function.generate_image.arn
-    find_image              = aws_lambda_function.find_image.arn
-    generate_speaker_notes  = aws_lambda_function.generate_speaker_notes.arn
-    compile_pptx            = aws_lambda_function.compile_pptx.arn
+    create_outline            = aws_lambda_function.create_outline.arn
+    generate_content          = aws_lambda_function.generate_content.arn
+    generate_image            = aws_lambda_function.generate_image.arn
+    find_image                = aws_lambda_function.find_image.arn
+    generate_speaker_notes    = aws_lambda_function.generate_speaker_notes.arn
+    compile_pptx              = aws_lambda_function.compile_pptx.arn
     api_generate_presentation = aws_lambda_function.api_generate_presentation.arn
-    api_presentation_status = aws_lambda_function.api_presentation_status.arn
+    api_presentation_status   = aws_lambda_function.api_presentation_status.arn
     api_presentation_download = aws_lambda_function.api_presentation_download.arn
-    api_modify_slide        = aws_lambda_function.api_modify_slide.arn
+    api_modify_slide          = aws_lambda_function.api_modify_slide.arn
   }
 }
 
 output "lambda_function_names" {
   value = {
-    create_outline           = aws_lambda_function.create_outline.function_name
-    generate_content        = aws_lambda_function.generate_content.function_name
-    generate_image          = aws_lambda_function.generate_image.function_name
-    find_image              = aws_lambda_function.find_image.function_name
-    generate_speaker_notes  = aws_lambda_function.generate_speaker_notes.function_name
-    compile_pptx            = aws_lambda_function.compile_pptx.function_name
+    create_outline            = aws_lambda_function.create_outline.function_name
+    generate_content          = aws_lambda_function.generate_content.function_name
+    generate_image            = aws_lambda_function.generate_image.function_name
+    find_image                = aws_lambda_function.find_image.function_name
+    generate_speaker_notes    = aws_lambda_function.generate_speaker_notes.function_name
+    compile_pptx              = aws_lambda_function.compile_pptx.function_name
     api_generate_presentation = aws_lambda_function.api_generate_presentation.function_name
-    api_presentation_status = aws_lambda_function.api_presentation_status.function_name
+    api_presentation_status   = aws_lambda_function.api_presentation_status.function_name
     api_presentation_download = aws_lambda_function.api_presentation_download.function_name
-    api_modify_slide        = aws_lambda_function.api_modify_slide.function_name
+    api_modify_slide          = aws_lambda_function.api_modify_slide.function_name
   }
 }
 

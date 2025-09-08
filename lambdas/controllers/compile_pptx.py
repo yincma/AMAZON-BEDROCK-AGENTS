@@ -73,7 +73,7 @@ from utils.checkpoint_manager import (
 # Initialize AWS Lambda Powertools
 logger = Logger()
 tracer = Tracer()
-metrics = Metrics()
+metrics = Metrics(namespace="AIPPTAssistant")
 
 # Initialize AWS clients
 s3 = boto3.client("s3")

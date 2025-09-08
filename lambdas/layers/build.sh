@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Lambda Layer Build Script for AI PPT Assistant
-# Builds Lambda layer packages for Python 3.13 runtime
+# Builds Lambda layer packages for Python 3.12 runtime (AWS Lambda compatible)
 
 set -e  # Exit on error
 
@@ -82,28 +82,55 @@ build_docker() {
         exit 1
     fi
     
-    # Create a temporary Dockerfile for ARM64
+    # Create a temporary optimized Dockerfile for ARM64
     cat > Dockerfile.layer <<EOF
+# Use official AWS Lambda Python base image for ARM64
 FROM --platform=linux/arm64 public.ecr.aws/lambda/python:3.12-arm64
 
-# Copy requirements file
-COPY requirements.txt /tmp/
+# Set working directory
+WORKDIR /var/task
 
-# Install packages for ARM64 architecture
-RUN pip install -r /tmp/requirements.txt -t /opt/python/lib/python3.12/site-packages/ \\
+# Copy requirements file
+COPY requirements.txt /tmp/requirements.txt
+
+# Install system dependencies if needed
+RUN yum update -y && \\
+    yum clean all && \\
+    rm -rf /var/cache/yum
+
+# Create python directory structure matching Lambda layer expectations
+RUN mkdir -p /opt/python/lib/python3.12/site-packages
+
+# Install Python packages with precise targeting for Lambda runtime
+RUN pip install --no-cache-dir \\
+    --target /opt/python/lib/python3.12/site-packages \\
     --platform linux_aarch64 \\
     --implementation cp \\
     --python-version 3.12 \\
     --only-binary=:all: \\
     --upgrade \\
-    --no-cache-dir
+    -r /tmp/requirements.txt
 
-# Clean up to reduce size
-RUN find /opt/python -type f -name "*.pyc" -delete
-RUN find /opt/python -type d -name "__pycache__" -delete
-RUN find /opt/python -type d -name "*.dist-info" -exec rm -rf {} + 2>/dev/null || true
-RUN find /opt/python -type d -name "tests" -exec rm -rf {} + 2>/dev/null || true
-RUN find /opt/python -name "*.so" -exec strip {} + 2>/dev/null || true
+# Optimize layer size by removing unnecessary files
+RUN find /opt/python -type f -name "*.pyc" -delete && \\
+    find /opt/python -type f -name "*.pyo" -delete && \\
+    find /opt/python -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true && \\
+    find /opt/python -type d -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true && \\
+    find /opt/python -type d -name "*.dist-info" -exec rm -rf {} + 2>/dev/null || true && \\
+    find /opt/python -type d -name "tests" -exec rm -rf {} + 2>/dev/null || true && \\
+    find /opt/python -name "*.so" -exec strip {} + 2>/dev/null || true
+
+# Remove documentation and examples to reduce size
+RUN find /opt/python -type d -name "doc" -exec rm -rf {} + 2>/dev/null || true && \\
+    find /opt/python -type d -name "docs" -exec rm -rf {} + 2>/dev/null || true && \\
+    find /opt/python -type d -name "examples" -exec rm -rf {} + 2>/dev/null || true && \\
+    find /opt/python -name "*.txt" -path "*/site-packages/*" -delete 2>/dev/null || true
+
+# Set permissions
+RUN chmod -R 755 /opt/python
+
+# Verify Python installation
+RUN ls -la /opt/python/lib/python3.12/site-packages/ | head -10
 EOF
 
     # Build Docker image for ARM64
@@ -160,7 +187,7 @@ create_layer_info() {
         "boto3": "1.35.0",
         "python-pptx": "0.6.23",
         "Pillow": "10.4.0",
-        "aws-lambda-powertools": "2.39.0"
+        "aws-lambda-powertools": "2.38.0"
     }
 }
 EOF
@@ -171,10 +198,12 @@ EOF
 # Main execution
 main() {
     # Parse arguments
-    # Default to local build due to Docker issues with Lambda base image
-    BUILD_METHOD="local"
-    if [[ "$1" == "--docker" ]]; then
-        BUILD_METHOD="docker"
+    # Default to Docker build for production compatibility
+    BUILD_METHOD="docker"
+    if [[ "$1" == "--local" ]]; then
+        BUILD_METHOD="local"
+        echo -e "${YELLOW}Warning: Local build may have Python version compatibility issues${NC}"
+        echo -e "${YELLOW}Recommend using Docker build for production${NC}"
     fi
     
     # Check Python version

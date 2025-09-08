@@ -1,0 +1,42 @@
+# Content processing Lambda Layer Dependencies
+# For functions that need document/presentation processing
+
+# Essential AWS SDK
+boto3==1.35.0
+
+# AWS Lambda Powertools
+aws-lambda-powertools==2.38.0
+
+# AWS X-Ray SDK for Lambda Powertools tracing
+aws-xray-sdk==2.14.0
+
+# HTTP requests
+requests==2.32.3
+
+# Date and time utilities
+python-dateutil==2.9.0
+
+# PowerPoint generation - Essential for presentation functions
+python-pptx==0.6.23
+
+# Image processing - Essential for visual content
+Pillow==10.4.0
+
+# JSON schema validation
+jsonschema==4.23.0
+
+# YAML processing - for content templates
+PyYAML==6.0.2
+
+# Type hints support
+typing-extensions==4.12.2
+
+# Data validation - Essential for controller functions
+pydantic==2.9.2
+pydantic-core==2.23.4
+
+# Retry logic for resilience
+tenacity==9.0.0
+
+# Caching for performance
+cachetools==5.5.0

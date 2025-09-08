@@ -1,0 +1,9 @@
+{
+  "topic": "Introduction to AI and Machine Learning",
+  "audience": "beginners",
+  "duration_minutes": 20,
+  "style": "professional",
+  "language": "en",
+  "num_slides": 8,
+  "include_examples": true
+}

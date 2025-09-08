@@ -572,7 +572,10 @@ def create_response(
     """
 
     # Determine if it's an error or success response
-    if "error" in body or status_code >= 400:
+    # Only treat as error if status code indicates error OR if error field is a string (not a dict)
+    is_api_error = (status_code >= 400) or (isinstance(body.get("error"), str))
+    
+    if is_api_error:
         error_code = body.get("error", "UNKNOWN_ERROR")
         error_message = body.get("message", "An error occurred")
         details = {k: v for k, v in body.items() if k not in ["error", "message"]}

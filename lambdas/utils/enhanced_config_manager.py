@@ -77,8 +77,9 @@ class DynamoDBConfig:
 class BedrockConfig:
     """Bedrock AI service configuration"""
 
-    model_id: str = "anthropic.claude-4-0"
-    nova_model_id: str = "amazon.nova-canvas-v1:0"
+    model_id: str  # Claude model for content generation - no default, must be configured
+    orchestrator_model_id: str  # Claude model for orchestration - no default, must be configured  
+    nova_model_id: str  # Nova model for image generation - no default, must be configured
     orchestrator_agent_id: Optional[str] = None
     content_agent_id: Optional[str] = None
     visual_agent_id: Optional[str] = None
@@ -224,8 +225,8 @@ class EnhancedConfigManager:
         if config_path.exists():
             return str(config_path)
 
-        # Fallback to creating config directory
-        config_path.mkdir(exist_ok=True)
+        # In Lambda environment, don't try to create directories
+        # Just return the path - it will be handled gracefully later
         return str(config_path)
 
     def _load_configuration(self) -> None:
@@ -422,15 +423,38 @@ class EnhancedConfigManager:
     def get_bedrock_config(self) -> BedrockConfig:
         """Get Bedrock configuration"""
         if "bedrock_config" not in self._cache:
+            # Get model IDs from environment or config, with no hardcoded fallbacks
+            model_id = self.get_value(
+                "services.bedrock.model_id", fallback_env_var="BEDROCK_MODEL_ID"
+            )
+            orchestrator_model_id = self.get_value(
+                "services.bedrock.orchestrator_model_id", fallback_env_var="BEDROCK_ORCHESTRATOR_MODEL_ID"
+            )
+            nova_model_id = self.get_value(
+                "services.bedrock.nova_model_id", fallback_env_var="NOVA_MODEL_ID"
+            )
+            
+            # Validate required configuration
+            if not model_id:
+                raise ValueError(
+                    "BEDROCK_MODEL_ID must be configured via environment variable or config file. "
+                    "Example: us.anthropic.claude-opus-4-20250514-v1:0"
+                )
+            if not orchestrator_model_id:
+                raise ValueError(
+                    "BEDROCK_ORCHESTRATOR_MODEL_ID must be configured. "
+                    "Example: us.anthropic.claude-opus-4-1-20250805-v1:0"
+                )
+            if not nova_model_id:
+                raise ValueError(
+                    "NOVA_MODEL_ID must be configured. "
+                    "Example: amazon.nova-canvas-v1:0"
+                )
+
             self._cache["bedrock_config"] = BedrockConfig(
-                model_id=self.get_value(
-                    "services.bedrock.model_id", fallback_env_var="BEDROCK_MODEL_ID"
-                )
-                or "anthropic.claude-4-0",
-                nova_model_id=self.get_value(
-                    "services.bedrock.nova_model_id", fallback_env_var="NOVA_MODEL_ID"
-                )
-                or "amazon.nova-canvas-v1:0",
+                model_id=model_id,
+                orchestrator_model_id=orchestrator_model_id,
+                nova_model_id=nova_model_id,
                 orchestrator_agent_id=self.get_value(
                     "services.bedrock.orchestrator_agent_id",
                     fallback_env_var="ORCHESTRATOR_AGENT_ID",

@@ -8,8 +8,9 @@ services:
     table: ai-ppt-assistant-dev-sessions
     checkpoints_table: ai-ppt-assistant-dev-checkpoints
   bedrock:
-    model_id: anthropic.claude-4-0
-    nova_model_id: stability.stable-diffusion-xl-v1
+    model_id: us.anthropic.claude-opus-4-20250514-v1:0  # Claude 4.0 for content generation
+    orchestrator_model_id: us.anthropic.claude-opus-4-1-20250805-v1:0  # Claude 4.1 for orchestration
+    nova_model_id: amazon.nova-canvas-v1:0  # Nova for image generation
 performance:
   max_concurrent_downloads: 3
   max_concurrent_images: 3

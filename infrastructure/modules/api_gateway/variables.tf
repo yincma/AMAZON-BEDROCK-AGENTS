@@ -114,7 +114,7 @@ variable "cors_allowed_origins" {
 variable "cors_allowed_headers" {
   description = "List of allowed headers for CORS"
   type        = list(string)
-  default     = [
+  default = [
     "Content-Type",
     "X-Amz-Date",
     "Authorization",
@@ -140,9 +140,9 @@ variable "waf_web_acl_arn" {
 variable "lambda_integrations" {
   description = "Map of Lambda function ARNs for API integrations"
   type = map(object({
-    function_arn     = string
-    function_name    = string
-    invoke_arn       = string
+    function_arn         = string
+    function_name        = string
+    invoke_arn           = string
     timeout_milliseconds = optional(number, 29000)
   }))
   default = {}
@@ -152,7 +152,7 @@ variable "lambda_integrations" {
 variable "create_deployment" {
   description = "Whether to create deployment and stage within the module"
   type        = bool
-  default     = true  # 保持向后兼容
+  default     = true # 保持向后兼容
 }
 
 variable "external_deployment_id" {
@@ -249,7 +249,7 @@ variable "canary_settings" {
   type = object({
     percent_traffic          = number
     stage_variable_overrides = map(string)
-    use_stage_cache         = bool
+    use_stage_cache          = bool
   })
   default = null
 }

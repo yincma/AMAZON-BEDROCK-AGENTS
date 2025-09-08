@@ -10,7 +10,7 @@ from typing import Any, Dict
 from datetime import datetime
 from decimal import Decimal
 import boto3
-from boto3.dynamodb.conditions import Key
+from boto3.dynamodb.conditions import Attr
 
 # Helper function to convert Decimal to float for JSON serialization
 def decimal_to_float(obj):
@@ -27,7 +27,7 @@ def decimal_to_float(obj):
 dynamodb = boto3.resource("dynamodb")
 
 # Environment variables
-TABLE_NAME = os.environ.get("DYNAMODB_TABLE", "ai-ppt-assistant-dev-sessions")
+TABLE_NAME = os.environ.get("DYNAMODB_TABLE", "presentations")
 
 # Configure logging
 logger = logging.getLogger()
@@ -67,7 +67,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             }
             
             if status_filter:
-                scan_params["FilterExpression"] = Key("status").eq(status_filter)
+                scan_params["FilterExpression"] = Attr("status").eq(status_filter)
             
             response = table.scan(**scan_params)
             

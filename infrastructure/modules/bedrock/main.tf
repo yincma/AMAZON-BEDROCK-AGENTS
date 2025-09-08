@@ -113,10 +113,10 @@ resource "aws_s3_bucket_versioning" "agent_configs" {
 resource "aws_s3_object" "agent_instructions" {
   for_each = var.agents
 
-  bucket  = aws_s3_bucket.agent_configs.id
-  key     = "${each.key}/instructions.txt"
-  source  = "${path.module}/../../../agents/${each.key}/instructions.txt"
-  etag    = filemd5("${path.module}/../../../agents/${each.key}/instructions.txt")
+  bucket = aws_s3_bucket.agent_configs.id
+  key    = "${each.key}/instructions.txt"
+  source = "${path.module}/../../../agents/${each.key}/instructions.txt"
+  etag   = filemd5("${path.module}/../../../agents/${each.key}/instructions.txt")
 
   tags = merge(var.tags, {
     Agent = each.key
@@ -126,10 +126,10 @@ resource "aws_s3_object" "agent_instructions" {
 resource "aws_s3_object" "agent_action_groups" {
   for_each = var.agents
 
-  bucket  = aws_s3_bucket.agent_configs.id
-  key     = "${each.key}/action_groups.json"
-  source  = "${path.module}/../../../agents/${each.key}/action_groups.json"
-  etag    = filemd5("${path.module}/../../../agents/${each.key}/action_groups.json")
+  bucket = aws_s3_bucket.agent_configs.id
+  key    = "${each.key}/action_groups.json"
+  source = "${path.module}/../../../agents/${each.key}/action_groups.json"
+  etag   = filemd5("${path.module}/../../../agents/${each.key}/action_groups.json")
 
   tags = merge(var.tags, {
     Agent = each.key
@@ -139,25 +139,25 @@ resource "aws_s3_object" "agent_action_groups" {
 # Bedrock Agent: Orchestrator
 resource "aws_bedrockagent_agent" "orchestrator" {
   agent_name                  = "${var.project_name}-orchestrator-agent"
-  agent_resource_role_arn    = aws_iam_role.bedrock_agent_role["orchestrator"].arn
-  foundation_model           = var.agents["orchestrator"].model_id
+  agent_resource_role_arn     = aws_iam_role.bedrock_agent_role["orchestrator"].arn
+  foundation_model            = var.agents["orchestrator"].model_id
   idle_session_ttl_in_seconds = 600
-  description                = "Master orchestrator agent for AI PPT Assistant"
+  description                 = "Master orchestrator agent for AI PPT Assistant"
 
   instruction = file("${path.module}/../../../agents/orchestrator/instructions.txt")
 
   prompt_override_configuration {
     prompt_configurations {
-      prompt_type           = "ORCHESTRATION"
-      prompt_creation_mode  = "DEFAULT"
+      prompt_type          = "ORCHESTRATION"
+      prompt_creation_mode = "DEFAULT"
       prompt_state         = "ENABLED"
-      
+
       inference_configuration {
-        temperature       = var.agents["orchestrator"].temperature
-        top_p            = var.agents["orchestrator"].top_p
-        top_k            = var.agents["orchestrator"].top_k
-        maximum_length   = var.agents["orchestrator"].max_length
-        stop_sequences   = []
+        temperature    = var.agents["orchestrator"].temperature
+        top_p          = var.agents["orchestrator"].top_p
+        top_k          = var.agents["orchestrator"].top_k
+        maximum_length = var.agents["orchestrator"].max_length
+        stop_sequences = []
       }
     }
   }
@@ -170,25 +170,25 @@ resource "aws_bedrockagent_agent" "orchestrator" {
 # Bedrock Agent: Content
 resource "aws_bedrockagent_agent" "content" {
   agent_name                  = "${var.project_name}-content-agent"
-  agent_resource_role_arn    = aws_iam_role.bedrock_agent_role["content"].arn
-  foundation_model           = var.agents["content"].model_id
+  agent_resource_role_arn     = aws_iam_role.bedrock_agent_role["content"].arn
+  foundation_model            = var.agents["content"].model_id
   idle_session_ttl_in_seconds = 600
-  description                = "Content generation agent for presentations"
+  description                 = "Content generation agent for presentations"
 
   instruction = file("${path.module}/../../../agents/content/instructions.txt")
 
   prompt_override_configuration {
     prompt_configurations {
-      prompt_type           = "ORCHESTRATION"
-      prompt_creation_mode  = "DEFAULT"
+      prompt_type          = "ORCHESTRATION"
+      prompt_creation_mode = "DEFAULT"
       prompt_state         = "ENABLED"
-      
+
       inference_configuration {
-        temperature       = var.agents["content"].temperature
-        top_p            = var.agents["content"].top_p
-        top_k            = var.agents["content"].top_k
-        maximum_length   = var.agents["content"].max_length
-        stop_sequences   = []
+        temperature    = var.agents["content"].temperature
+        top_p          = var.agents["content"].top_p
+        top_k          = var.agents["content"].top_k
+        maximum_length = var.agents["content"].max_length
+        stop_sequences = []
       }
     }
   }
@@ -201,25 +201,25 @@ resource "aws_bedrockagent_agent" "content" {
 # Bedrock Agent: Visual
 resource "aws_bedrockagent_agent" "visual" {
   agent_name                  = "${var.project_name}-visual-agent"
-  agent_resource_role_arn    = aws_iam_role.bedrock_agent_role["visual"].arn
-  foundation_model           = var.agents["visual"].model_id
+  agent_resource_role_arn     = aws_iam_role.bedrock_agent_role["visual"].arn
+  foundation_model            = var.agents["visual"].model_id
   idle_session_ttl_in_seconds = 600
-  description                = "Visual generation agent for presentations"
+  description                 = "Visual generation agent for presentations"
 
   instruction = file("${path.module}/../../../agents/visual/instructions.txt")
 
   prompt_override_configuration {
     prompt_configurations {
-      prompt_type           = "ORCHESTRATION"
-      prompt_creation_mode  = "DEFAULT"
+      prompt_type          = "ORCHESTRATION"
+      prompt_creation_mode = "DEFAULT"
       prompt_state         = "ENABLED"
-      
+
       inference_configuration {
-        temperature       = var.agents["visual"].temperature
-        top_p            = var.agents["visual"].top_p
-        top_k            = var.agents["visual"].top_k
-        maximum_length   = var.agents["visual"].max_length
-        stop_sequences   = []
+        temperature    = var.agents["visual"].temperature
+        top_p          = var.agents["visual"].top_p
+        top_k          = var.agents["visual"].top_k
+        maximum_length = var.agents["visual"].max_length
+        stop_sequences = []
       }
     }
   }
@@ -232,25 +232,25 @@ resource "aws_bedrockagent_agent" "visual" {
 # Bedrock Agent: Compiler
 resource "aws_bedrockagent_agent" "compiler" {
   agent_name                  = "${var.project_name}-compiler-agent"
-  agent_resource_role_arn    = aws_iam_role.bedrock_agent_role["compiler"].arn
-  foundation_model           = var.agents["compiler"].model_id
+  agent_resource_role_arn     = aws_iam_role.bedrock_agent_role["compiler"].arn
+  foundation_model            = var.agents["compiler"].model_id
   idle_session_ttl_in_seconds = 600
-  description                = "File compilation agent for presentations"
+  description                 = "File compilation agent for presentations"
 
   instruction = file("${path.module}/../../../agents/compiler/instructions.txt")
 
   prompt_override_configuration {
     prompt_configurations {
-      prompt_type           = "ORCHESTRATION"
-      prompt_creation_mode  = "DEFAULT"
+      prompt_type          = "ORCHESTRATION"
+      prompt_creation_mode = "DEFAULT"
       prompt_state         = "ENABLED"
-      
+
       inference_configuration {
-        temperature       = var.agents["compiler"].temperature
-        top_p            = var.agents["compiler"].top_p
-        top_k            = var.agents["compiler"].top_k
-        maximum_length   = var.agents["compiler"].max_length
-        stop_sequences   = []
+        temperature    = var.agents["compiler"].temperature
+        top_p          = var.agents["compiler"].top_p
+        top_k          = var.agents["compiler"].top_k
+        maximum_length = var.agents["compiler"].max_length
+        stop_sequences = []
       }
     }
   }
@@ -303,10 +303,10 @@ resource "aws_bedrockagent_agent_alias" "compiler" {
 
 # Action Groups for each agent
 resource "aws_bedrockagent_agent_action_group" "orchestrator_actions" {
-  agent_id            = aws_bedrockagent_agent.orchestrator.id
-  agent_version       = "DRAFT"
-  action_group_name   = "PresentationManagement"
-  description         = "Manages presentation lifecycle"
+  agent_id                   = aws_bedrockagent_agent.orchestrator.id
+  agent_version              = "DRAFT"
+  action_group_name          = "PresentationManagement"
+  description                = "Manages presentation lifecycle"
   skip_resource_in_use_check = true
 
   action_group_executor {
@@ -322,10 +322,10 @@ resource "aws_bedrockagent_agent_action_group" "orchestrator_actions" {
 }
 
 resource "aws_bedrockagent_agent_action_group" "content_actions" {
-  agent_id            = aws_bedrockagent_agent.content.id
-  agent_version       = "DRAFT"
-  action_group_name   = "ContentGeneration"
-  description         = "Generates presentation content"
+  agent_id                   = aws_bedrockagent_agent.content.id
+  agent_version              = "DRAFT"
+  action_group_name          = "ContentGeneration"
+  description                = "Generates presentation content"
   skip_resource_in_use_check = true
 
   action_group_executor {
@@ -341,10 +341,10 @@ resource "aws_bedrockagent_agent_action_group" "content_actions" {
 }
 
 resource "aws_bedrockagent_agent_action_group" "visual_actions" {
-  agent_id            = aws_bedrockagent_agent.visual.id
-  agent_version       = "DRAFT"
-  action_group_name   = "ImageGeneration"
-  description         = "Generates visual elements"
+  agent_id                   = aws_bedrockagent_agent.visual.id
+  agent_version              = "DRAFT"
+  action_group_name          = "ImageGeneration"
+  description                = "Generates visual elements"
   skip_resource_in_use_check = true
 
   action_group_executor {
@@ -360,10 +360,10 @@ resource "aws_bedrockagent_agent_action_group" "visual_actions" {
 }
 
 resource "aws_bedrockagent_agent_action_group" "compiler_actions" {
-  agent_id            = aws_bedrockagent_agent.compiler.id
-  agent_version       = "DRAFT"
-  action_group_name   = "PresentationAssembly"
-  description         = "Assembles final presentation files"
+  agent_id                   = aws_bedrockagent_agent.compiler.id
+  agent_version              = "DRAFT"
+  action_group_name          = "PresentationAssembly"
+  description                = "Assembles final presentation files"
   skip_resource_in_use_check = true
 
   action_group_executor {
@@ -382,18 +382,18 @@ resource "aws_bedrockagent_agent_action_group" "compiler_actions" {
 output "agent_ids" {
   value = {
     orchestrator = aws_bedrockagent_agent.orchestrator.id
-    content     = aws_bedrockagent_agent.content.id
-    visual      = aws_bedrockagent_agent.visual.id
-    compiler    = aws_bedrockagent_agent.compiler.id
+    content      = aws_bedrockagent_agent.content.id
+    visual       = aws_bedrockagent_agent.visual.id
+    compiler     = aws_bedrockagent_agent.compiler.id
   }
 }
 
 output "agent_alias_ids" {
   value = {
     orchestrator = aws_bedrockagent_agent_alias.orchestrator.id
-    content     = aws_bedrockagent_agent_alias.content.id
-    visual      = aws_bedrockagent_agent_alias.visual.id
-    compiler    = aws_bedrockagent_agent_alias.compiler.id
+    content      = aws_bedrockagent_agent_alias.content.id
+    visual       = aws_bedrockagent_agent_alias.visual.id
+    compiler     = aws_bedrockagent_agent_alias.compiler.id
   }
 }
 

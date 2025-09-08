@@ -25,7 +25,7 @@ variable "allowed_methods" {
 variable "allowed_headers" {
   description = "List of allowed headers"
   type        = list(string)
-  default     = [
+  default = [
     "Content-Type",
     "X-Amz-Date",
     "Authorization",

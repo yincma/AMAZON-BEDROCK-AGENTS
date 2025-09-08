@@ -13,6 +13,18 @@ terraform {
       source  = "hashicorp/random"
       version = "~> 3.5"
     }
+    archive = {
+      source  = "hashicorp/archive"
+      version = "~> 2.4"
+    }
+    local = {
+      source  = "hashicorp/local"
+      version = "~> 2.4"
+    }
+    null = {
+      source  = "hashicorp/null"
+      version = "~> 3.2"
+    }
   }
 }
 
@@ -198,9 +210,14 @@ module "lambda" {
   sqs_queue_url         = aws_sqs_queue.task_queue.url
   sqs_queue_arn         = aws_sqs_queue.task_queue.arn
 
+  # Bedrock model configuration
+  bedrock_model_id = var.bedrock_model_id
+  bedrock_orchestrator_model_id = var.bedrock_orchestrator_model_id
+  nova_model_id = var.nova_model_id
+
   # Bedrock Agent IDs (use placeholders for now)
-  orchestrator_agent_id = "placeholder-orchestrator-agent-id"
-  orchestrator_alias_id = "placeholder-orchestrator-alias-id"
+  orchestrator_agent_id = "LA1D127LSK"
+  orchestrator_alias_id = "PSQBDUP6KR"
   content_agent_id      = "placeholder-content-agent-id"
   content_alias_id      = "placeholder-content-alias-id"
   visual_agent_id       = "placeholder-visual-agent-id"
@@ -282,7 +299,7 @@ resource "aws_api_gateway_integration" "list_presentations" {
 
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = module.lambda.function_invoke_arns["presentation_status"]
+  uri                     = "arn:aws:apigateway:${var.aws_region}:lambda:path/2015-03-31/functions/${aws_lambda_function.list_presentations.arn}/invocations"
 
   timeout_milliseconds = 10000
 
@@ -351,19 +368,19 @@ resource "aws_api_gateway_resource" "health_ready" {
 
 # GET /health method (no API key required)
 resource "aws_api_gateway_method" "health_get" {
-  rest_api_id   = module.api_gateway.rest_api_id
-  resource_id   = aws_api_gateway_resource.health.id
-  http_method   = "GET"
-  authorization = "NONE"
+  rest_api_id      = module.api_gateway.rest_api_id
+  resource_id      = aws_api_gateway_resource.health.id
+  http_method      = "GET"
+  authorization    = "NONE"
   api_key_required = false
 }
 
 # GET /health/ready method (no API key required)
 resource "aws_api_gateway_method" "health_ready_get" {
-  rest_api_id   = module.api_gateway.rest_api_id
-  resource_id   = aws_api_gateway_resource.health_ready.id
-  http_method   = "GET"
-  authorization = "NONE"
+  rest_api_id      = module.api_gateway.rest_api_id
+  resource_id      = aws_api_gateway_resource.health_ready.id
+  http_method      = "GET"
+  authorization    = "NONE"
   api_key_required = false
 }
 
@@ -428,7 +445,7 @@ resource "aws_api_gateway_integration_response" "health_200" {
 
   response_templates = {
     "application/json" = jsonencode({
-      status = "healthy"
+      status    = "healthy"
       timestamp = "$context.requestTime"
     })
   }
@@ -447,7 +464,7 @@ resource "aws_api_gateway_integration_response" "health_ready_200" {
 
   response_templates = {
     "application/json" = jsonencode({
-      status = "ready"
+      status    = "ready"
       timestamp = "$context.requestTime"
     })
   }
@@ -457,7 +474,11 @@ resource "aws_api_gateway_integration_response" "health_ready_200" {
   ]
 }
 
-# Lambda permissions for API Gateway
+# ============================================================================
+# Lambda Permissions for API Gateway
+# ============================================================================
+
+# Lambda permissions must be created before API Gateway deployment
 resource "aws_lambda_permission" "generate_presentation_permission" {
   statement_id  = "AllowAPIGatewayInvoke-generate-presentation"
   action        = "lambda:InvokeFunction"
@@ -478,13 +499,19 @@ resource "aws_lambda_permission" "presentation_status_permission" {
   depends_on = [module.lambda, module.api_gateway]
 }
 
-# Create a new deployment to include the integrations
+# Note: list_presentations_permission is defined in lambda_list_presentations.tf
+# to avoid duplication
+
+# Create a new deployment to include all integrations and responses
+# Note: This is the legacy deployment for v0 (unversioned) endpoints
+# Versioned endpoints use aws_api_gateway_deployment.versioned_deployment
 resource "aws_api_gateway_deployment" "integration_deployment" {
   rest_api_id = module.api_gateway.rest_api_id
 
   triggers = {
-    # Redeploy when any integration changes
+    # Redeploy when any integration or response changes
     redeployment = sha1(jsonencode([
+      # Main integrations
       aws_api_gateway_integration.create_presentation,
       aws_api_gateway_integration.get_presentation,
       aws_api_gateway_integration.list_presentations,
@@ -493,6 +520,25 @@ resource "aws_api_gateway_deployment" "integration_deployment" {
       aws_api_gateway_integration.execute_agent,
       aws_api_gateway_integration.health,
       aws_api_gateway_integration.health_ready,
+      # Additional integrations from api_gateway_additional.tf
+      # aws_api_gateway_integration.get_task,
+      # aws_api_gateway_integration.get_templates,
+      # aws_api_gateway_integration.templates_options,
+      # aws_api_gateway_integration.task_options,
+      # Integration responses
+      aws_api_gateway_integration_response.health_200,
+      aws_api_gateway_integration_response.health_ready_200,
+      # aws_api_gateway_integration_response.get_templates_200,
+      # aws_api_gateway_integration_response.templates_options_200,
+      # aws_api_gateway_integration_response.task_options_200,
+      # Gateway responses for validation errors
+      # aws_api_gateway_gateway_response.bad_request,
+      # aws_api_gateway_gateway_response.bad_request_parameters,
+      # aws_api_gateway_gateway_response.missing_authentication_token,
+      # aws_api_gateway_gateway_response.throttled,
+      # aws_api_gateway_gateway_response.default_5xx,
+      # Include versioned resources in deployment triggers
+      # aws_api_gateway_deployment.versioned_deployment,
     ]))
   }
 
@@ -501,6 +547,14 @@ resource "aws_api_gateway_deployment" "integration_deployment" {
   }
 
   depends_on = [
+    # Ensure all method responses are created first
+    aws_api_gateway_method_response.health_200,
+    aws_api_gateway_method_response.health_ready_200,
+    # aws_api_gateway_method_response.get_task_200,
+    # aws_api_gateway_method_response.get_templates_200,
+    # aws_api_gateway_method_response.templates_options_200,
+    # aws_api_gateway_method_response.task_options_200,
+    # Then integrations
     aws_api_gateway_integration.create_presentation,
     aws_api_gateway_integration.get_presentation,
     aws_api_gateway_integration.list_presentations,
@@ -509,6 +563,31 @@ resource "aws_api_gateway_deployment" "integration_deployment" {
     aws_api_gateway_integration.execute_agent,
     aws_api_gateway_integration.health,
     aws_api_gateway_integration.health_ready,
+    # aws_api_gateway_integration.get_task,
+    # aws_api_gateway_integration.get_templates,
+    # aws_api_gateway_integration.templates_options,
+    # aws_api_gateway_integration.task_options,
+    # Then integration responses
+    aws_api_gateway_integration_response.health_200,
+    aws_api_gateway_integration_response.health_ready_200,
+    # aws_api_gateway_integration_response.get_templates_200,
+    # aws_api_gateway_integration_response.templates_options_200,
+    # aws_api_gateway_integration_response.task_options_200,
+    # Lambda permissions (critical for avoiding 502 errors)
+    aws_lambda_permission.generate_presentation_permission,
+    aws_lambda_permission.presentation_status_permission,
+    # Gateway responses for validation errors
+    # Gateway responses commented out - resources not defined
+    # aws_api_gateway_gateway_response.bad_request,
+    # aws_api_gateway_gateway_response.bad_request_parameters,
+    # aws_api_gateway_gateway_response.missing_authentication_token,
+    # aws_api_gateway_gateway_response.throttled,
+    # aws_api_gateway_gateway_response.default_5xx,
+    # Wait for versioned deployment to complete
+    # aws_api_gateway_deployment.versioned_deployment,
+    # Ensure Lambda functions and API Gateway are available
+    module.lambda,
+    module.api_gateway,
   ]
 }
 
@@ -518,7 +597,28 @@ resource "aws_api_gateway_stage" "main" {
   rest_api_id   = module.api_gateway.rest_api_id
   stage_name    = var.stage_name
 
+  # Enable X-Ray tracing for better debugging
   xray_tracing_enabled = true
+
+  # CloudWatch settings for monitoring
+  access_log_settings {
+    destination_arn = aws_cloudwatch_log_group.api_gateway_stage.arn
+    format = jsonencode({
+      requestId        = "$context.requestId"
+      ip               = "$context.identity.sourceIp"
+      caller           = "$context.identity.caller"
+      user             = "$context.identity.user"
+      requestTime      = "$context.requestTime"
+      httpMethod       = "$context.httpMethod"
+      resourcePath     = "$context.resourcePath"
+      status           = "$context.status"
+      protocol         = "$context.protocol"
+      responseLength   = "$context.responseLength"
+      responseTime     = "$context.responseTime"
+      error            = "$context.error.message"
+      integrationError = "$context.integrationErrorMessage"
+    })
+  }
 
   tags = merge(
     local.common_tags,
@@ -528,8 +628,22 @@ resource "aws_api_gateway_stage" "main" {
   )
 
   depends_on = [
-    aws_api_gateway_deployment.integration_deployment
+    aws_api_gateway_deployment.integration_deployment,
+    aws_cloudwatch_log_group.api_gateway_stage
   ]
+}
+
+# CloudWatch Log Group for API Gateway Stage
+resource "aws_cloudwatch_log_group" "api_gateway_stage" {
+  name              = "/aws/apigateway/${var.project_name}-${var.environment}-stage"
+  retention_in_days = var.log_retention_days
+
+  tags = merge(
+    local.common_tags,
+    {
+      Name = "${var.project_name}-${var.environment}-stage-logs"
+    }
+  )
 }
 
 # Create Usage Plan (since module doesn't create it when deployment is disabled)
@@ -573,6 +687,54 @@ resource "aws_api_gateway_usage_plan_key" "main" {
 }
 
 # ============================================================================
+# Layer 7: Monitoring and Alerting (Depends on all infrastructure components)
+# ============================================================================
+
+# CloudWatch Monitoring Module
+module "monitoring" {
+  count  = var.enable_monitoring ? 1 : 0
+  source = "./modules/monitoring"
+
+  # General configuration
+  project_name = var.project_name
+  environment  = var.environment
+
+  # SNS configuration
+  alert_email_addresses = var.alert_email_addresses
+
+  # Lambda monitoring configuration
+  lambda_function_names     = module.lambda.function_names
+  lambda_error_threshold    = var.lambda_error_threshold
+  lambda_duration_threshold = var.lambda_duration_threshold
+
+  # API Gateway monitoring configuration
+  api_gateway_name      = "${var.project_name}-${var.environment}"
+  api_gateway_stage     = aws_api_gateway_stage.main.stage_name
+  api_latency_threshold = var.api_latency_threshold
+  api_4xx_threshold     = var.api_4xx_threshold
+  api_5xx_threshold     = var.api_5xx_threshold
+
+  # DynamoDB monitoring configuration
+  enable_dynamodb_monitoring = var.enable_dynamodb_monitoring
+  dynamodb_table_name        = module.dynamodb.table_name
+
+  # Log retention
+  log_retention_days = var.log_retention_days
+
+  # Tags
+  tags = local.common_tags
+
+  # Dependencies to ensure proper creation order
+  depends_on = [
+    module.lambda,
+    module.api_gateway,
+    module.dynamodb,
+    aws_api_gateway_stage.main,
+    aws_api_gateway_deployment.integration_deployment
+  ]
+}
+
+# ============================================================================
 # Outputs
 # ============================================================================
 
@@ -607,7 +769,7 @@ output "dynamodb_table_name" {
 # API outputs
 output "api_gateway_url" {
   description = "API Gateway URL"
-  value       = module.api_gateway.api_url
+  value       = aws_api_gateway_stage.main.invoke_url
 }
 
 output "api_gateway_api_key" {
@@ -626,4 +788,20 @@ output "lambda_function_names" {
 output "sqs_queue_url" {
   description = "SQS Queue URL"
   value       = aws_sqs_queue.task_queue.url
+}
+
+# Monitoring outputs
+output "monitoring_dashboard_url" {
+  description = "CloudWatch Dashboard URL"
+  value       = var.enable_monitoring && length(module.monitoring) > 0 ? module.monitoring[0].dashboard_url : null
+}
+
+output "monitoring_sns_topic_arn" {
+  description = "SNS Topic ARN for alerts"
+  value       = var.enable_monitoring && length(module.monitoring) > 0 ? module.monitoring[0].sns_topic_arn : null
+}
+
+output "monitoring_summary" {
+  description = "Summary of monitoring components"
+  value       = var.enable_monitoring && length(module.monitoring) > 0 ? module.monitoring[0].monitoring_summary : null
 }

@@ -3,7 +3,7 @@
 
 terraform {
   required_version = ">= 1.5.0"
-  
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -14,7 +14,7 @@ terraform {
 
 provider "aws" {
   region = "us-east-1"
-  
+
   default_tags {
     tags = {
       Project     = "ai-ppt-assistant"
@@ -48,9 +48,9 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "presentations" {
 
 # DynamoDB Table for sessions
 resource "aws_dynamodb_table" "sessions" {
-  name           = "ai-ppt-assistant-dev-sessions"
-  billing_mode   = "PAY_PER_REQUEST"
-  hash_key       = "session_id"
+  name         = "ai-ppt-assistant-dev-sessions"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "session_id"
 
   attribute {
     name = "session_id"
@@ -65,9 +65,9 @@ resource "aws_dynamodb_table" "sessions" {
 
 # DynamoDB Table for checkpoints
 resource "aws_dynamodb_table" "checkpoints" {
-  name           = "ai-ppt-assistant-dev-checkpoints"
-  billing_mode   = "PAY_PER_REQUEST"
-  hash_key       = "checkpoint_id"
+  name         = "ai-ppt-assistant-dev-checkpoints"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "checkpoint_id"
 
   attribute {
     name = "checkpoint_id"
@@ -88,10 +88,10 @@ resource "random_id" "bucket_suffix" {
 # SQS Queue (if needed for Lambda)
 resource "aws_sqs_queue" "task_queue" {
   name = "ai-ppt-assistant-dev-tasks"
-  
+
   visibility_timeout_seconds = 300
   message_retention_seconds  = 86400
-  
+
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.dlq.arn
     maxReceiveCount     = 3
@@ -99,8 +99,8 @@ resource "aws_sqs_queue" "task_queue" {
 }
 
 resource "aws_sqs_queue" "dlq" {
-  name = "ai-ppt-assistant-dev-tasks-dlq"
-  message_retention_seconds = 1209600  # 14 days
+  name                      = "ai-ppt-assistant-dev-tasks-dlq"
+  message_retention_seconds = 1209600 # 14 days
 }
 
 # Lambda Layer for dependencies
@@ -207,7 +207,7 @@ resource "aws_api_gateway_deployment" "api" {
   lifecycle {
     create_before_destroy = true
   }
-  
+
   depends_on = [aws_api_gateway_rest_api.api]
 }
 

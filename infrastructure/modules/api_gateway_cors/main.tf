@@ -3,10 +3,10 @@
 
 # OPTIONS method for CORS preflight
 resource "aws_api_gateway_method" "options" {
-  rest_api_id   = var.rest_api_id
-  resource_id   = var.resource_id
-  http_method   = "OPTIONS"
-  authorization = "NONE"
+  rest_api_id      = var.rest_api_id
+  resource_id      = var.resource_id
+  http_method      = "OPTIONS"
+  authorization    = "NONE"
   api_key_required = false
 }
 
@@ -56,7 +56,7 @@ resource "aws_api_gateway_integration_response" "options" {
   response_parameters = {
     "method.response.header.Access-Control-Allow-Headers" = "'${join(",", var.allowed_headers)}'"
     "method.response.header.Access-Control-Allow-Methods" = "'${join(",", var.allowed_methods)}'"
-    "method.response.header.Access-Control-Allow-Origin"  = "'${var.allowed_origins[0]}'"  # For simplicity, using first origin
+    "method.response.header.Access-Control-Allow-Origin"  = "'${var.allowed_origins[0]}'" # For simplicity, using first origin
     "method.response.header.Access-Control-Max-Age"       = "'${var.max_age_seconds}'"
   }
 

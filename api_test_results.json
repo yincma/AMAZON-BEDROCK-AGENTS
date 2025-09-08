@@ -1,0 +1,205 @@
+[
+  {
+    "timestamp": "2025-09-08T19:20:19.008277",
+    "endpoint": "/presentations",
+    "method": "POST",
+    "status": "PASS",
+    "response_code": 202,
+    "message": "Presentation creation initiated. Task ID: None",
+    "response_data": {
+      "success": true,
+      "data": {
+        "task_id": "0e1c0677-50ee-4e83-ba78-05dcca6be3c4",
+        "status": "pending",
+        "created_at": "2025-09-08T10:20:18.808721Z",
+        "estimated_completion": "2025-09-08T10:21:38.991441Z",
+        "_links": {
+          "self": "/tasks/0e1c0677-50ee-4e83-ba78-05dcca6be3c4",
+          "result": "/presentations/0e1c0677-50ee-4e83-ba78-05dcca6be3c4",
+          "status": "/tasks/0e1c0677-50ee-4e83-ba78-05dcca6be3c4/status"
+        }
+      },
+      "request_id": "2477567b-59fd-45d5-bad0-7ab956cd731f",
+      "timestamp": "2025-09-08T10:20:18.991502+00:00",
+      "message": "Presentation generation started"
+    }
+  },
+  {
+    "timestamp": "2025-09-08T19:20:20.497100",
+    "endpoint": "/presentations",
+    "method": "GET",
+    "status": "PASS",
+    "response_code": 200,
+    "message": "Retrieved 7 presentations",
+    "response_data": {
+      "presentations": [
+        {
+          "presentation_id": "c75d6c47-0ad1-498e-bb29-9779ec229a60",
+          "title": "Test Presentation - 20250908_184817",
+          "status": "pending",
+          "created_at": "2025-09-08T09:48:19.722275Z",
+          "metadata": {
+            "total_slides": 5.0,
+            "language": "en",
+            "style": "professional"
+          }
+        },
+        {
+          "presentation_id": "3e6bdadb-6f11-4ddd-ae87-f103a8f03fb1",
+          "title": "Test Presentation - 20250908_185204",
+          "status": "pending",
+          "created_at": "2025-09-08T09:52:06.611650Z",
+          "metadata": {
+            "total_slides": 5.0,
+            "language": "en",
+            "style": "professional"
+          }
+        },
+        {
+          "presentation_id": "8079b312-c4d2-44b8-ac9d-c909f2364013",
+          "title": "Test Presentation - 20250908_183926",
+          "status": "pending",
+          "created_at": "2025-09-08T09:39:28.116964Z",
+          "metadata": {
+            "total_slides": 5.0,
+            "language": "en",
+            "style": "professional"
+          }
+        },
+        {
+          "presentation_id": "529b6a8f-0d78-4134-a69f-3f11f638e0ef",
+          "title": "Test Presentation - 20250908_184958",
+          "status": "pending",
+          "created_at": "2025-09-08T09:50:00.529222Z",
+          "metadata": {
+            "total_slides": 5.0,
+            "language": "en",
+            "style": "professional"
+          }
+        },
+        {
+          "presentation_id": "0e1c0677-50ee-4e83-ba78-05dcca6be3c4",
+          "title": "Test Presentation - 20250908_192016",
+          "status": "pending",
+          "created_at": "2025-09-08T10:20:18.808721Z",
+          "metadata": {
+            "total_slides": 5.0,
+            "language": "en",
+            "style": "professional"
+          }
+        },
+        {
+          "presentation_id": "a4db2bf9-4920-4033-a741-268dace411d9",
+          "title": "Test Presentation - 20250908_185313",
+          "status": "pending",
+          "created_at": "2025-09-08T09:53:13.833987Z",
+          "metadata": {
+            "total_slides": 5.0,
+            "language": "en",
+            "style": "professional"
+          }
+        },
+        {
+          "presentation_id": "0e00f148-7cb2-40d0-bd46-a10b0b5f82f3",
+          "title": "测试演示文稿",
+          "status": "pending",
+          "created_at": "2025-09-08T06:01:58.704229Z",
+          "metadata": {
+            "total_slides": 15.0,
+            "language": "en",
+            "style": "professional"
+          }
+        }
+      ],
+      "count": 7,
+      "next_page_token": null
+    }
+  },
+  {
+    "timestamp": "2025-09-08T19:20:22.425895",
+    "endpoint": "/presentations/c75d6c47-0ad1-498e-bb29-9779ec229a60",
+    "method": "GET",
+    "status": "PASS",
+    "response_code": 200,
+    "message": "Successfully retrieved presentation",
+    "response_data": {
+      "success": true,
+      "data": {
+        "task_id": "c75d6c47-0ad1-498e-bb29-9779ec229a60",
+        "status": "pending",
+        "progress": 0,
+        "created_at": "2025-09-08T09:48:19.722275Z",
+        "updated_at": "2025-09-08T09:48:19.722275Z",
+        "_links": {
+          "self": "/tasks/c75d6c47-0ad1-498e-bb29-9779ec229a60",
+          "presentation": "/presentations/c75d6c47-0ad1-498e-bb29-9779ec229a60"
+        }
+      },
+      "request_id": "b0e62995-76ec-4c82-b93b-b91ba21f7d66",
+      "timestamp": "2025-09-08T10:20:22.412757+00:00",
+      "message": "Presentation generation queued"
+    }
+  },
+  {
+    "timestamp": "2025-09-08T19:20:23.105192",
+    "endpoint": "/sessions",
+    "method": "POST",
+    "status": "PASS",
+    "response_code": 202,
+    "message": "Session created. Session ID: None",
+    "response_data": {
+      "success": true,
+      "data": {
+        "session_id": "c0ccbbbd-5741-4f73-89b1-bc18a9a062eb",
+        "user_id": "test_user_96bf8d0f",
+        "session_name": "Test Session for API Validation",
+        "status": "active",
+        "created_at": "2025-09-08T10:20:23.083792Z",
+        "expires_at": "2025-09-08T18:20:23.083808Z"
+      },
+      "request_id": "9e210d3c-bbf5-4431-9f5c-0152f1a812cd",
+      "timestamp": "2025-09-08T10:20:23.090950+00:00",
+      "metadata": {
+        "test_case": "api_validation",
+        "created_by": "test_script"
+      }
+    }
+  },
+  {
+    "timestamp": "2025-09-08T19:20:23.814808",
+    "endpoint": "/sessions/00000000-0000-0000-0000-000000000000",
+    "method": "GET",
+    "status": "PASS",
+    "response_code": 404,
+    "message": "Session not found (expected if ID is test ID)",
+    "response_data": {
+      "success": false,
+      "error": {
+        "code": "SESSION_NOT_FOUND",
+        "message": "Session 00000000-0000-0000-0000-000000000000 not found",
+        "request_id": "fe180b16-ed94-4986-898d-785a65ace5f1",
+        "timestamp": "2025-09-08T10:20:23.804209+00:00"
+      }
+    }
+  },
+  {
+    "timestamp": "2025-09-08T19:20:24.507813",
+    "endpoint": "/agents/orchestrator/execute",
+    "method": "POST",
+    "status": "FAIL",
+    "response_code": 500,
+    "message": "Failed to execute agent",
+    "response_data": {
+      "success": false,
+      "error": {
+        "code": "AGENT_EXECUTION_FAILED",
+        "message": "Failed to execute agent 'orchestrator': An error occurred (AccessDeniedException) when calling the InvokeAgent operation: User: arn:aws:sts::375004070918:assumed-role/ai-ppt-assistant-lambda-execution-role/ai-ppt-assistant-api-generate-presentation is not authorized to perform: bedrock:InvokeAgent on resource: arn:aws:bedrock:us-east-1:375004070918:agent-alias/LA1D127LSK/PSQBDUP6KR because no identity-based policy allows the bedrock:InvokeAgent action",
+        "request_id": "620505d7-ca4b-4e44-b511-ccc60e50b209",
+        "timestamp": "2025-09-08T10:20:24.496389+00:00",
+        "details": {
+          "request_id": "f9bde08c-6e7a-4df3-9332-eaab3074e28a"
+        }
+      }
+    }
+  }
+]
