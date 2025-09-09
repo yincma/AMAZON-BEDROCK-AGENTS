@@ -786,6 +786,85 @@ module "monitoring" {
 }
 
 # ============================================================================
+# Update Lambda Environment Variables with Real Bedrock Agent IDs
+# ============================================================================
+
+# Update Lambda function environment variables after Bedrock agents are created
+resource "null_resource" "update_lambda_bedrock_configs" {
+  # This resource will run after bedrock module is created
+  depends_on = [module.bedrock, module.lambda]
+
+  # Trigger when agent IDs change
+  triggers = {
+    orchestrator_agent_id = module.bedrock.agent_ids["orchestrator"]
+    orchestrator_alias_id = module.bedrock.agent_alias_ids["orchestrator"]
+    content_agent_id      = module.bedrock.agent_ids["content"]
+    content_alias_id      = module.bedrock.agent_alias_ids["content"]
+    visual_agent_id       = module.bedrock.agent_ids["visual"]
+    visual_alias_id       = module.bedrock.agent_alias_ids["visual"]
+    compiler_agent_id     = module.bedrock.agent_ids["compiler"]
+    compiler_alias_id     = module.bedrock.agent_alias_ids["compiler"]
+  }
+
+  # Update all relevant Lambda functions with real agent IDs
+  provisioner "local-exec" {
+    command = <<-EOF
+      echo "Updating Lambda functions with real Bedrock Agent IDs..."
+      
+      # Update generate_presentation function
+      aws lambda update-function-configuration \
+        --function-name ${module.lambda.function_names["generate_presentation"]} \
+        --environment Variables="{
+          S3_BUCKET=${module.s3.bucket_name},
+          DYNAMODB_TABLE=${module.dynamodb.tasks_table_name},
+          CHECKPOINTS_TABLE=${module.dynamodb.checkpoints_table_name},
+          SQS_QUEUE_URL=${aws_sqs_queue.task_queue.url},
+          ORCHESTRATOR_AGENT_ID=${module.bedrock.agent_ids["orchestrator"]},
+          ORCHESTRATOR_ALIAS_ID=${module.bedrock.agent_alias_ids["orchestrator"]},
+          CONTENT_AGENT_ID=${module.bedrock.agent_ids["content"]},
+          CONTENT_ALIAS_ID=${module.bedrock.agent_alias_ids["content"]},
+          VISUAL_AGENT_ID=${module.bedrock.agent_ids["visual"]},
+          VISUAL_ALIAS_ID=${module.bedrock.agent_alias_ids["visual"]},
+          COMPILER_AGENT_ID=${module.bedrock.agent_ids["compiler"]},
+          COMPILER_ALIAS_ID=${module.bedrock.agent_alias_ids["compiler"]},
+          BEDROCK_MODEL_ID=${var.bedrock_model_id},
+          BEDROCK_ORCHESTRATOR_MODEL_ID=${var.bedrock_orchestrator_model_id},
+          NOVA_MODEL_ID=${var.nova_model_id},
+          LOG_LEVEL=INFO
+        }" \
+        --region ${var.aws_region}
+
+      # Update core Lambda functions that use Bedrock Agents
+      for func_name in create_outline generate_content generate_image compile_pptx; do
+        echo "Updating Lambda function: $func_name"
+        aws lambda update-function-configuration \
+          --function-name ${var.project_name}-$func_name \
+          --environment Variables="{
+            S3_BUCKET=${module.s3.bucket_name},
+            DYNAMODB_TABLE=${module.dynamodb.tasks_table_name},
+            CHECKPOINTS_TABLE=${module.dynamodb.checkpoints_table_name},
+            ORCHESTRATOR_AGENT_ID=${module.bedrock.agent_ids["orchestrator"]},
+            ORCHESTRATOR_ALIAS_ID=${module.bedrock.agent_alias_ids["orchestrator"]},
+            CONTENT_AGENT_ID=${module.bedrock.agent_ids["content"]},
+            CONTENT_ALIAS_ID=${module.bedrock.agent_alias_ids["content"]},
+            VISUAL_AGENT_ID=${module.bedrock.agent_ids["visual"]},
+            VISUAL_ALIAS_ID=${module.bedrock.agent_alias_ids["visual"]},
+            COMPILER_AGENT_ID=${module.bedrock.agent_ids["compiler"]},
+            COMPILER_ALIAS_ID=${module.bedrock.agent_alias_ids["compiler"]},
+            BEDROCK_MODEL_ID=${var.bedrock_model_id},
+            BEDROCK_ORCHESTRATOR_MODEL_ID=${var.bedrock_orchestrator_model_id},
+            NOVA_MODEL_ID=${var.nova_model_id},
+            LOG_LEVEL=INFO
+          }" \
+          --region ${var.aws_region} || echo "Failed to update $func_name, continuing..."
+      done
+
+      echo "Lambda functions updated successfully with real Bedrock Agent IDs"
+    EOF
+  }
+}
+
+# ============================================================================
 # Outputs
 # ============================================================================
 

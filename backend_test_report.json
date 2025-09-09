@@ -1,6 +1,6 @@
 {
   "test_summary": {
-    "timestamp": "2025-09-10T01:00:15.004792",
+    "timestamp": "2025-09-10T01:17:11.591761",
     "total_tests": 5,
     "passed_tests": 3,
     "failed_tests": 1,
@@ -9,43 +9,43 @@
   },
   "detailed_results": [
     {
-      "timestamp": "2025-09-10T01:00:12.365653",
+      "timestamp": "2025-09-10T01:17:07.332395",
       "test_name": "创建演示文稿",
       "status": "FAIL",
-      "details": "HTTP 500: {\"message\": \"Internal server error\"}",
+      "details": "响应格式错误: {'presentation_id': '9f09481a-6f9f-4f54-87cc-391529a4a996', 'title': '后台测试演示文稿 - 01:17:05', 'status': 'pending', 'progress': 0, 'created_at': '2025-09-09T16:17:07.047336Z', 'updated_at': '2025-09-09T16:17:07.047336Z', 'estimated_completion_time': '2025-09-09T16:18:57.276821Z', 'slide_count': 8, 'session_id': 'f6d7bec4-60d1-42fb-8238-e602e440a2ce'}",
       "data": null
     },
     {
-      "timestamp": "2025-09-10T01:00:13.196451",
+      "timestamp": "2025-09-10T01:17:08.857364",
       "test_name": "Lambda调用",
       "status": "PASS",
       "details": "ai-ppt-assistant-list-presentations 调用成功",
       "data": null
     },
     {
-      "timestamp": "2025-09-10T01:00:13.448075",
+      "timestamp": "2025-09-10T01:17:09.601272",
       "test_name": "Lambda调用",
       "status": "PASS",
       "details": "ai-ppt-assistant-get-task 调用成功",
       "data": null
     },
     {
-      "timestamp": "2025-09-10T01:00:15.004670",
+      "timestamp": "2025-09-10T01:17:11.591622",
       "test_name": "并发请求测试",
       "status": "PASS",
       "details": "成功率: 100.0% (10/10)",
       "data": null
     },
     {
-      "timestamp": "2025-09-10T01:00:15.004697",
+      "timestamp": "2025-09-10T01:17:11.591651",
       "test_name": "响应时间统计",
       "status": "INFO",
-      "details": "平均: 0.71s, 最大: 0.89s, 最小: 0.62s",
+      "details": "平均: 0.79s, 最大: 1.47s, 最小: 0.63s",
       "data": null
     }
   ],
   "test_resources": {
-    "session_id": "test_session_18395af3",
+    "session_id": "test_session_9dfb58a1",
     "presentation_ids": [],
     "task_ids": []
   }

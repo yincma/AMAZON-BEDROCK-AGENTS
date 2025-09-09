@@ -15,8 +15,8 @@ import threading
 import concurrent.futures
 
 # 配置信息
-API_BASE_URL = "https://kuou9k0zh7.execute-api.us-east-1.amazonaws.com/legacy"
-API_KEY = "sA9UZU7SfK5bZMrx0uX1c4yHIbRwBX4B6Z1uoNcS"
+API_BASE_URL = "https://5vkle9t89e.execute-api.us-east-1.amazonaws.com/legacy"
+API_KEY = "JVuEiLVBtlaXN8ctsNIJIaPi3eROzEgc6Y3lb4gM"
 REGION = "us-east-1"
 
 # API请求头
@@ -123,27 +123,26 @@ class BackendTester:
             if response.status_code == 202:
                 response_data = response.json()
                 
-                # 解析包装的响应格式
-                if response_data.get("success") and "data" in response_data:
-                    data = response_data["data"]
-                    task_id = data.get("task_id")
+                # 解析直接的API响应格式（OpenAPI标准）
+                presentation_id = response_data.get("presentation_id")
+                
+                if presentation_id:
+                    # API返回presentation_id，将其用作task_id追踪
+                    task_id = presentation_id
+                    self.test_presentation_ids.append(presentation_id)
+                    self.test_task_ids.append(task_id)
+                    workflow_results["presentation_created"] = True
+                    workflow_results["presentation_id"] = presentation_id
+                    workflow_results["task_id"] = task_id
                     
-                    if task_id:
-                        # 使用task_id作为presentation_id（根据API返回结构）
-                        presentation_id = task_id
-                        self.test_presentation_ids.append(presentation_id)
-                        self.test_task_ids.append(task_id)
-                        workflow_results["presentation_created"] = True
-                        workflow_results["presentation_id"] = presentation_id
-                        workflow_results["task_id"] = task_id
-                        
-                        self.log_test("创建演示文稿", "PASS", 
-                                    f"任务ID: {task_id}, 状态: {data.get('status', 'unknown')}")
-                    else:
-                        self.log_test("创建演示文稿", "FAIL", "响应数据中缺少task_id")
-                        return workflow_results
+                    status = response_data.get('status', 'unknown')
+                    progress = response_data.get('progress', 0)
+                    title = response_data.get('title', 'unknown')
+                    
+                    self.log_test("创建演示文稿", "PASS", 
+                                f"演示文稿ID: {presentation_id}, 状态: {status}, 进度: {progress}%, 标题: {title}")
                 else:
-                    self.log_test("创建演示文稿", "FAIL", f"响应格式错误: {response_data}")
+                    self.log_test("创建演示文稿", "FAIL", f"响应数据中缺少presentation_id: {response_data}")
                     return workflow_results
             else:
                 self.log_test("创建演示文稿", "FAIL", 
@@ -187,10 +186,10 @@ class BackendTester:
                 
                 if response.status_code == 200:
                     data = response.json()
-                    task = data.get("task", {})
-                    current_status = task.get("status", "unknown")
-                    current_step = task.get("current_step", "unknown") 
-                    progress = task.get("progress", 0)
+                    # 直接从API响应获取任务状态信息（OpenAPI标准格式）
+                    current_status = data.get("status", "unknown")
+                    current_step = data.get("current_step", "unknown") 
+                    progress = data.get("progress", 0)
                     
                     status_info = {
                         "timestamp": datetime.now().isoformat(),
