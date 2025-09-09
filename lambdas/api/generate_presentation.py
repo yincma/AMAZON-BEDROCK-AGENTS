@@ -18,14 +18,21 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from utils.api_utils import create_response
 
-# Initialize AWS clients
-dynamodb = boto3.resource("dynamodb")
-bedrock_agent_runtime = boto3.client("bedrock-agent-runtime")
-s3 = boto3.client("s3")
-sqs = boto3.client("sqs")
+# Initialize AWS clients with explicit region (AWS Expert fix)
+# AWS Lambda automatically sets AWS_REGION, but fallback to us-east-1
+AWS_REGION = os.environ.get("AWS_REGION") or os.environ.get("AWS_DEFAULT_REGION", "us-east-1")
+dynamodb = boto3.resource("dynamodb", region_name=AWS_REGION)
+bedrock_agent_runtime = boto3.client("bedrock-agent-runtime", region_name=AWS_REGION)
+s3 = boto3.client("s3", region_name=AWS_REGION)
+sqs = boto3.client("sqs", region_name=AWS_REGION)
+
+# AWS Expert: Log region for debugging
+print(f"AWS Expert Debug - Using region: {AWS_REGION}")
 
 # Environment variables
-TABLE_NAME = os.environ.get("DYNAMODB_TABLE", "presentations")
+# Use DYNAMODB_TABLE for tasks (corrected after infrastructure fix)
+TASKS_TABLE = os.environ.get("DYNAMODB_TABLE", "ai-ppt-assistant-dev-tasks")
+SESSIONS_TABLE = os.environ.get("DYNAMODB_SESSIONS_TABLE", "ai-ppt-assistant-dev-sessions")
 ORCHESTRATOR_AGENT_ID = os.environ.get("ORCHESTRATOR_AGENT_ID")
 ORCHESTRATOR_ALIAS_ID = os.environ.get("ORCHESTRATOR_ALIAS_ID")
 QUEUE_URL = os.environ.get("SQS_QUEUE_URL")
@@ -136,20 +143,19 @@ def handle_create_presentation(event: Dict[str, Any], context: Any) -> Dict[str,
         # Calculate estimated completion time
         estimated_completion = calculate_completion_time(body)
 
-        # Return success response
+        # Return success response in OpenAPI-compliant format
         return create_response(
             202,
             {
-                "task_id": presentation_id,
+                "presentation_id": presentation_id,
+                "title": task["title"],
                 "status": "pending",
+                "progress": 0,
                 "created_at": task["created_at"],
-                "estimated_completion": estimated_completion,
-                "message": "Presentation generation started",
-                "_links": {
-                    "self": f"/tasks/{presentation_id}",
-                    "result": f"/presentations/{presentation_id}",
-                    "status": f"/tasks/{presentation_id}/status",
-                },
+                "updated_at": task["created_at"],
+                "estimated_completion_time": estimated_completion,
+                "slide_count": task.get("slide_count", 15),
+                "session_id": session_id,
             },
         )
 
@@ -256,14 +262,20 @@ def store_presentation_state(task: Dict[str, Any]) -> None:
     Args:
         task: Task object to store
     """
-    table = dynamodb.Table(TABLE_NAME)
+    # Use the tasks table (now correctly configured)
+    table = dynamodb.Table(TASKS_TABLE)
 
     # Add TTL (30 days from creation)
     ttl = int((datetime.utcnow() + timedelta(days=30)).timestamp())
     task["ttl"] = ttl
+    
+    # Map presentation_id to task_id for consistency
+    if "presentation_id" in task and "task_id" not in task:
+        task["task_id"] = task["presentation_id"]
 
+    # Store in the tasks table, not sessions table
     table.put_item(Item=task)
-    logger.info(f"Stored presentation state: {task['presentation_id']}")
+    logger.info(f"Stored presentation state in {TASKS_TABLE}: {task.get('task_id', task.get('presentation_id'))}")
 
 
 def queue_presentation_task(task: Dict[str, Any]) -> None:

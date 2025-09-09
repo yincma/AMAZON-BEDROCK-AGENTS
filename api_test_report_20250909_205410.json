@@ -1,0 +1,64 @@
+{
+  "summary": {
+    "total_tests": 6,
+    "success": 0,
+    "failed": 4,
+    "warning": 0,
+    "skipped": 2,
+    "duration_seconds": 0.04802,
+    "api_url": "https://mrd1bpxuw8.execute-api.us-east-1.amazonaws.com/legacy",
+    "test_time": "2025-09-09T20:54:10.674068"
+  },
+  "results": [
+    {
+      "timestamp": "2025-09-09T20:54:10.717565",
+      "test": "无效API密钥测试",
+      "status": "FAILED",
+      "message": "请求异常: HTTPSConnectionPool(host='mrd1bpxuw8.execute-api.us-east-1.amazonaws.com', port=443): Max retries exceeded with url: /legacy/presentations (Caused by NameResolutionError(\"<urllib3.connection.HTTPSConnection object at 0x102c0b0e0>: Failed to resolve 'mrd1bpxuw8.execute-api.us-east-1.amazonaws.com' ([Errno 8] nodename nor servname provided, or not known)\"))",
+      "details": {
+        "error": "HTTPSConnectionPool(host='mrd1bpxuw8.execute-api.us-east-1.amazonaws.com', port=443): Max retries exceeded with url: /legacy/presentations (Caused by NameResolutionError(\"<urllib3.connection.HTTPSConnection object at 0x102c0b0e0>: Failed to resolve 'mrd1bpxuw8.execute-api.us-east-1.amazonaws.com' ([Errno 8] nodename nor servname provided, or not known)\"))"
+      }
+    },
+    {
+      "timestamp": "2025-09-09T20:54:10.719111",
+      "test": "创建演示文稿",
+      "status": "FAILED",
+      "message": "请求异常: HTTPSConnectionPool(host='mrd1bpxuw8.execute-api.us-east-1.amazonaws.com', port=443): Max retries exceeded with url: /legacy/presentations (Caused by NameResolutionError(\"<urllib3.connection.HTTPSConnection object at 0x102bdb610>: Failed to resolve 'mrd1bpxuw8.execute-api.us-east-1.amazonaws.com' ([Errno 8] nodename nor servname provided, or not known)\"))",
+      "details": {
+        "error": "HTTPSConnectionPool(host='mrd1bpxuw8.execute-api.us-east-1.amazonaws.com', port=443): Max retries exceeded with url: /legacy/presentations (Caused by NameResolutionError(\"<urllib3.connection.HTTPSConnection object at 0x102bdb610>: Failed to resolve 'mrd1bpxuw8.execute-api.us-east-1.amazonaws.com' ([Errno 8] nodename nor servname provided, or not known)\"))"
+      }
+    },
+    {
+      "timestamp": "2025-09-09T20:54:10.719145",
+      "test": "获取演示文稿状态",
+      "status": "SKIPPED",
+      "message": "没有可用的演示文稿ID",
+      "details": {}
+    },
+    {
+      "timestamp": "2025-09-09T20:54:10.720565",
+      "test": "列出演示文稿",
+      "status": "FAILED",
+      "message": "请求异常: HTTPSConnectionPool(host='mrd1bpxuw8.execute-api.us-east-1.amazonaws.com', port=443): Max retries exceeded with url: /legacy/presentations?limit=10&offset=0 (Caused by NameResolutionError(\"<urllib3.connection.HTTPSConnection object at 0x102cc8050>: Failed to resolve 'mrd1bpxuw8.execute-api.us-east-1.amazonaws.com' ([Errno 8] nodename nor servname provided, or not known)\"))",
+      "details": {
+        "error": "HTTPSConnectionPool(host='mrd1bpxuw8.execute-api.us-east-1.amazonaws.com', port=443): Max retries exceeded with url: /legacy/presentations?limit=10&offset=0 (Caused by NameResolutionError(\"<urllib3.connection.HTTPSConnection object at 0x102cc8050>: Failed to resolve 'mrd1bpxuw8.execute-api.us-east-1.amazonaws.com' ([Errno 8] nodename nor servname provided, or not known)\"))"
+      }
+    },
+    {
+      "timestamp": "2025-09-09T20:54:10.720588",
+      "test": "下载演示文稿",
+      "status": "SKIPPED",
+      "message": "没有可用的演示文稿ID",
+      "details": {}
+    },
+    {
+      "timestamp": "2025-09-09T20:54:10.722053",
+      "test": "无效演示文稿ID测试",
+      "status": "FAILED",
+      "message": "请求异常: HTTPSConnectionPool(host='mrd1bpxuw8.execute-api.us-east-1.amazonaws.com', port=443): Max retries exceeded with url: /legacy/presentations/invalid-id-12345 (Caused by NameResolutionError(\"<urllib3.connection.HTTPSConnection object at 0x102bdb890>: Failed to resolve 'mrd1bpxuw8.execute-api.us-east-1.amazonaws.com' ([Errno 8] nodename nor servname provided, or not known)\"))",
+      "details": {
+        "error": "HTTPSConnectionPool(host='mrd1bpxuw8.execute-api.us-east-1.amazonaws.com', port=443): Max retries exceeded with url: /legacy/presentations/invalid-id-12345 (Caused by NameResolutionError(\"<urllib3.connection.HTTPSConnection object at 0x102bdb890>: Failed to resolve 'mrd1bpxuw8.execute-api.us-east-1.amazonaws.com' ([Errno 8] nodename nor servname provided, or not known)\"))"
+      }
+    }
+  ]
+}

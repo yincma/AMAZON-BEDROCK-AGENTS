@@ -1,0 +1,145 @@
+[
+  {
+    "timestamp": "2025-09-08T21:12:27.868675",
+    "endpoint": "/presentations",
+    "method": "POST",
+    "status": "PASS",
+    "response_code": 202,
+    "message": "Presentation creation initiated. Task ID: None",
+    "response_data": {
+      "success": true,
+      "data": {
+        "task_id": "5974459e-bb08-4d55-b833-e566fd69dbdd",
+        "status": "pending",
+        "created_at": "2025-09-08T12:12:27.131278Z",
+        "estimated_completion": "2025-09-08T12:13:47.776978Z",
+        "_links": {
+          "self": "/tasks/5974459e-bb08-4d55-b833-e566fd69dbdd",
+          "result": "/presentations/5974459e-bb08-4d55-b833-e566fd69dbdd",
+          "status": "/tasks/5974459e-bb08-4d55-b833-e566fd69dbdd/status"
+        }
+      },
+      "request_id": "5202fc32-2c2e-4588-a534-cc8c624eb722",
+      "timestamp": "2025-09-08T12:12:27.777047+00:00",
+      "message": "Presentation generation started"
+    }
+  },
+  {
+    "timestamp": "2025-09-08T21:12:29.311845",
+    "endpoint": "/presentations",
+    "method": "GET",
+    "status": "PASS",
+    "response_code": 200,
+    "message": "Retrieved 1 presentations",
+    "response_data": {
+      "presentations": [
+        {
+          "presentation_id": "5974459e-bb08-4d55-b833-e566fd69dbdd",
+          "title": "Test Presentation - 20250908_211225",
+          "status": "pending",
+          "created_at": "2025-09-08T12:12:27.131278Z",
+          "metadata": {
+            "total_slides": 5.0,
+            "language": "en",
+            "style": "professional"
+          }
+        }
+      ],
+      "count": 1,
+      "next_page_token": null
+    }
+  },
+  {
+    "timestamp": "2025-09-08T21:12:31.316905",
+    "endpoint": "/presentations/5974459e-bb08-4d55-b833-e566fd69dbdd",
+    "method": "GET",
+    "status": "PASS",
+    "response_code": 200,
+    "message": "Successfully retrieved presentation",
+    "response_data": {
+      "success": true,
+      "data": {
+        "task_id": "5974459e-bb08-4d55-b833-e566fd69dbdd",
+        "status": "pending",
+        "progress": 0,
+        "created_at": "2025-09-08T12:12:27.131278Z",
+        "updated_at": "2025-09-08T12:12:27.131278Z",
+        "_links": {
+          "self": "/tasks/5974459e-bb08-4d55-b833-e566fd69dbdd",
+          "presentation": "/presentations/5974459e-bb08-4d55-b833-e566fd69dbdd"
+        }
+      },
+      "request_id": "e56435b3-b510-400e-89dd-53d50848e962",
+      "timestamp": "2025-09-08T12:12:31.232944+00:00",
+      "message": "Presentation generation queued"
+    }
+  },
+  {
+    "timestamp": "2025-09-08T21:12:32.001610",
+    "endpoint": "/sessions",
+    "method": "POST",
+    "status": "PASS",
+    "response_code": 202,
+    "message": "Session created. Session ID: None",
+    "response_data": {
+      "success": true,
+      "data": {
+        "session_id": "47d24239-5afc-4be9-a959-9e2ab10271ad",
+        "user_id": "test_user_4abdf31a",
+        "session_name": "Test Session for API Validation",
+        "status": "active",
+        "created_at": "2025-09-08T12:12:31.907469Z",
+        "expires_at": "2025-09-08T20:12:31.907486Z"
+      },
+      "request_id": "ab588b65-6ddb-46f4-bb01-9fad3225c58a",
+      "timestamp": "2025-09-08T12:12:31.918052+00:00",
+      "metadata": {
+        "test_case": "api_validation",
+        "created_by": "test_script"
+      }
+    }
+  },
+  {
+    "timestamp": "2025-09-08T21:12:32.664097",
+    "endpoint": "/sessions/00000000-0000-0000-0000-000000000000",
+    "method": "GET",
+    "status": "PASS",
+    "response_code": 404,
+    "message": "Session not found (expected if ID is test ID)",
+    "response_data": {
+      "success": false,
+      "error": {
+        "code": "SESSION_NOT_FOUND",
+        "message": "Session 00000000-0000-0000-0000-000000000000 not found",
+        "request_id": "0a0aad46-3aef-4cbf-bc4b-eec769c396a4",
+        "timestamp": "2025-09-08T12:12:32.582278+00:00"
+      }
+    }
+  },
+  {
+    "timestamp": "2025-09-08T21:12:33.356675",
+    "endpoint": "/agents/orchestrator/execute",
+    "method": "POST",
+    "status": "PASS",
+    "response_code": 202,
+    "message": "Agent execution initiated",
+    "response_data": {
+      "success": true,
+      "data": {
+        "task_id": "00fa58ea-d8ed-4302-ac1c-a585ff073149",
+        "agent_name": "orchestrator",
+        "status": "processing",
+        "session_id": "065d57e0-05f6-455a-9509-e80586b73c45",
+        "started_at": "2025-09-08T12:12:33.272899Z",
+        "input": "Generate a presentation outline about cloud computing fundamentals with 5 slides",
+        "enable_trace": false,
+        "_links": {
+          "status": "/tasks/00fa58ea-d8ed-4302-ac1c-a585ff073149",
+          "session": "/sessions/065d57e0-05f6-455a-9509-e80586b73c45"
+        }
+      },
+      "request_id": "bf4ec08e-a743-4867-bbaa-2b42e5b0279d",
+      "timestamp": "2025-09-08T12:12:33.272943+00:00"
+    }
+  }
+]

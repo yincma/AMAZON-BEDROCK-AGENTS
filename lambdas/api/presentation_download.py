@@ -21,7 +21,8 @@ dynamodb = boto3.resource("dynamodb")
 s3 = boto3.client("s3")
 
 # Environment variables
-TABLE_NAME = os.environ.get("DYNAMODB_TABLE", "presentations")
+# Use DYNAMODB_TASKS_TABLE for tasks, fallback to DYNAMODB_TABLE for compatibility
+TASKS_TABLE = os.environ.get("DYNAMODB_TASKS_TABLE", os.environ.get("DYNAMODB_TABLE", "ai-ppt-assistant-dev-tasks"))
 S3_BUCKET = os.environ.get("S3_BUCKET")
 DOWNLOAD_EXPIRY_SECONDS = int(
     os.environ.get("DOWNLOAD_EXPIRY_SECONDS", "3600")
@@ -46,7 +47,8 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     try:
         # Extract presentation ID from path parameters
         path_params = event.get("pathParameters", {})
-        presentation_id = path_params.get("presentationId")
+        # Support both 'id' and 'presentationId' for compatibility
+        presentation_id = path_params.get("id") or path_params.get("presentationId")
 
         if not presentation_id:
             return create_response(
@@ -210,11 +212,19 @@ def get_presentation_state(presentation_id: str) -> Dict[str, Any]:
     Returns:
         Presentation state object or None if not found
     """
-    table = dynamodb.Table(TABLE_NAME)
+    table = dynamodb.Table(TASKS_TABLE)
 
     try:
-        response = table.get_item(Key={"presentation_id": presentation_id})
-        return response.get("Item")
+        # Tasks table uses task_id as the key, not presentation_id
+        response = table.get_item(Key={"task_id": presentation_id})
+        item = response.get("Item")
+        
+        # If not found by task_id, try as presentation_id (backward compatibility)
+        if not item:
+            response = table.get_item(Key={"presentation_id": presentation_id})
+            item = response.get("Item")
+        
+        return item
     except Exception as e:
         logger.error(f"Error retrieving presentation state: {str(e)}")
         return None

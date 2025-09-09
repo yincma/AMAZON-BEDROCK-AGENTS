@@ -371,6 +371,13 @@ resource "aws_api_gateway_resource" "presentation_id" {
   path_part   = "{id}"
 }
 
+# /presentations/{id}/download
+resource "aws_api_gateway_resource" "presentation_download" {
+  rest_api_id = aws_api_gateway_rest_api.main.id
+  parent_id   = aws_api_gateway_resource.presentation_id.id
+  path_part   = "download"
+}
+
 # /sessions
 resource "aws_api_gateway_resource" "sessions" {
   rest_api_id = aws_api_gateway_rest_api.main.id
@@ -512,6 +519,21 @@ resource "aws_api_gateway_method" "execute_agent" {
   }
 }
 
+# GET /presentations/{id}/download - Download presentation
+resource "aws_api_gateway_method" "download_presentation" {
+  rest_api_id      = aws_api_gateway_rest_api.main.id
+  resource_id      = aws_api_gateway_resource.presentation_download.id
+  http_method      = "GET"
+  authorization    = var.api_key_required ? "NONE" : "NONE"
+  api_key_required = var.api_key_required
+
+  request_parameters = {
+    "method.request.path.id" = true
+  }
+
+  request_validator_id = aws_api_gateway_request_validator.validate_params.id
+}
+
 # Request Validators
 resource "aws_api_gateway_request_validator" "validate_body" {
   name                        = "${var.project_name}-validate-body"
@@ -612,6 +634,18 @@ module "cors_presentation_id" {
 
   allowed_origins = var.cors_allowed_origins
   allowed_methods = ["GET", "PUT", "DELETE", "OPTIONS"]
+  allowed_headers = var.cors_allowed_headers
+  max_age_seconds = var.cors_max_age_seconds
+}
+
+module "cors_presentation_download" {
+  source = "../api_gateway_cors"
+
+  rest_api_id = aws_api_gateway_rest_api.main.id
+  resource_id = aws_api_gateway_resource.presentation_download.id
+
+  allowed_origins = var.cors_allowed_origins
+  allowed_methods = ["GET", "OPTIONS"]
   allowed_headers = var.cors_allowed_headers
   max_age_seconds = var.cors_max_age_seconds
 }

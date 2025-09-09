@@ -1,359 +1,173 @@
 {
-  "actionGroups": [
-    {
-      "actionGroupName": "PresentationManagement",
-      "description": "Manages presentation lifecycle including creation, status tracking, and retrieval",
-      "actionGroupExecutor": {
-        "lambda": {
-          "lambdaArn": "${CREATE_OUTLINE_LAMBDA_ARN}"
-        }
-      },
-      "apiSchema": {
-        "s3": {
-          "s3BucketName": "${API_SCHEMA_BUCKET}",
-          "s3ObjectKey": "schemas/presentation_management.json"
-        }
-      },
-      "functionSchema": {
-        "functions": [
-          {
-            "name": "createPresentation",
-            "description": "Initialize a new presentation request and generate outline",
-            "parameters": {
-              "topic": {
-                "type": "string",
-                "description": "Main topic of the presentation",
-                "required": true
-              },
-              "audience": {
-                "type": "string",
-                "description": "Target audience description",
-                "required": false
-              },
-              "duration": {
-                "type": "integer",
-                "description": "Duration in minutes (default: 20)",
-                "required": false
-              },
-              "language": {
-                "type": "string",
-                "description": "Language code (EN, JA, ZH, ES, FR, DE, PT, KO)",
-                "required": false
-              },
-              "style": {
-                "type": "string",
-                "description": "Presentation style (professional, creative, minimalist, technical)",
-                "required": false
-              }
-            }
-          },
-          {
-            "name": "getPresentationStatus",
-            "description": "Check the current status of a presentation creation",
-            "parameters": {
-              "presentationId": {
-                "type": "string",
-                "description": "Unique identifier of the presentation",
-                "required": true
-              }
-            }
-          },
-          {
-            "name": "listPresentations",
-            "description": "List all presentations for current session",
-            "parameters": {
-              "sessionId": {
-                "type": "string",
-                "description": "Session identifier",
-                "required": false
-              },
-              "status": {
-                "type": "string",
-                "description": "Filter by status",
-                "required": false
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Orchestrator Agent API",
+    "description": "Master orchestrator agent for AI PPT Assistant",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/create-presentation": {
+      "post": {
+        "operationId": "createPresentation",
+        "summary": "Initialize a new presentation request and generate outline",
+        "description": "Initialize a new presentation request and generate outline",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "topic": {
+                    "type": "string",
+                    "description": "Main topic of the presentation"
+                  },
+                  "audience": {
+                    "type": "string",
+                    "description": "Target audience description"
+                  },
+                  "duration": {
+                    "type": "integer",
+                    "description": "Duration in minutes (default: 20)",
+                    "default": 20
+                  },
+                  "language": {
+                    "type": "string",
+                    "description": "Language code (EN, JA, ZH, ES, FR, DE, PT, KO)",
+                    "default": "EN"
+                  },
+                  "style": {
+                    "type": "string",
+                    "description": "Presentation style (professional, creative, minimalist, technical)",
+                    "default": "professional"
+                  }
+                },
+                "required": ["topic"]
               }
             }
           }
-        ]
+        },
+        "responses": {
+          "200": {
+            "description": "Presentation created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "presentationId": {
+                      "type": "string",
+                      "description": "Unique identifier of the presentation"
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "Creation status"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
-    {
-      "actionGroupName": "ContentGeneration",
-      "description": "Coordinates content generation including slides and speaker notes",
-      "actionGroupExecutor": {
-        "lambda": {
-          "lambdaArn": "${GENERATE_CONTENT_LAMBDA_ARN}"
-        }
-      },
-      "functionSchema": {
-        "functions": [
+    "/presentation-status": {
+      "get": {
+        "operationId": "getPresentationStatus",
+        "summary": "Check the current status of a presentation creation",
+        "description": "Check the current status of a presentation creation",
+        "parameters": [
           {
-            "name": "generateSlideContent",
-            "description": "Generate detailed content for presentation slides",
-            "parameters": {
-              "presentationId": {
-                "type": "string",
-                "description": "Presentation identifier",
-                "required": true
-              },
-              "outline": {
-                "type": "object",
-                "description": "Presentation outline structure",
-                "required": true
-              },
-              "style": {
-                "type": "string",
-                "description": "Content generation style",
-                "required": false
-              },
-              "includeCharts": {
-                "type": "boolean",
-                "description": "Whether to include data visualizations",
-                "required": false
-              }
-            }
-          },
-          {
-            "name": "generateSpeakerNotes",
-            "description": "Create detailed speaker notes for each slide",
-            "parameters": {
-              "presentationId": {
-                "type": "string",
-                "description": "Presentation identifier",
-                "required": true
-              },
-              "slides": {
-                "type": "array",
-                "description": "Array of slide content",
-                "required": true
-              },
-              "duration": {
-                "type": "integer",
-                "description": "Total presentation duration in minutes",
-                "required": true
-              },
-              "expertise": {
-                "type": "string",
-                "description": "Speaker expertise level (beginner, intermediate, expert)",
-                "required": false
-              },
-              "style": {
-                "type": "string",
-                "description": "Note style (conversational, formal, educational, motivational, technical)",
-                "required": false
-              }
-            }
-          },
-          {
-            "name": "refineContent",
-            "description": "Refine or modify existing slide content",
-            "parameters": {
-              "presentationId": {
-                "type": "string",
-                "description": "Presentation identifier",
-                "required": true
-              },
-              "slideNumber": {
-                "type": "integer",
-                "description": "Specific slide to modify (optional)",
-                "required": false
-              },
-              "refinementInstructions": {
-                "type": "string",
-                "description": "Instructions for content refinement",
-                "required": true
+            "name": "presentationId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique identifier of the presentation"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "description": "Current status of the presentation"
+                    },
+                    "progress": {
+                      "type": "number",
+                      "description": "Completion percentage"
+                    }
+                  }
+                }
               }
             }
           }
-        ]
+        }
       }
     },
-    {
-      "actionGroupName": "VisualGeneration",
-      "description": "Manages image generation and visual element creation",
-      "actionGroupExecutor": {
-        "lambda": {
-          "lambdaArn": "${FIND_IMAGE_LAMBDA_ARN}"
+    "/list-presentations": {
+      "get": {
+        "operationId": "listPresentations",
+        "summary": "List all presentations for current session",
+        "description": "List all presentations for current session",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session identifier"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by status"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Presentations listed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "presentations": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
-      },
-      "functionSchema": {
-        "functions": [
-          {
-            "name": "findOrGenerateImages",
-            "description": "Find existing images or generate new ones for slides",
-            "parameters": {
-              "presentationId": {
-                "type": "string",
-                "description": "Presentation identifier",
-                "required": true
-              },
-              "slides": {
-                "type": "array",
-                "description": "Slides requiring images",
-                "required": true
-              },
-              "style": {
-                "type": "string",
-                "description": "Visual style preference",
-                "required": false
-              },
-              "sources": {
-                "type": "array",
-                "description": "Image sources to use (s3, pexels, pixabay, ai_generated)",
-                "required": false
-              }
-            }
-          },
-          {
-            "name": "generateChart",
-            "description": "Generate data visualization charts",
-            "parameters": {
-              "chartType": {
-                "type": "string",
-                "description": "Type of chart (bar, line, pie, column, area)",
-                "required": true
-              },
-              "data": {
-                "type": "object",
-                "description": "Chart data and labels",
-                "required": true
-              },
-              "title": {
-                "type": "string",
-                "description": "Chart title",
-                "required": false
-              }
-            }
-          }
-        ]
-      }
-    },
-    {
-      "actionGroupName": "PresentationCompilation",
-      "description": "Compiles all elements into final presentation file",
-      "actionGroupExecutor": {
-        "lambda": {
-          "lambdaArn": "${COMPILE_PPTX_LAMBDA_ARN}"
-        }
-      },
-      "functionSchema": {
-        "functions": [
-          {
-            "name": "compilePresentation",
-            "description": "Assemble all elements into final PPTX file",
-            "parameters": {
-              "presentationId": {
-                "type": "string",
-                "description": "Presentation identifier",
-                "required": true
-              },
-              "templateId": {
-                "type": "string",
-                "description": "Template to use for styling",
-                "required": false
-              },
-              "includeSpeakerNotes": {
-                "type": "boolean",
-                "description": "Include speaker notes in presentation",
-                "required": false
-              },
-              "includeImages": {
-                "type": "boolean",
-                "description": "Include images in presentation",
-                "required": false
-              },
-              "outputFormat": {
-                "type": "string",
-                "description": "Output format (pptx, pdf, both)",
-                "required": false
-              }
-            }
-          },
-          {
-            "name": "downloadPresentation",
-            "description": "Get download URL for completed presentation",
-            "parameters": {
-              "presentationId": {
-                "type": "string",
-                "description": "Presentation identifier",
-                "required": true
-              },
-              "format": {
-                "type": "string",
-                "description": "Download format (pptx or pdf)",
-                "required": false
-              }
-            }
-          },
-          {
-            "name": "previewPresentation",
-            "description": "Generate preview of presentation slides",
-            "parameters": {
-              "presentationId": {
-                "type": "string",
-                "description": "Presentation identifier",
-                "required": true
-              },
-              "slideNumbers": {
-                "type": "array",
-                "description": "Specific slides to preview",
-                "required": false
-              }
-            }
-          }
-        ]
-      }
-    },
-    {
-      "actionGroupName": "SessionManagement",
-      "description": "Manages user sessions and conversation context",
-      "functionSchema": {
-        "functions": [
-          {
-            "name": "createSession",
-            "description": "Initialize a new user session",
-            "parameters": {
-              "userId": {
-                "type": "string",
-                "description": "User identifier",
-                "required": false
-              },
-              "preferences": {
-                "type": "object",
-                "description": "User preferences for presentations",
-                "required": false
-              }
-            }
-          },
-          {
-            "name": "updateSessionContext",
-            "description": "Update session with new context or preferences",
-            "parameters": {
-              "sessionId": {
-                "type": "string",
-                "description": "Session identifier",
-                "required": true
-              },
-              "context": {
-                "type": "object",
-                "description": "Updated context information",
-                "required": true
-              }
-            }
-          },
-          {
-            "name": "clearSession",
-            "description": "Clear session data and start fresh",
-            "parameters": {
-              "sessionId": {
-                "type": "string",
-                "description": "Session identifier",
-                "required": true
-              }
-            }
-          }
-        ]
       }
     }
-  ]
+  }
 }

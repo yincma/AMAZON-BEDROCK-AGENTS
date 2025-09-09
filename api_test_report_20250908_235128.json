@@ -1,0 +1,80 @@
+{
+  "summary": {
+    "total_tests": 6,
+    "success": 4,
+    "failed": 0,
+    "warning": 0,
+    "skipped": 2,
+    "duration_seconds": 6.940919,
+    "api_url": "https://mrd1bpxuw8.execute-api.us-east-1.amazonaws.com/legacy",
+    "test_time": "2025-09-08T23:51:28.924619"
+  },
+  "results": [
+    {
+      "timestamp": "2025-09-08T23:51:29.568623",
+      "test": "无效API密钥测试",
+      "status": "SUCCESS",
+      "message": "正确拒绝无效密钥 (HTTP 403)",
+      "details": {
+        "status_code": 403
+      }
+    },
+    {
+      "timestamp": "2025-09-08T23:51:32.454512",
+      "test": "创建演示文稿",
+      "status": "SUCCESS",
+      "message": "成功创建演示文稿，ID: None",
+      "details": {
+        "success": true,
+        "data": {
+          "task_id": "87771bac-392d-498f-b4b5-cdd71dd491f1",
+          "status": "pending",
+          "created_at": "2025-09-08T14:51:31.636082Z",
+          "estimated_completion": "2025-09-08T14:52:52.335772Z",
+          "_links": {
+            "self": "/tasks/87771bac-392d-498f-b4b5-cdd71dd491f1",
+            "result": "/presentations/87771bac-392d-498f-b4b5-cdd71dd491f1",
+            "status": "/tasks/87771bac-392d-498f-b4b5-cdd71dd491f1/status"
+          }
+        },
+        "request_id": "10d578cc-3934-40b6-9ba3-d0f0a05417d4",
+        "timestamp": "2025-09-08T14:51:32.335837+00:00",
+        "message": "Presentation generation started"
+      }
+    },
+    {
+      "timestamp": "2025-09-08T23:51:32.456309",
+      "test": "获取演示文稿状态",
+      "status": "SKIPPED",
+      "message": "没有可用的演示文稿ID",
+      "details": {}
+    },
+    {
+      "timestamp": "2025-09-08T23:51:33.947639",
+      "test": "列出演示文稿",
+      "status": "SUCCESS",
+      "message": "成功获取演示文稿列表，共 0 个，当前页 0 个",
+      "details": {
+        "total": 0,
+        "items_count": 0,
+        "first_item": null
+      }
+    },
+    {
+      "timestamp": "2025-09-08T23:51:33.949212",
+      "test": "下载演示文稿",
+      "status": "SKIPPED",
+      "message": "没有可用的演示文稿ID",
+      "details": {}
+    },
+    {
+      "timestamp": "2025-09-08T23:51:35.864509",
+      "test": "无效演示文稿ID测试",
+      "status": "SUCCESS",
+      "message": "正确处理无效ID (HTTP 400)",
+      "details": {
+        "status_code": 400
+      }
+    }
+  ]
+}

@@ -31,12 +31,20 @@ help:
 	@echo "  make build-layers    - Build Lambda layers (legacy)"
 	@echo "  make build-layers-optimized - Build optimized Lambda layers for performance"
 	@echo "  make deploy          - Deploy infrastructure with Terraform"
+	@echo "  make deploy-with-config - Deploy and auto-update API configuration"
 	@echo "  make destroy         - Safely destroy infrastructure with cleanup"
+	@echo "  make check-cloudfront - Check CloudFront resources status"
 	@echo "  make safe-destroy    - Run comprehensive cleanup and destroy"
 	@echo "  make tf-destroy      - Run Terraform destroy only (less safe)"
 	@echo "  make docs            - Generate HTML documentation"
 	@echo "  make docs-serve      - Serve documentation with live reload"
 	@echo "  make docs-clean      - Clean documentation build files"
+	@echo ""
+	@echo "API Configuration commands:"
+	@echo "  make update-api-config - Auto-update API Keys and URLs in test scripts"
+	@echo "  make validate-api-config - Validate current API configuration"
+	@echo "  make test-api        - Run comprehensive API functionality tests"
+	@echo "  make health-check    - Quick system health verification"
 	@echo ""
 	@echo "Performance optimization commands:"
 	@echo "  make perf-test       - Run Lambda performance tests"
@@ -273,8 +281,19 @@ tf-destroy:
 	cd infrastructure && $(TERRAFORM) destroy -var="project_name=$(PROJECT_NAME)" -var="aws_region=$(AWS_REGION)" -auto-approve
 	@echo "✅ Infrastructure destroyed"
 
-# Safe destroy with cleanup script
-safe-destroy:
+# Check CloudFront resources status
+check-cloudfront:
+	@echo "🔍 Checking CloudFront resources status..."
+	@if [ ! -f scripts/check_cloudfront_resources.sh ]; then \
+		echo "❌ CloudFront check script not found!"; \
+		echo "ℹ️  Script should be at: scripts/check_cloudfront_resources.sh"; \
+		exit 1; \
+	fi
+	@chmod +x scripts/check_cloudfront_resources.sh
+	@bash scripts/check_cloudfront_resources.sh
+
+# Legacy safe destroy with cleanup script
+safe-destroy-legacy:
 	@echo "🔧 Running safe destroy with comprehensive cleanup..."
 	@if [ ! -f scripts/safe_destroy.sh ]; then \
 		echo "❌ Safe destroy script not found!"; \
@@ -284,7 +303,20 @@ safe-destroy:
 	@bash scripts/safe_destroy.sh
 	@echo "✅ Safe destroy completed"
 
-# Real destroy target (now uses safe-destroy for reliability)
+# Enhanced safe destroy with intelligent CloudFront handling
+safe-destroy:
+	@echo "🚀 Running enhanced safe destroy v2.0 with intelligent CloudFront handling..."
+	@echo "ℹ️  This version automatically handles CloudFront distributions and OAI dependencies"
+	@if [ ! -f scripts/enhanced_safe_destroy.sh ]; then \
+		echo "⚠️  Enhanced destroy script not found, falling back to legacy version..."; \
+		$(MAKE) safe-destroy-legacy; \
+	else \
+		chmod +x scripts/enhanced_safe_destroy.sh; \
+		bash scripts/enhanced_safe_destroy.sh; \
+		echo "✅ Enhanced safe destroy completed successfully!"; \
+	fi
+
+# Real destroy target (now uses enhanced safe-destroy for reliability)
 destroy: safe-destroy
 
 # Protection against common typos for destroy command
@@ -440,7 +472,7 @@ cd-deploy: validate deploy
 
 # Cache directory for Lambda layers
 LAYER_CACHE := .layer-cache
-LAYER_HASH := $(shell md5 lambdas/layers/requirements.txt 2>/dev/null || echo "no-hash")
+LAYER_HASH := $(shell md5 lambdas/layers/requirements.txt 2>/dev/null | awk '{print $$NF}' || echo "no-hash")
 CACHED_LAYER := $(LAYER_CACHE)/$(LAYER_HASH).zip
 
 # Fast deployment (skip unnecessary steps)
@@ -559,6 +591,67 @@ deploy-incremental:
 		-target=module.lambda \
 		-auto-approve
 	@echo "✅ Incremental deployment completed"
+
+# AWS Expert: 自动化API配置更新
+update-api-config:
+	@echo "🔧 更新API配置..."
+	@if [ ! -f scripts/update_api_config.sh ]; then \
+		echo "❌ 配置更新脚本不存在: scripts/update_api_config.sh"; \
+		exit 1; \
+	fi
+	@chmod +x scripts/update_api_config.sh
+	@scripts/update_api_config.sh
+	@echo "✅ API配置更新完成"
+
+# 验证API配置
+validate-api-config:
+	@echo "🧪 验证API配置..."
+	@if [ ! -f scripts/update_api_config.sh ]; then \
+		echo "❌ 配置验证脚本不存在"; \
+		exit 1; \
+	fi
+	@chmod +x scripts/update_api_config.sh
+	@scripts/update_api_config.sh --validate-only
+
+# 带自动配置更新的完整部署
+deploy-with-config: deploy update-api-config post-deploy-validate
+	@echo "🎉 完整部署、配置更新和验证完成！"
+	@echo "💡 现在可以运行测试验证系统功能:"
+	@echo "   make test-api"
+
+# 部署后验证
+post-deploy-validate:
+	@echo "🔍 执行部署后验证..."
+	@if [ -f scripts/post_deploy_validation.sh ]; then \
+		chmod +x scripts/post_deploy_validation.sh && \
+		scripts/post_deploy_validation.sh; \
+	else \
+		echo "ℹ️ post_deploy_validation.sh 不存在，跳过"; \
+	fi
+
+# API功能测试
+test-api:
+	@echo "🧪 运行API功能测试..."
+	@if [ -f comprehensive_backend_test.py ]; then \
+		python3 comprehensive_backend_test.py; \
+	elif [ -f test_all_backend_apis.py ]; then \
+		python3 test_all_backend_apis.py; \
+	else \
+		echo "❌ 测试脚本未找到"; \
+		exit 1; \
+	fi
+	@echo "✅ API测试完成"
+
+# 快速健康检查
+health-check:
+	@echo "🩺 执行系统健康检查..."
+	@if [ -f system_health_check.py ]; then \
+		python3 system_health_check.py; \
+	else \
+		echo "❌ 健康检查脚本未找到"; \
+		exit 1; \
+	fi
+	@echo "✅ 健康检查完成"
 
 # Clean layer cache
 clean-layer-cache:

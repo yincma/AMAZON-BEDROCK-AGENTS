@@ -92,7 +92,8 @@ resource "aws_iam_policy" "lambda_policy" {
         ]
         Resource = [
           var.dynamodb_table_arn,
-          var.checkpoints_table_arn
+          var.checkpoints_table_arn,
+          "arn:aws:dynamodb:${var.aws_region}:${data.aws_caller_identity.current.account_id}:table/ai-ppt-assistant-dev-sessions"
         ]
       },
       {
@@ -111,17 +112,38 @@ resource "aws_iam_policy" "lambda_policy" {
           "bedrock:InvokeModel",
           "bedrock:InvokeModelWithResponseStream"
         ]
-        Resource = "arn:aws:bedrock:${var.aws_region}::foundation-model/*"
+        Resource = [
+          "arn:aws:bedrock:${var.aws_region}::foundation-model/*",
+          "arn:aws:bedrock:*:*:inference-profile/*"
+        ]
       },
       {
         Effect = "Allow"
         Action = [
-          "bedrock:InvokeAgent"
+          "bedrock:InvokeAgent",
+          "bedrock:GetAgent"
         ]
         Resource = [
           "arn:aws:bedrock:${var.aws_region}:${data.aws_caller_identity.current.account_id}:agent/*",
           "arn:aws:bedrock:${var.aws_region}:${data.aws_caller_identity.current.account_id}:agent-alias/*/*"
         ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "bedrock:GetInferenceProfile",
+          "bedrock:ListInferenceProfiles", 
+          "bedrock:UseInferenceProfile"
+        ]
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "bedrock:GetFoundationModelAvailability",
+          "bedrock:ListFoundationModels"
+        ]
+        Resource = "*"
       },
       {
         Effect = "Allow"
@@ -138,6 +160,15 @@ resource "aws_iam_policy" "lambda_policy" {
             "ec2:Region" = "${var.aws_region}"
           }
         }
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "lambda:InvokeFunction"
+        ]
+        Resource = [
+          "arn:aws:lambda:${var.aws_region}:${data.aws_caller_identity.current.account_id}:function:${var.project_name}-*"
+        ]
       }
     ]
   })
@@ -502,6 +533,54 @@ resource "aws_lambda_function" "api_modify_slide" {
   tags = var.tags
 }
 
+# Lambda Function: Task Processor (SQS Event Handler)
+resource "aws_lambda_function" "api_task_processor" {
+  filename      = "${path.module}/../../../lambdas/api/task_processor.zip"
+  function_name = "${var.project_name}-api-task-processor"
+  role          = aws_iam_role.lambda_execution_role.arn
+  handler       = "task_processor.lambda_handler"
+  runtime       = "python3.12"
+  architectures = ["arm64"]
+  timeout       = 900  # 15 minutes for complex orchestration
+  memory_size   = 1536 # Optimized memory for orchestration
+
+  layers = [aws_lambda_layer_version.content_dependencies.arn]
+
+  environment {
+    variables = {
+      DYNAMODB_TABLE                   = var.dynamodb_table_name
+      DYNAMODB_SESSIONS_TABLE          = "${var.project_name}-sessions"
+      DYNAMODB_CHECKPOINTS_TABLE       = var.checkpoints_table_name
+      S3_BUCKET                        = var.s3_bucket_name
+      SQS_QUEUE_URL                    = var.sqs_queue_url
+      ORCHESTRATOR_AGENT_ID            = var.orchestrator_agent_id
+      ORCHESTRATOR_ALIAS_ID            = var.orchestrator_alias_id
+      CONTENT_AGENT_ID                 = var.content_agent_id
+      CONTENT_ALIAS_ID                 = var.content_alias_id
+      VISUAL_AGENT_ID                  = var.visual_agent_id
+      VISUAL_ALIAS_ID                  = var.visual_alias_id
+      COMPILER_AGENT_ID                = var.compiler_agent_id
+      COMPILER_ALIAS_ID                = var.compiler_alias_id
+      BEDROCK_MODEL_ID                 = var.bedrock_model_id
+      BEDROCK_ORCHESTRATOR_MODEL_ID    = var.bedrock_model_id
+      NOVA_MODEL_ID                    = var.nova_model_id
+      PROJECT_NAME                     = var.project_name
+      LOG_LEVEL                        = var.log_level
+    }
+  }
+
+  # VPC configuration for enhanced security
+  dynamic "vpc_config" {
+    for_each = var.enable_vpc_config ? [1] : []
+    content {
+      subnet_ids         = var.vpc_subnet_ids
+      security_group_ids = var.vpc_security_group_ids
+    }
+  }
+
+  tags = var.tags
+}
+
 # =============================================================================
 # PROVISIONED CONCURRENCY CONFIGURATION
 # =============================================================================
@@ -612,6 +691,7 @@ output "lambda_function_arns" {
     api_presentation_status   = aws_lambda_function.api_presentation_status.arn
     api_presentation_download = aws_lambda_function.api_presentation_download.arn
     api_modify_slide          = aws_lambda_function.api_modify_slide.arn
+    api_task_processor        = aws_lambda_function.api_task_processor.arn
   }
 }
 
@@ -627,6 +707,7 @@ output "lambda_function_names" {
     api_presentation_status   = aws_lambda_function.api_presentation_status.function_name
     api_presentation_download = aws_lambda_function.api_presentation_download.function_name
     api_modify_slide          = aws_lambda_function.api_modify_slide.function_name
+    api_task_processor        = aws_lambda_function.api_task_processor.function_name
   }
 }
 

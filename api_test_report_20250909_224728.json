@@ -1,0 +1,79 @@
+{
+  "summary": {
+    "total_tests": 6,
+    "success": 4,
+    "failed": 1,
+    "warning": 1,
+    "skipped": 0,
+    "duration_seconds": 4.913457,
+    "api_url": "https://z0xtvlab5i.execute-api.us-east-1.amazonaws.com/legacy",
+    "test_time": "2025-09-09T22:47:28.463252"
+  },
+  "results": [
+    {
+      "timestamp": "2025-09-09T22:47:29.144231",
+      "test": "无效API密钥测试",
+      "status": "SUCCESS",
+      "message": "正确拒绝无效密钥 (HTTP 403)",
+      "details": {
+        "status_code": 403
+      }
+    },
+    {
+      "timestamp": "2025-09-09T22:47:30.414154",
+      "test": "创建演示文稿",
+      "status": "SUCCESS",
+      "message": "成功创建演示文稿，ID: 62c67c75-0704-4835-af3a-14a97aeef398",
+      "details": {
+        "presentation_id": "62c67c75-0704-4835-af3a-14a97aeef398",
+        "title": "AI技术测试演示",
+        "status": "pending",
+        "progress": 0,
+        "created_at": "2025-09-09T13:47:29.763844Z",
+        "updated_at": "2025-09-09T13:47:29.763844Z",
+        "estimated_completion_time": "2025-09-09T13:48:50.349212Z",
+        "slide_count": 5,
+        "session_id": "50121eca-ba20-45ba-8dd8-2fdd8644a0e7"
+      }
+    },
+    {
+      "timestamp": "2025-09-09T22:47:31.149354",
+      "test": "获取演示文稿状态",
+      "status": "FAILED",
+      "message": "HTTP 404",
+      "details": {
+        "status_code": 404,
+        "response": "{\"success\": false, \"error\": {\"code\": \"NOT_FOUND\", \"message\": \"Presentation not found\", \"request_id\": \"8cbff6d4-c132-4ac6-b668-8cf8d27a885c\", \"timestamp\": \"2025-09-09T13:47:31.091340+00:00\", \"details\": {\"task_id\": \"62c67c75-0704-4835-af3a-14a97aeef398\"}}}"
+      }
+    },
+    {
+      "timestamp": "2025-09-09T22:47:31.940027",
+      "test": "列出演示文稿",
+      "status": "SUCCESS",
+      "message": "成功获取演示文稿列表，共 0 个，当前页 0 个",
+      "details": {
+        "total": 0,
+        "items_count": 0,
+        "first_item": null
+      }
+    },
+    {
+      "timestamp": "2025-09-09T22:47:32.721338",
+      "test": "下载演示文稿",
+      "status": "WARNING",
+      "message": "演示文稿尚未准备好",
+      "details": {
+        "status_code": 409
+      }
+    },
+    {
+      "timestamp": "2025-09-09T22:47:33.375382",
+      "test": "无效演示文稿ID测试",
+      "status": "SUCCESS",
+      "message": "正确处理无效ID (HTTP 400)",
+      "details": {
+        "status_code": 400
+      }
+    }
+  ]
+}

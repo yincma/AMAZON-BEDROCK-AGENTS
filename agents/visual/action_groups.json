@@ -1,374 +1,216 @@
 {
-  "actionGroups": [
-    {
-      "actionGroupName": "ImageGeneration",
-      "description": "Generates images using AI models",
-      "actionGroupExecutor": {
-        "lambda": {
-          "lambdaArn": "${GENERATE_IMAGE_LAMBDA_ARN}"
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Visual Agent API",
+    "description": "Visual generation agent for presentations",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/generate-image": {
+      "post": {
+        "operationId": "generateImage",
+        "summary": "Generate an AI image based on prompt",
+        "description": "Generate an AI image based on prompt",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "prompt": {
+                    "type": "string",
+                    "description": "Detailed description of the image to generate"
+                  },
+                  "style": {
+                    "type": "string",
+                    "description": "Visual style (photorealistic, illustration, diagram, infographic, abstract)",
+                    "default": "photorealistic"
+                  },
+                  "aspectRatio": {
+                    "type": "string",
+                    "description": "Image aspect ratio (16:9, 4:3, 1:1, 9:16)",
+                    "default": "16:9"
+                  },
+                  "colorScheme": {
+                    "type": "string",
+                    "description": "Color palette preference",
+                    "default": "natural"
+                  },
+                  "model": {
+                    "type": "string",
+                    "description": "AI model to use (stability-diffusion-xl, dall-e-3)",
+                    "default": "stability-diffusion-xl"
+                  }
+                },
+                "required": ["prompt"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Image generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "imageUrl": {
+                      "type": "string",
+                      "description": "URL of the generated image"
+                    },
+                    "imageId": {
+                      "type": "string",
+                      "description": "Unique identifier of the image"
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
-      },
-      "functionSchema": {
-        "functions": [
+      }
+    },
+    "/find-image": {
+      "get": {
+        "operationId": "searchImages",
+        "summary": "Search for existing images",
+        "description": "Search for existing images from various sources",
+        "parameters": [
           {
-            "name": "generateImage",
-            "description": "Generate an AI image based on prompt",
-            "parameters": {
-              "prompt": {
-                "type": "string",
-                "description": "Detailed description of the image to generate",
-                "required": true
-              },
-              "style": {
-                "type": "string",
-                "description": "Visual style (photorealistic, illustration, diagram, infographic, abstract)",
-                "required": false
-              },
-              "aspect_ratio": {
-                "type": "string",
-                "description": "Image aspect ratio (16:9, 4:3, 1:1, 9:16)",
-                "required": false
-              },
-              "color_scheme": {
-                "type": "string",
-                "description": "Color palette preference",
-                "required": false
-              },
-              "model": {
-                "type": "string",
-                "description": "AI model to use (stability-diffusion-xl, dall-e-3)",
-                "required": false
-              }
-            }
+            "name": "keywords",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Search keywords (comma-separated)"
           },
           {
-            "name": "generateDiagram",
-            "description": "Create technical diagrams and flowcharts",
-            "parameters": {
-              "diagram_type": {
-                "type": "string",
-                "description": "Type of diagram (flowchart, architecture, sequence, mindmap)",
-                "required": true
-              },
-              "content": {
-                "type": "object",
-                "description": "Diagram content and structure",
-                "required": true
-              },
-              "style": {
-                "type": "string",
-                "description": "Visual style for the diagram",
-                "required": false
-              }
-            }
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Image category (business, technology, nature, abstract)"
           },
           {
-            "name": "generateChart",
-            "description": "Create data visualization charts",
-            "parameters": {
-              "chart_type": {
-                "type": "string",
-                "description": "Type of chart (bar, line, pie, scatter, heatmap)",
-                "required": true
-              },
-              "data": {
-                "type": "object",
-                "description": "Data to visualize",
-                "required": true
-              },
-              "title": {
-                "type": "string",
-                "description": "Chart title",
-                "required": false
-              },
-              "color_palette": {
-                "type": "array",
-                "description": "Colors to use in the chart",
-                "required": false
+            "name": "licenseType",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "License requirement (creative_commons, royalty_free, commercial)"
+          },
+          {
+            "name": "minResolution",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Minimum resolution requirement"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Images found successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "images": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "url": {
+                            "type": "string"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "source": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
               }
             }
           }
-        ]
-      }
-    },
-    {
-      "actionGroupName": "ImageSelection",
-      "description": "Selects appropriate images from repositories",
-      "actionGroupExecutor": {
-        "lambda": {
-          "lambdaArn": "${SELECT_IMAGE_LAMBDA_ARN}"
         }
-      },
-      "functionSchema": {
-        "functions": [
-          {
-            "name": "searchImages",
-            "description": "Search for existing images",
-            "parameters": {
-              "keywords": {
-                "type": "array",
-                "description": "Search keywords",
-                "required": true
-              },
-              "category": {
-                "type": "string",
-                "description": "Image category (business, technology, nature, abstract)",
-                "required": false
-              },
-              "license_type": {
-                "type": "string",
-                "description": "License requirement (creative_commons, royalty_free, commercial)",
-                "required": false
-              },
-              "min_resolution": {
-                "type": "string",
-                "description": "Minimum resolution requirement",
-                "required": false
-              }
-            }
-          },
-          {
-            "name": "selectBestImage",
-            "description": "Select the most appropriate image from candidates",
-            "parameters": {
-              "candidates": {
-                "type": "array",
-                "description": "List of candidate images",
-                "required": true
-              },
-              "criteria": {
-                "type": "object",
-                "description": "Selection criteria and weights",
-                "required": true
-              },
-              "context": {
-                "type": "string",
-                "description": "Slide context for better selection",
-                "required": false
-              }
-            }
-          },
-          {
-            "name": "validateImageRights",
-            "description": "Verify image usage rights and licensing",
-            "parameters": {
-              "image_source": {
-                "type": "string",
-                "description": "Source of the image",
-                "required": true
-              },
-              "intended_use": {
-                "type": "string",
-                "description": "How the image will be used",
-                "required": true
-              },
-              "commercial": {
-                "type": "boolean",
-                "description": "Whether for commercial use",
-                "required": false
-              }
-            }
-          }
-        ]
       }
     },
-    {
-      "actionGroupName": "ImageOptimization",
-      "description": "Optimizes images for presentation use",
-      "functionSchema": {
-        "functions": [
-          {
-            "name": "optimizeImage",
-            "description": "Optimize image for presentation display",
-            "parameters": {
-              "image_path": {
-                "type": "string",
-                "description": "Path to the image file",
-                "required": true
-              },
-              "target_resolution": {
-                "type": "string",
-                "description": "Target resolution (1920x1080, 1280x720)",
-                "required": false
-              },
-              "quality": {
-                "type": "integer",
-                "description": "JPEG quality (1-100)",
-                "required": false
-              },
-              "format": {
-                "type": "string",
-                "description": "Output format (png, jpeg, webp)",
-                "required": false
-              }
-            }
-          },
-          {
-            "name": "cropImage",
-            "description": "Crop image to specific aspect ratio",
-            "parameters": {
-              "image_path": {
-                "type": "string",
-                "description": "Path to the image",
-                "required": true
-              },
-              "aspect_ratio": {
-                "type": "string",
-                "description": "Target aspect ratio",
-                "required": true
-              },
-              "focus_point": {
+    "/generate-chart": {
+      "post": {
+        "operationId": "generateChart",
+        "summary": "Create data visualization charts",
+        "description": "Create data visualization charts",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
                 "type": "object",
-                "description": "Point to focus on when cropping",
-                "required": false
-              }
-            }
-          },
-          {
-            "name": "enhanceImage",
-            "description": "Enhance image quality and appearance",
-            "parameters": {
-              "image_path": {
-                "type": "string",
-                "description": "Path to the image",
-                "required": true
-              },
-              "enhancements": {
-                "type": "array",
-                "description": "List of enhancements (brightness, contrast, sharpness)",
-                "required": false
-              },
-              "auto_enhance": {
-                "type": "boolean",
-                "description": "Apply automatic enhancements",
-                "required": false
+                "properties": {
+                  "chartType": {
+                    "type": "string",
+                    "description": "Type of chart (bar, line, pie, scatter, heatmap)"
+                  },
+                  "data": {
+                    "type": "object",
+                    "description": "Data to visualize"
+                  },
+                  "title": {
+                    "type": "string",
+                    "description": "Chart title"
+                  },
+                  "colorPalette": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Colors to use in the chart"
+                  }
+                },
+                "required": ["chartType", "data"]
               }
             }
           }
-        ]
-      }
-    },
-    {
-      "actionGroupName": "LayoutDesign",
-      "description": "Designs visual layouts for slides",
-      "functionSchema": {
-        "functions": [
-          {
-            "name": "suggestLayout",
-            "description": "Suggest optimal layout for content and visuals",
-            "parameters": {
-              "content_type": {
-                "type": "string",
-                "description": "Type of content (title, bullet_points, comparison, process)",
-                "required": true
-              },
-              "visual_elements": {
-                "type": "array",
-                "description": "Visual elements to include",
-                "required": true
-              },
-              "text_amount": {
-                "type": "string",
-                "description": "Amount of text (minimal, moderate, heavy)",
-                "required": false
-              }
-            }
-          },
-          {
-            "name": "applyDesignPrinciples",
-            "description": "Apply design principles to layout",
-            "parameters": {
-              "layout": {
-                "type": "object",
-                "description": "Current layout structure",
-                "required": true
-              },
-              "principles": {
-                "type": "array",
-                "description": "Design principles to apply (balance, contrast, hierarchy)",
-                "required": false
-              }
-            }
-          },
-          {
-            "name": "createVisualHierarchy",
-            "description": "Establish visual hierarchy in slide design",
-            "parameters": {
-              "elements": {
-                "type": "array",
-                "description": "All visual and text elements",
-                "required": true
-              },
-              "importance_order": {
-                "type": "array",
-                "description": "Order of importance",
-                "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Chart generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "chartUrl": {
+                      "type": "string",
+                      "description": "URL of the generated chart"
+                    },
+                    "chartId": {
+                      "type": "string",
+                      "description": "Unique identifier of the chart"
+                    }
+                  }
+                }
               }
             }
           }
-        ]
-      }
-    },
-    {
-      "actionGroupName": "StyleManagement",
-      "description": "Manages visual styles and themes",
-      "functionSchema": {
-        "functions": [
-          {
-            "name": "applyTheme",
-            "description": "Apply visual theme to presentation",
-            "parameters": {
-              "theme_name": {
-                "type": "string",
-                "description": "Name of the theme",
-                "required": true
-              },
-              "color_palette": {
-                "type": "object",
-                "description": "Color scheme for the theme",
-                "required": false
-              },
-              "typography": {
-                "type": "object",
-                "description": "Font settings for the theme",
-                "required": false
-              }
-            }
-          },
-          {
-            "name": "ensureConsistency",
-            "description": "Ensure visual consistency across slides",
-            "parameters": {
-              "slides": {
-                "type": "array",
-                "description": "All slides to check",
-                "required": true
-              },
-              "style_guide": {
-                "type": "object",
-                "description": "Style guide to follow",
-                "required": false
-              }
-            }
-          },
-          {
-            "name": "adaptToBrand",
-            "description": "Adapt visuals to brand guidelines",
-            "parameters": {
-              "brand_guidelines": {
-                "type": "object",
-                "description": "Brand style requirements",
-                "required": true
-              },
-              "visual_elements": {
-                "type": "array",
-                "description": "Elements to adapt",
-                "required": true
-              }
-            }
-          }
-        ]
+        }
       }
     }
-  ]
+  }
 }

@@ -1,0 +1,154 @@
+# SQS Lambda Event Source Mapping Configuration
+# This file creates the connection between SQS queues and Lambda functions
+# Critical for async task processing in the AI PPT Assistant
+
+# Create a dedicated Lambda function for processing SQS messages
+resource "aws_lambda_function" "task_processor" {
+  filename      = "${path.module}/../lambdas/api/task_processor.zip"
+  function_name = "${local.name_prefix}-task-processor"
+  role          = module.lambda.lambda_execution_role_arn
+  handler       = "task_processor.lambda_handler"
+  runtime       = "python3.12"
+  architectures = ["arm64"]
+  timeout       = 120  # Longer timeout for processing tasks
+  memory_size   = 1536
+  
+  # Reserve concurrent executions for this critical function
+  reserved_concurrent_executions = 10
+
+  environment {
+    variables = {
+      DYNAMODB_TABLE         = module.dynamodb.table_name
+      DYNAMODB_SESSIONS_TABLE = module.dynamodb.sessions_table_name
+      DYNAMODB_CHECKPOINTS_TABLE = module.dynamodb.checkpoints_table_name
+      S3_BUCKET              = module.s3.bucket_name
+      ORCHESTRATOR_AGENT_ID  = module.lambda.orchestrator_agent_id
+      ORCHESTRATOR_ALIAS_ID  = module.lambda.orchestrator_alias_id
+      CONTENT_AGENT_ID       = module.lambda.content_agent_id
+      CONTENT_ALIAS_ID       = module.lambda.content_alias_id
+      VISUAL_AGENT_ID        = module.lambda.visual_agent_id
+      VISUAL_ALIAS_ID        = module.lambda.visual_alias_id
+      COMPILER_AGENT_ID      = module.lambda.compiler_agent_id
+      COMPILER_ALIAS_ID      = module.lambda.compiler_alias_id
+      BEDROCK_MODEL_ID       = var.bedrock_model_id
+      BEDROCK_ORCHESTRATOR_MODEL_ID = var.bedrock_orchestrator_model_id
+      NOVA_MODEL_ID          = var.nova_model_id
+      LOG_LEVEL              = "INFO"
+    }
+  }
+
+  # Dead letter queue configuration
+  dead_letter_config {
+    target_arn = aws_sqs_queue.dlq.arn
+  }
+
+  tags = local.common_tags
+
+  depends_on = [
+    module.lambda,
+    module.dynamodb,
+    module.s3,
+    aws_sqs_queue.task_queue
+  ]
+}
+
+# SQS Event Source Mapping - Connects SQS queue to Lambda function
+resource "aws_lambda_event_source_mapping" "sqs_to_lambda" {
+  event_source_arn = aws_sqs_queue.task_queue.arn
+  function_name    = aws_lambda_function.task_processor.arn
+  
+  # Process messages in batches for efficiency
+  batch_size                         = 5
+  maximum_batching_window_in_seconds = 10
+  
+  # Enable partial batch response to handle failures gracefully
+  function_response_types = ["ReportBatchItemFailures"]
+  
+  # Scaling configuration
+  scaling_config {
+    maximum_concurrency = 10  # Limit concurrent executions
+  }
+
+  depends_on = [
+    aws_lambda_function.task_processor,
+    aws_sqs_queue.task_queue
+  ]
+}
+
+# Grant SQS permissions to invoke Lambda
+resource "aws_lambda_permission" "sqs_invoke" {
+  statement_id  = "AllowSQSInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.task_processor.function_name
+  principal     = "sqs.amazonaws.com"
+  source_arn    = aws_sqs_queue.task_queue.arn
+}
+
+# CloudWatch Alarms for monitoring the task processor
+resource "aws_cloudwatch_metric_alarm" "task_processor_errors" {
+  alarm_name          = "${local.name_prefix}-task-processor-errors"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "Errors"
+  namespace           = "AWS/Lambda"
+  period              = "300"
+  statistic           = "Sum"
+  threshold           = "10"
+  alarm_description   = "This metric monitors task processor errors"
+  alarm_actions       = var.alarm_sns_topic_arn != "" ? [var.alarm_sns_topic_arn] : []
+
+  dimensions = {
+    FunctionName = aws_lambda_function.task_processor.function_name
+  }
+
+  tags = local.common_tags
+}
+
+resource "aws_cloudwatch_metric_alarm" "sqs_message_age" {
+  alarm_name          = "${local.name_prefix}-sqs-message-age"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "ApproximateAgeOfOldestMessage"
+  namespace           = "AWS/SQS"
+  period              = "300"
+  statistic           = "Maximum"
+  threshold           = "300"  # Alert if messages are older than 5 minutes
+  alarm_description   = "Alert when SQS messages are not being processed"
+  alarm_actions       = var.alarm_sns_topic_arn != "" ? [var.alarm_sns_topic_arn] : []
+
+  dimensions = {
+    QueueName = aws_sqs_queue.task_queue.name
+  }
+
+  tags = local.common_tags
+}
+
+resource "aws_cloudwatch_metric_alarm" "dlq_messages" {
+  alarm_name          = "${local.name_prefix}-dlq-messages"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "1"
+  metric_name         = "ApproximateNumberOfMessagesVisible"
+  namespace           = "AWS/SQS"
+  period              = "300"
+  statistic           = "Sum"
+  threshold           = "0"  # Alert on any messages in DLQ
+  alarm_description   = "Alert when messages are sent to the dead letter queue"
+  alarm_actions       = var.alarm_sns_topic_arn != "" ? [var.alarm_sns_topic_arn] : []
+
+  dimensions = {
+    QueueName = aws_sqs_queue.dlq.name
+  }
+
+  tags = local.common_tags
+}
+
+# Output the task processor function ARN
+output "task_processor_function_arn" {
+  value = aws_lambda_function.task_processor.arn
+  description = "ARN of the task processor Lambda function"
+}
+
+output "sqs_event_source_mapping_uuid" {
+  value = aws_lambda_event_source_mapping.sqs_to_lambda.uuid
+  description = "UUID of the SQS to Lambda event source mapping"
+}

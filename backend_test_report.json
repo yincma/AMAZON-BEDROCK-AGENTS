@@ -1,0 +1,52 @@
+{
+  "test_summary": {
+    "timestamp": "2025-09-10T01:00:15.004792",
+    "total_tests": 5,
+    "passed_tests": 3,
+    "failed_tests": 1,
+    "warnings": 0,
+    "success_rate": "60.0%"
+  },
+  "detailed_results": [
+    {
+      "timestamp": "2025-09-10T01:00:12.365653",
+      "test_name": "创建演示文稿",
+      "status": "FAIL",
+      "details": "HTTP 500: {\"message\": \"Internal server error\"}",
+      "data": null
+    },
+    {
+      "timestamp": "2025-09-10T01:00:13.196451",
+      "test_name": "Lambda调用",
+      "status": "PASS",
+      "details": "ai-ppt-assistant-list-presentations 调用成功",
+      "data": null
+    },
+    {
+      "timestamp": "2025-09-10T01:00:13.448075",
+      "test_name": "Lambda调用",
+      "status": "PASS",
+      "details": "ai-ppt-assistant-get-task 调用成功",
+      "data": null
+    },
+    {
+      "timestamp": "2025-09-10T01:00:15.004670",
+      "test_name": "并发请求测试",
+      "status": "PASS",
+      "details": "成功率: 100.0% (10/10)",
+      "data": null
+    },
+    {
+      "timestamp": "2025-09-10T01:00:15.004697",
+      "test_name": "响应时间统计",
+      "status": "INFO",
+      "details": "平均: 0.71s, 最大: 0.89s, 最小: 0.62s",
+      "data": null
+    }
+  ],
+  "test_resources": {
+    "session_id": "test_session_18395af3",
+    "presentation_ids": [],
+    "task_ids": []
+  }
+}

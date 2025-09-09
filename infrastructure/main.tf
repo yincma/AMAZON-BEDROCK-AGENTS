@@ -145,7 +145,7 @@ module "dynamodb" {
 resource "aws_sqs_queue" "task_queue" {
   name = "${local.name_prefix}-tasks"
 
-  visibility_timeout_seconds = 300
+  visibility_timeout_seconds = 950  # Must be greater than task_processor Lambda timeout (900s)
   message_retention_seconds  = 86400
 
   redrive_policy = jsonencode({
@@ -201,12 +201,13 @@ module "lambda" {
 
   # Required bucket and table names
   s3_bucket_name      = module.s3.bucket_name
-  dynamodb_table_name = module.dynamodb.table_name
+  dynamodb_table_name = module.dynamodb.tasks_table_name
 
   # ARNs for IAM permissions
-  s3_bucket_arn         = module.s3.bucket_arn
-  dynamodb_table_arn    = module.dynamodb.table_arn
-  checkpoints_table_arn = module.dynamodb.checkpoints_table_arn
+  s3_bucket_arn           = module.s3.bucket_arn
+  dynamodb_table_arn      = module.dynamodb.tasks_table_arn
+  checkpoints_table_name  = module.dynamodb.checkpoints_table_name
+  checkpoints_table_arn   = module.dynamodb.checkpoints_table_arn
   sqs_queue_url         = aws_sqs_queue.task_queue.url
   sqs_queue_arn         = aws_sqs_queue.task_queue.arn
 
@@ -215,15 +216,15 @@ module "lambda" {
   bedrock_orchestrator_model_id = var.bedrock_orchestrator_model_id
   nova_model_id = var.nova_model_id
 
-  # Bedrock Agent IDs (use placeholders for now)
-  orchestrator_agent_id = "LA1D127LSK"
-  orchestrator_alias_id = "PSQBDUP6KR"
-  content_agent_id      = "placeholder-content-agent-id"
-  content_alias_id      = "placeholder-content-alias-id"
-  visual_agent_id       = "placeholder-visual-agent-id"
-  visual_alias_id       = "placeholder-visual-alias-id"
-  compiler_agent_id     = "placeholder-compiler-agent-id"
-  compiler_alias_id     = "placeholder-compiler-alias-id"
+  # Bedrock Agent IDs - Dynamically fetched from deployed agents
+  orchestrator_agent_id = local.orchestrator_agent_id
+  orchestrator_alias_id = local.orchestrator_alias_id
+  content_agent_id      = local.content_agent_id
+  content_alias_id      = local.content_alias_id
+  visual_agent_id       = local.visual_agent_id
+  visual_alias_id       = local.visual_alias_id
+  compiler_agent_id     = local.compiler_agent_id
+  compiler_alias_id     = local.compiler_alias_id
 
   # Explicit dependencies to ensure proper creation order
   depends_on = [
@@ -238,26 +239,50 @@ module "lambda" {
 # Layer 5: Bedrock Agents (Depends on Lambda)
 # ============================================================================
 
-# Temporarily disabled due to parameter mismatch
-# module "bedrock" {
-#   source = "./modules/bedrock"
-#   
-#   project_name = var.project_name
-#   environment  = var.environment
-#   
-#   model_id      = var.bedrock_model_id
-#   model_version = var.bedrock_model_version
-#   
-#   # Agent configurations
-#   agents = var.bedrock_agents
-#   
-#   # Lambda function ARNs for agent actions
-#   lambda_function_arns = module.lambda.function_arns
-#   
-#   tags = local.common_tags
-#   
-#   depends_on = [module.lambda]
-# }
+# Bedrock Agents Module - Now enabled with Terraform management
+module "bedrock" {
+  source = "./modules/bedrock"
+  
+  project_name = var.project_name
+  aws_region   = var.aws_region
+  
+  # Agent configurations - using module default values with correct inference profiles
+  # This will use the defaults defined in modules/bedrock/variables.tf
+  
+  # Lambda function ARNs for agent actions  
+  lambda_function_arns = {
+    orchestrator = {
+      create_outline = module.lambda.function_arns["create_outline"]
+    }
+    content = {
+      generate_content = module.lambda.function_arns["generate_content"]
+    }
+    visual = {
+      generate_image = module.lambda.function_arns["generate_image"]
+    }
+    compiler = {
+      compile_pptx = module.lambda.function_arns["compile_pptx"]
+    }
+  }
+  
+  # Required resources for agent permissions
+  s3_bucket_arn      = module.s3.bucket_arn
+  dynamodb_table_arn = module.dynamodb.tasks_table_arn
+  
+  tags = local.common_tags
+  
+  depends_on = [module.lambda, module.dynamodb, module.s3]
+}
+
+# ============================================================================
+# Layer 5.5: SQS Lambda Event Source Mapping (Task Processing)
+# ============================================================================
+# Include the SQS Lambda mapping configuration
+# This creates the task processor function and connects it to SQS
+# Critical for async task processing
+
+# Note: The configuration is in a separate file for modularity
+# See: sqs_lambda_mapping.tf
 
 # ============================================================================
 # Layer 6: API Gateway Integration (Connect API to Lambda)
@@ -286,6 +311,20 @@ resource "aws_api_gateway_integration" "get_presentation" {
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
   uri                     = module.lambda.function_invoke_arns["presentation_status"]
+
+  timeout_milliseconds = 10000
+
+  depends_on = [module.lambda, module.api_gateway]
+}
+
+resource "aws_api_gateway_integration" "download_presentation" {
+  rest_api_id = module.api_gateway.rest_api_id
+  resource_id = module.api_gateway.resource_ids["presentation_download"]
+  http_method = "GET"
+
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = module.lambda.function_invoke_arns["presentation_download"]
 
   timeout_milliseconds = 10000
 
@@ -499,6 +538,16 @@ resource "aws_lambda_permission" "presentation_status_permission" {
   depends_on = [module.lambda, module.api_gateway]
 }
 
+resource "aws_lambda_permission" "presentation_download_permission" {
+  statement_id  = "AllowAPIGatewayInvoke-presentation-download"
+  action        = "lambda:InvokeFunction"
+  function_name = module.lambda.function_names["presentation_download"]
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "arn:aws:execute-api:${var.aws_region}:${data.aws_caller_identity.current.account_id}:${module.api_gateway.rest_api_id}/*/*"
+
+  depends_on = [module.lambda, module.api_gateway]
+}
+
 # Note: list_presentations_permission is defined in lambda_list_presentations.tf
 # to avoid duplication
 
@@ -557,6 +606,7 @@ resource "aws_api_gateway_deployment" "integration_deployment" {
     # Then integrations
     aws_api_gateway_integration.create_presentation,
     aws_api_gateway_integration.get_presentation,
+    aws_api_gateway_integration.download_presentation,
     aws_api_gateway_integration.list_presentations,
     aws_api_gateway_integration.create_session,
     aws_api_gateway_integration.get_session,
@@ -576,6 +626,7 @@ resource "aws_api_gateway_deployment" "integration_deployment" {
     # Lambda permissions (critical for avoiding 502 errors)
     aws_lambda_permission.generate_presentation_permission,
     aws_lambda_permission.presentation_status_permission,
+    aws_lambda_permission.presentation_download_permission,
     # Gateway responses for validation errors
     # Gateway responses commented out - resources not defined
     # aws_api_gateway_gateway_response.bad_request,
@@ -716,7 +767,7 @@ module "monitoring" {
 
   # DynamoDB monitoring configuration
   enable_dynamodb_monitoring = var.enable_dynamodb_monitoring
-  dynamodb_table_name        = module.dynamodb.table_name
+  dynamodb_table_name        = module.dynamodb.tasks_table_name
 
   # Log retention
   log_retention_days = var.log_retention_days
@@ -804,4 +855,25 @@ output "monitoring_sns_topic_arn" {
 output "monitoring_summary" {
   description = "Summary of monitoring components"
   value       = var.enable_monitoring && length(module.monitoring) > 0 ? module.monitoring[0].monitoring_summary : null
+}
+
+# Bedrock Agents outputs
+output "bedrock_agent_ids" {
+  description = "Map of Bedrock Agent IDs"
+  value       = module.bedrock.agent_ids
+}
+
+output "bedrock_agent_alias_ids" {
+  description = "Map of Bedrock Agent Alias IDs"  
+  value       = module.bedrock.agent_alias_ids
+}
+
+output "bedrock_orchestrator_agent_id" {
+  description = "Orchestrator Agent ID for Lambda environment variables"
+  value       = module.bedrock.agent_ids["orchestrator"]
+}
+
+output "bedrock_orchestrator_alias_id" {
+  description = "Orchestrator Agent Alias ID for Lambda environment variables"
+  value       = module.bedrock.agent_alias_ids["orchestrator"]
 }

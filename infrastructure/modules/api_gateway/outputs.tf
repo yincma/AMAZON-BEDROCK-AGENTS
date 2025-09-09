@@ -94,13 +94,14 @@ output "usage_plan_name" {
 output "resource_ids" {
   description = "Map of API Gateway resource IDs"
   value = {
-    presentations   = aws_api_gateway_resource.presentations.id
-    presentation_id = aws_api_gateway_resource.presentation_id.id
-    sessions        = aws_api_gateway_resource.sessions.id
-    session_id      = aws_api_gateway_resource.session_id.id
-    agents          = aws_api_gateway_resource.agents.id
-    agent_name      = aws_api_gateway_resource.agent_name.id
-    agent_execute   = aws_api_gateway_resource.agent_execute.id
+    presentations          = aws_api_gateway_resource.presentations.id
+    presentation_id        = aws_api_gateway_resource.presentation_id.id
+    presentation_download  = aws_api_gateway_resource.presentation_download.id
+    sessions              = aws_api_gateway_resource.sessions.id
+    session_id            = aws_api_gateway_resource.session_id.id
+    agents                = aws_api_gateway_resource.agents.id
+    agent_name            = aws_api_gateway_resource.agent_name.id
+    agent_execute         = aws_api_gateway_resource.agent_execute.id
   }
 }
 
@@ -108,12 +109,13 @@ output "resource_ids" {
 output "resource_paths" {
   description = "Map of API Gateway resource paths"
   value = {
-    presentations   = aws_api_gateway_resource.presentations.path
-    presentation_id = aws_api_gateway_resource.presentation_id.path
-    sessions        = aws_api_gateway_resource.sessions.path
-    session_id      = aws_api_gateway_resource.session_id.path
-    agents          = aws_api_gateway_resource.agents.path
-    agent_execute   = aws_api_gateway_resource.agent_execute.path
+    presentations         = aws_api_gateway_resource.presentations.path
+    presentation_id       = aws_api_gateway_resource.presentation_id.path
+    presentation_download = aws_api_gateway_resource.presentation_download.path
+    sessions             = aws_api_gateway_resource.sessions.path
+    session_id           = aws_api_gateway_resource.session_id.path
+    agents               = aws_api_gateway_resource.agents.path
+    agent_execute        = aws_api_gateway_resource.agent_execute.path
   }
 }
 
@@ -130,6 +132,11 @@ output "methods" {
       resource_id      = aws_api_gateway_method.get_presentation.resource_id
       http_method      = aws_api_gateway_method.get_presentation.http_method
       api_key_required = aws_api_gateway_method.get_presentation.api_key_required
+    }
+    download_presentation = {
+      resource_id      = aws_api_gateway_method.download_presentation.resource_id
+      http_method      = aws_api_gateway_method.download_presentation.http_method
+      api_key_required = aws_api_gateway_method.download_presentation.api_key_required
     }
     list_presentations = {
       resource_id      = aws_api_gateway_method.list_presentations.resource_id
@@ -179,9 +186,10 @@ output "api_endpoints" {
   description = "Full URLs for API endpoints"
   value = {
     presentations = {
-      create = "${var.create_deployment ? aws_api_gateway_stage.main[0].invoke_url : "https://${aws_api_gateway_rest_api.main.id}.execute-api.${data.aws_region.current.name}.amazonaws.com/${var.stage_name}"}/presentations"
-      list   = "${var.create_deployment ? aws_api_gateway_stage.main[0].invoke_url : "https://${aws_api_gateway_rest_api.main.id}.execute-api.${data.aws_region.current.name}.amazonaws.com/${var.stage_name}"}/presentations"
-      get    = "${var.create_deployment ? aws_api_gateway_stage.main[0].invoke_url : "https://${aws_api_gateway_rest_api.main.id}.execute-api.${data.aws_region.current.name}.amazonaws.com/${var.stage_name}"}/presentations/{id}"
+      create   = "${var.create_deployment ? aws_api_gateway_stage.main[0].invoke_url : "https://${aws_api_gateway_rest_api.main.id}.execute-api.${data.aws_region.current.name}.amazonaws.com/${var.stage_name}"}/presentations"
+      list     = "${var.create_deployment ? aws_api_gateway_stage.main[0].invoke_url : "https://${aws_api_gateway_rest_api.main.id}.execute-api.${data.aws_region.current.name}.amazonaws.com/${var.stage_name}"}/presentations"
+      get      = "${var.create_deployment ? aws_api_gateway_stage.main[0].invoke_url : "https://${aws_api_gateway_rest_api.main.id}.execute-api.${data.aws_region.current.name}.amazonaws.com/${var.stage_name}"}/presentations/{id}"
+      download = "${var.create_deployment ? aws_api_gateway_stage.main[0].invoke_url : "https://${aws_api_gateway_rest_api.main.id}.execute-api.${data.aws_region.current.name}.amazonaws.com/${var.stage_name}"}/presentations/{id}/download"
     }
     sessions = {
       create = "${var.create_deployment ? aws_api_gateway_stage.main[0].invoke_url : "https://${aws_api_gateway_rest_api.main.id}.execute-api.${data.aws_region.current.name}.amazonaws.com/${var.stage_name}"}/sessions"

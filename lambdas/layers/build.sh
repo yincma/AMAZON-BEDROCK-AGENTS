@@ -84,8 +84,8 @@ build_docker() {
     
     # Create a temporary optimized Dockerfile for ARM64
     cat > Dockerfile.layer <<EOF
-# Use official AWS Lambda Python base image for ARM64
-FROM --platform=linux/arm64 public.ecr.aws/lambda/python:3.12-arm64
+# AWS Expert: Use exact Python 3.12 Lambda runtime image for compatibility
+FROM public.ecr.aws/lambda/python:3.12-arm64
 
 # Set working directory
 WORKDIR /var/task
@@ -93,21 +93,15 @@ WORKDIR /var/task
 # Copy requirements file
 COPY requirements.txt /tmp/requirements.txt
 
-# Install system dependencies if needed
-RUN yum update -y && \\
-    yum clean all && \\
-    rm -rf /var/cache/yum
-
-# Create python directory structure matching Lambda layer expectations
+# AWS Expert: Create exact layer structure for Python 3.12
 RUN mkdir -p /opt/python/lib/python3.12/site-packages
 
-# Install Python packages with precise targeting for Lambda runtime
+# AWS Expert: Install system utilities first
+RUN dnf install -y zip && dnf clean all
+
+# AWS Expert: Install Python packages with precise Lambda 3.12 compatibility
 RUN pip install --no-cache-dir \\
     --target /opt/python/lib/python3.12/site-packages \\
-    --platform linux_aarch64 \\
-    --implementation cp \\
-    --python-version 3.12 \\
-    --only-binary=:all: \\
     --upgrade \\
     -r /tmp/requirements.txt
 
@@ -137,7 +131,7 @@ EOF
     docker build --platform=linux/arm64 -f Dockerfile.layer -t ${LAYER_NAME}-builder .
     
     # Extract the layer
-    docker run --rm -v "$PWD/$OUTPUT_DIR":/output ${LAYER_NAME}-builder \
+    docker run --rm --entrypoint="" -v "$PWD/$OUTPUT_DIR":/output ${LAYER_NAME}-builder \
         bash -c "cd /opt && zip -r -q /output/${LAYER_NAME}.zip python/"
     
     # Clean up

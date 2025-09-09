@@ -1,0 +1,145 @@
+{
+  "validation_timestamp": "2025-09-09T14:42:58.513229",
+  "overall_status": "FAIL",
+  "summary": {
+    "Lambda层兼容性": true,
+    "SQS事件源映射": true,
+    "IAM权限配置": true,
+    "基础设施状态": true,
+    "Lambda函数状态": true,
+    "Terraform状态": false
+  },
+  "detailed_results": [
+    {
+      "timestamp": "2025-09-09T14:42:54.091927",
+      "category": "LAYER",
+      "item": "ai-ppt-assistant-content-deps",
+      "status": "PASS",
+      "message": "Python 3.12 兼容 (ARN: arn:aws:lambda:us-east-1:375004070918:layer:ai-ppt-assistant-content-deps:10)",
+      "details": null
+    },
+    {
+      "timestamp": "2025-09-09T14:42:54.280174",
+      "category": "LAYER",
+      "item": "ai-ppt-assistant-minimal-deps",
+      "status": "PASS",
+      "message": "Python 3.12 兼容 (ARN: arn:aws:lambda:us-east-1:375004070918:layer:ai-ppt-assistant-minimal-deps:10)",
+      "details": null
+    },
+    {
+      "timestamp": "2025-09-09T14:42:54.469778",
+      "category": "LAYER",
+      "item": "ai-ppt-assistant-shared-deps",
+      "status": "PASS",
+      "message": "Python 3.12 兼容 (ARN: arn:aws:lambda:us-east-1:375004070918:layer:ai-ppt-assistant-shared-deps:24)",
+      "details": null
+    },
+    {
+      "timestamp": "2025-09-09T14:42:54.710957",
+      "category": "SQS_MAPPING",
+      "item": "Unknown",
+      "status": "PASS",
+      "message": "映射状态: Enabled",
+      "details": null
+    },
+    {
+      "timestamp": "2025-09-09T14:42:54.710982",
+      "category": "SQS_MAPPING",
+      "item": "Unknown",
+      "status": "PASS",
+      "message": "映射状态: Enabled",
+      "details": null
+    },
+    {
+      "timestamp": "2025-09-09T14:42:54.710986",
+      "category": "SQS_MAPPING",
+      "item": "Unknown",
+      "status": "PASS",
+      "message": "映射状态: Enabled",
+      "details": null
+    },
+    {
+      "timestamp": "2025-09-09T14:42:55.494207",
+      "category": "IAM",
+      "item": "ai-ppt-assistant-lambda-execution-role",
+      "status": "PASS",
+      "message": "Lambda执行角色存在",
+      "details": null
+    },
+    {
+      "timestamp": "2025-09-09T14:42:55.494216",
+      "category": "IAM",
+      "item": "TRUST_POLICY",
+      "status": "PASS",
+      "message": "Lambda信任策略正确",
+      "details": null
+    },
+    {
+      "timestamp": "2025-09-09T14:42:56.074679",
+      "category": "DYNAMODB",
+      "item": "ai-ppt-assistant-dev-tasks",
+      "status": "PASS",
+      "message": "表状态: ACTIVE",
+      "details": null
+    },
+    {
+      "timestamp": "2025-09-09T14:42:56.264110",
+      "category": "DYNAMODB",
+      "item": "ai-ppt-assistant-dev-sessions",
+      "status": "PASS",
+      "message": "表状态: ACTIVE",
+      "details": null
+    },
+    {
+      "timestamp": "2025-09-09T14:42:56.451293",
+      "category": "DYNAMODB",
+      "item": "ai-ppt-assistant-dev-checkpoints",
+      "status": "PASS",
+      "message": "表状态: ACTIVE",
+      "details": null
+    },
+    {
+      "timestamp": "2025-09-09T14:42:57.193445",
+      "category": "SQS",
+      "item": "task_queue",
+      "status": "PASS",
+      "message": "队列可访问",
+      "details": null
+    },
+    {
+      "timestamp": "2025-09-09T14:42:57.973842",
+      "category": "LAMBDA",
+      "item": "ai-ppt-assistant-api-generate-presentation",
+      "status": "PASS",
+      "message": "状态: Active, 运行时: python3.12",
+      "details": null
+    },
+    {
+      "timestamp": "2025-09-09T14:42:58.266166",
+      "category": "LAMBDA",
+      "item": "ai-ppt-assistant-generate-content",
+      "status": "PASS",
+      "message": "状态: Active, 运行时: python3.12",
+      "details": null
+    },
+    {
+      "timestamp": "2025-09-09T14:42:58.512923",
+      "category": "LAMBDA",
+      "item": "ai-ppt-assistant-create-outline",
+      "status": "PASS",
+      "message": "状态: Active, 运行时: python3.12",
+      "details": null
+    },
+    {
+      "timestamp": "2025-09-09T14:42:58.513193",
+      "category": "TERRAFORM",
+      "item": "CONFIG_FILES",
+      "status": "FAIL",
+      "message": "缺少配置文件: ['main.tf', 'variables.tf', 'outputs.tf']",
+      "details": null
+    }
+  ],
+  "recommendations": [
+    "修复 Terraform 配置文件或运行 terraform init"
+  ]
+}

@@ -11,9 +11,9 @@ import requests
 from datetime import datetime
 from typing import Dict, Any, Optional
 
-# API Configuration
-API_BASE_URL = "https://1mivrhr3w7.execute-api.us-east-1.amazonaws.com/legacy"
-API_KEY = "RUAeSTNzw33iQKQPFBggs9RPUXMnkmon7ZQmjV63"
+# API Configuration (Updated from Terraform output)
+API_BASE_URL = "https://rcbrq6bckg.execute-api.us-east-1.amazonaws.com/legacy"
+API_KEY = "EJgSAWxiyD3clYyMBcL03TpzjjGfObM2lahJ7L90"
 
 # Request headers
 HEADERS = {

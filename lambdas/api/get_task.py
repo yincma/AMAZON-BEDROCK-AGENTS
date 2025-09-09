@@ -269,13 +269,14 @@ def format_error_response(
 
 def format_success_response(task_data: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Format successful task response (wrapper for backward compatibility).
+    Format successful task response in OpenAPI compliant format.
     """
-    return format_response(
-        status_code=200,
-        success=True,
-        data={'task': task_data}
-    )
+    # Return task data directly for OpenAPI compliance
+    return {
+        'statusCode': 200,
+        'headers': CORS_HEADERS,
+        'body': json.dumps(task_data, default=lambda obj: str(obj) if isinstance(obj, Decimal) else str(obj))
+    }
 
 
 def extract_and_validate_task_id(event: Dict[str, Any]) -> tuple[Optional[str], Optional[Dict[str, Any]]]:
@@ -410,10 +411,10 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         if error_response:
             return error_response
         
-        # Get table name from environment
-        table_name = os.environ.get('TASKS_TABLE_NAME')
+        # Get table name from environment (now using standard DYNAMODB_TABLE)
+        table_name = os.environ.get('DYNAMODB_TABLE')
         if not table_name:
-            logger.error("TASKS_TABLE_NAME environment variable not configured")
+            logger.error("DYNAMODB_TABLE environment variable not configured")
             return format_error_response(500, "Service configuration error")
         
         # Retrieve task from DynamoDB with retry logic

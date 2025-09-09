@@ -74,12 +74,8 @@ class APIResponseBuilder:
     ) -> Dict[str, Any]:
         """Create successful response"""
 
-        response_body = {
-            "success": True,
-            "data": data,
-            "request_id": self.request_id,
-            "timestamp": self.timestamp,
-        }
+        # OpenAPI compliant response - return data directly without nested structure
+        response_body = data if isinstance(data, dict) else {"result": data}
 
         if message:
             response_body["message"] = message

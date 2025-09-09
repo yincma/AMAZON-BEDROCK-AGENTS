@@ -30,6 +30,11 @@ variable "dynamodb_table_arn" {
   type        = string
 }
 
+variable "checkpoints_table_name" {
+  description = "Name of the DynamoDB checkpoints table"
+  type        = string
+}
+
 variable "checkpoints_table_arn" {
   description = "ARN of the DynamoDB checkpoints table"
   type        = string

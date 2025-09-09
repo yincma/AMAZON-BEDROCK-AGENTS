@@ -1,435 +1,179 @@
 {
-  "actionGroups": [
-    {
-      "actionGroupName": "OutlineGeneration",
-      "description": "Creates structured presentation outlines based on topic and requirements",
-      "actionGroupExecutor": {
-        "lambda": {
-          "lambdaArn": "${CREATE_OUTLINE_LAMBDA_ARN}"
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Content Agent API",
+    "description": "Content generation agent for presentations",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/generate-content": {
+      "post": {
+        "operationId": "generateSlideContent",
+        "summary": "Generate content for presentation slides",
+        "description": "Create detailed content for presentation slides",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "outline": {
+                    "type": "object",
+                    "description": "Presentation outline with slide structure"
+                  },
+                  "slideNumbers": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    },
+                    "description": "Specific slides to generate (null for all)"
+                  },
+                  "contentStyle": {
+                    "type": "string",
+                    "description": "Writing style (formal, conversational, academic, persuasive)",
+                    "default": "formal"
+                  },
+                  "detailLevel": {
+                    "type": "string",
+                    "description": "Level of detail (executive_summary, balanced, detailed)",
+                    "default": "balanced"
+                  },
+                  "includeData": {
+                    "type": "boolean",
+                    "description": "Include data points and statistics",
+                    "default": false
+                  },
+                  "language": {
+                    "type": "string",
+                    "description": "Output language (EN, JA, ZH, ES, FR, DE, PT, KO)",
+                    "default": "EN"
+                  }
+                },
+                "required": ["outline"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Content generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "slides": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "slideNumber": {
+                            "type": "integer"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "content": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
-      },
-      "functionSchema": {
-        "functions": [
-          {
-            "name": "createOutline",
-            "description": "Generate a comprehensive presentation outline",
-            "parameters": {
-              "topic": {
-                "type": "string",
-                "description": "Main presentation topic",
-                "required": true
-              },
-              "subtopics": {
-                "type": "array",
-                "description": "Specific subtopics to cover",
-                "required": false
-              },
-              "duration": {
-                "type": "integer",
-                "description": "Presentation duration in minutes",
-                "required": true
-              },
-              "audience": {
-                "type": "string",
-                "description": "Target audience (executives, technical, general, academic)",
-                "required": true
-              },
-              "objective": {
-                "type": "string",
-                "description": "Primary presentation objective",
-                "required": false
-              },
-              "structure_preference": {
-                "type": "string",
-                "description": "Preferred structure (problem-solution, chronological, comparative, hierarchical)",
-                "required": false
-              }
-            }
-          },
-          {
-            "name": "refineOutline",
-            "description": "Modify existing outline based on feedback",
-            "parameters": {
-              "outline": {
+      }
+    },
+    "/generate-speaker-notes": {
+      "post": {
+        "operationId": "generateSpeakerNotes",
+        "summary": "Create detailed speaker notes for slides",
+        "description": "Create detailed speaker notes for each slide",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
                 "type": "object",
-                "description": "Current outline structure",
-                "required": true
-              },
-              "modifications": {
-                "type": "string",
-                "description": "Requested changes to the outline",
-                "required": true
-              },
-              "maintain_duration": {
-                "type": "boolean",
-                "description": "Keep within original time constraints",
-                "required": false
-              }
-            }
-          },
-          {
-            "name": "validateOutline",
-            "description": "Check outline for completeness and coherence",
-            "parameters": {
-              "outline": {
-                "type": "object",
-                "description": "Outline to validate",
-                "required": true
-              },
-              "criteria": {
-                "type": "array",
-                "description": "Validation criteria to check",
-                "required": false
+                "properties": {
+                  "slides": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    },
+                    "description": "Array of slides with content"
+                  },
+                  "totalDuration": {
+                    "type": "integer",
+                    "description": "Total presentation time in minutes"
+                  },
+                  "style": {
+                    "type": "string",
+                    "description": "Speaking style (conversational, formal, educational, motivational, technical)",
+                    "default": "conversational"
+                  },
+                  "expertiseLevel": {
+                    "type": "string",
+                    "description": "Speaker's expertise (beginner, intermediate, expert)",
+                    "default": "intermediate"
+                  },
+                  "includeTransitions": {
+                    "type": "boolean",
+                    "description": "Include slide transition phrases",
+                    "default": true
+                  },
+                  "includeExamples": {
+                    "type": "boolean",
+                    "description": "Include examples and anecdotes",
+                    "default": true
+                  },
+                  "includeQuestions": {
+                    "type": "boolean",
+                    "description": "Include anticipated Q&A",
+                    "default": false
+                  }
+                },
+                "required": ["slides", "totalDuration"]
               }
             }
           }
-        ]
-      }
-    },
-    {
-      "actionGroupName": "SlideContentGeneration",
-      "description": "Generates detailed content for individual slides",
-      "actionGroupExecutor": {
-        "lambda": {
-          "lambdaArn": "${GENERATE_CONTENT_LAMBDA_ARN}"
+        },
+        "responses": {
+          "200": {
+            "description": "Speaker notes generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "speakerNotes": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "slideNumber": {
+                            "type": "integer"
+                          },
+                          "notes": {
+                            "type": "string"
+                          },
+                          "timing": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
-      },
-      "functionSchema": {
-        "functions": [
-          {
-            "name": "generateSlideContent",
-            "description": "Create content for presentation slides",
-            "parameters": {
-              "outline": {
-                "type": "object",
-                "description": "Presentation outline with slide structure",
-                "required": true
-              },
-              "slide_numbers": {
-                "type": "array",
-                "description": "Specific slides to generate (null for all)",
-                "required": false
-              },
-              "content_style": {
-                "type": "string",
-                "description": "Writing style (formal, conversational, academic, persuasive)",
-                "required": false
-              },
-              "detail_level": {
-                "type": "string",
-                "description": "Level of detail (executive_summary, balanced, detailed)",
-                "required": false
-              },
-              "include_data": {
-                "type": "boolean",
-                "description": "Include data points and statistics",
-                "required": false
-              },
-              "language": {
-                "type": "string",
-                "description": "Output language (EN, JA, ZH, ES, FR, DE, PT, KO)",
-                "required": false
-              }
-            }
-          },
-          {
-            "name": "generateBulletPoints",
-            "description": "Convert paragraph text to bullet points",
-            "parameters": {
-              "text": {
-                "type": "string",
-                "description": "Text to convert to bullets",
-                "required": true
-              },
-              "max_points": {
-                "type": "integer",
-                "description": "Maximum number of bullet points",
-                "required": false
-              },
-              "max_words_per_point": {
-                "type": "integer",
-                "description": "Maximum words per bullet point",
-                "required": false
-              }
-            }
-          },
-          {
-            "name": "generateSlideTitle",
-            "description": "Create impactful slide titles",
-            "parameters": {
-              "content": {
-                "type": "string",
-                "description": "Slide content to title",
-                "required": true
-              },
-              "style": {
-                "type": "string",
-                "description": "Title style (question, statement, action, number)",
-                "required": false
-              }
-            }
-          },
-          {
-            "name": "simplifyContent",
-            "description": "Simplify complex content for clarity",
-            "parameters": {
-              "content": {
-                "type": "string",
-                "description": "Content to simplify",
-                "required": true
-              },
-              "target_level": {
-                "type": "string",
-                "description": "Target complexity level",
-                "required": false
-              }
-            }
-          }
-        ]
-      }
-    },
-    {
-      "actionGroupName": "SpeakerNotesGeneration",
-      "description": "Creates comprehensive speaker notes with timing guidance",
-      "actionGroupExecutor": {
-        "lambda": {
-          "lambdaArn": "${GENERATE_SPEAKER_NOTES_LAMBDA_ARN}"
-        }
-      },
-      "functionSchema": {
-        "functions": [
-          {
-            "name": "generateSpeakerNotes",
-            "description": "Create detailed speaker notes for slides",
-            "parameters": {
-              "slides": {
-                "type": "array",
-                "description": "Array of slides with content",
-                "required": true
-              },
-              "total_duration": {
-                "type": "integer",
-                "description": "Total presentation time in minutes",
-                "required": true
-              },
-              "style": {
-                "type": "string",
-                "description": "Speaking style (conversational, formal, educational, motivational, technical)",
-                "required": false
-              },
-              "expertise_level": {
-                "type": "string",
-                "description": "Speaker's expertise (beginner, intermediate, expert)",
-                "required": false
-              },
-              "include_transitions": {
-                "type": "boolean",
-                "description": "Include slide transition phrases",
-                "required": false
-              },
-              "include_examples": {
-                "type": "boolean",
-                "description": "Include examples and anecdotes",
-                "required": false
-              },
-              "include_questions": {
-                "type": "boolean",
-                "description": "Include anticipated Q&A",
-                "required": false
-              }
-            }
-          },
-          {
-            "name": "generateTransitions",
-            "description": "Create smooth transitions between slides",
-            "parameters": {
-              "from_slide": {
-                "type": "object",
-                "description": "Previous slide content",
-                "required": true
-              },
-              "to_slide": {
-                "type": "object",
-                "description": "Next slide content",
-                "required": true
-              },
-              "transition_type": {
-                "type": "string",
-                "description": "Type of transition (sequential, contrasting, causal, summary)",
-                "required": false
-              }
-            }
-          },
-          {
-            "name": "calculateTimingAllocation",
-            "description": "Distribute time across slides",
-            "parameters": {
-              "slides": {
-                "type": "array",
-                "description": "All slides in presentation",
-                "required": true
-              },
-              "total_minutes": {
-                "type": "integer",
-                "description": "Total available time",
-                "required": true
-              },
-              "emphasis_slides": {
-                "type": "array",
-                "description": "Slides requiring extra time",
-                "required": false
-              }
-            }
-          }
-        ]
-      }
-    },
-    {
-      "actionGroupName": "ContentEnhancement",
-      "description": "Enhances and refines existing content",
-      "functionSchema": {
-        "functions": [
-          {
-            "name": "addExamples",
-            "description": "Add relevant examples to content",
-            "parameters": {
-              "content": {
-                "type": "string",
-                "description": "Content to enhance with examples",
-                "required": true
-              },
-              "industry": {
-                "type": "string",
-                "description": "Industry context for examples",
-                "required": false
-              },
-              "example_types": {
-                "type": "array",
-                "description": "Types of examples (case_study, analogy, statistic, quote)",
-                "required": false
-              }
-            }
-          },
-          {
-            "name": "addDataVisualization",
-            "description": "Suggest data visualizations for content",
-            "parameters": {
-              "content": {
-                "type": "string",
-                "description": "Content with data",
-                "required": true
-              },
-              "data_points": {
-                "type": "object",
-                "description": "Data to visualize",
-                "required": true
-              },
-              "preferred_charts": {
-                "type": "array",
-                "description": "Preferred chart types",
-                "required": false
-              }
-            }
-          },
-          {
-            "name": "createCallToAction",
-            "description": "Generate compelling calls to action",
-            "parameters": {
-              "presentation_objective": {
-                "type": "string",
-                "description": "Main presentation goal",
-                "required": true
-              },
-              "audience": {
-                "type": "string",
-                "description": "Target audience",
-                "required": true
-              },
-              "action_type": {
-                "type": "string",
-                "description": "Type of action (decision, behavior_change, next_steps, commitment)",
-                "required": false
-              }
-            }
-          },
-          {
-            "name": "generateQuestions",
-            "description": "Create thought-provoking questions",
-            "parameters": {
-              "topic": {
-                "type": "string",
-                "description": "Topic for questions",
-                "required": true
-              },
-              "question_purpose": {
-                "type": "string",
-                "description": "Purpose (engage, reflect, challenge, discuss)",
-                "required": false
-              },
-              "difficulty_level": {
-                "type": "string",
-                "description": "Question difficulty",
-                "required": false
-              }
-            }
-          }
-        ]
-      }
-    },
-    {
-      "actionGroupName": "ContentTranslation",
-      "description": "Handles multi-language content generation and translation",
-      "functionSchema": {
-        "functions": [
-          {
-            "name": "translateContent",
-            "description": "Translate presentation content to target language",
-            "parameters": {
-              "content": {
-                "type": "object",
-                "description": "Content to translate",
-                "required": true
-              },
-              "target_language": {
-                "type": "string",
-                "description": "Target language code (JA, ZH, ES, FR, DE, PT, KO)",
-                "required": true
-              },
-              "maintain_formatting": {
-                "type": "boolean",
-                "description": "Preserve original formatting",
-                "required": false
-              },
-              "localize": {
-                "type": "boolean",
-                "description": "Adapt content to local culture",
-                "required": false
-              }
-            }
-          },
-          {
-            "name": "adaptCulturalContext",
-            "description": "Adapt content for cultural appropriateness",
-            "parameters": {
-              "content": {
-                "type": "object",
-                "description": "Content to adapt",
-                "required": true
-              },
-              "target_culture": {
-                "type": "string",
-                "description": "Target culture/region",
-                "required": true
-              },
-              "adaptation_level": {
-                "type": "string",
-                "description": "Level of adaptation (minimal, moderate, extensive)",
-                "required": false
-              }
-            }
-          }
-        ]
       }
     }
-  ]
+  }
 }

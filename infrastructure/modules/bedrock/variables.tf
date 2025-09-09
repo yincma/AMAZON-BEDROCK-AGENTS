@@ -42,28 +42,28 @@ variable "agents" {
   }))
   default = {
     orchestrator = {
-      model_id    = "anthropic.claude-4-1"
+      model_id    = "us.anthropic.claude-opus-4-1-20250805-v1:0"
       temperature = 0.7
       top_p       = 0.9
       top_k       = 250
       max_length  = 2048
     }
     content = {
-      model_id    = "anthropic.claude-4-0"
+      model_id    = "us.anthropic.claude-opus-4-20250514-v1:0"
       temperature = 0.8
       top_p       = 0.95
       top_k       = 250
       max_length  = 4096
     }
     visual = {
-      model_id    = "anthropic.claude-4-0"
+      model_id    = "us.anthropic.claude-opus-4-20250514-v1:0"
       temperature = 0.9
       top_p       = 0.95
       top_k       = 250
       max_length  = 2048
     }
     compiler = {
-      model_id    = "anthropic.claude-4-0"
+      model_id    = "us.anthropic.claude-opus-4-20250514-v1:0"
       temperature = 0.3
       top_p       = 0.95
       top_k       = 250

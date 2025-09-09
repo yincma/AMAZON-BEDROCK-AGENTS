@@ -43,14 +43,26 @@ resource "aws_iam_policy" "bedrock_agent_policy" {
           "bedrock:InvokeModel",
           "bedrock:InvokeModelWithResponseStream"
         ]
-        Resource = "arn:aws:bedrock:${var.aws_region}::foundation-model/${each.value.model_id}"
+        Resource = [
+          "arn:aws:bedrock:${var.aws_region}::foundation-model/${each.value.model_id}",
+          "arn:aws:bedrock:*:*:inference-profile/*"
+        ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "bedrock:GetInferenceProfile",
+          "bedrock:ListInferenceProfiles", 
+          "bedrock:UseInferenceProfile"
+        ]
+        Resource = "*"
       },
       {
         Effect = "Allow"
         Action = [
           "lambda:InvokeFunction"
         ]
-        Resource = var.lambda_function_arns[each.key]
+        Resource = values(var.lambda_function_arns[each.key])
       },
       {
         Effect = "Allow"
@@ -146,21 +158,8 @@ resource "aws_bedrockagent_agent" "orchestrator" {
 
   instruction = file("${path.module}/../../../agents/orchestrator/instructions.txt")
 
-  prompt_override_configuration {
-    prompt_configurations {
-      prompt_type          = "ORCHESTRATION"
-      prompt_creation_mode = "DEFAULT"
-      prompt_state         = "ENABLED"
-
-      inference_configuration {
-        temperature    = var.agents["orchestrator"].temperature
-        top_p          = var.agents["orchestrator"].top_p
-        top_k          = var.agents["orchestrator"].top_k
-        maximum_length = var.agents["orchestrator"].max_length
-        stop_sequences = []
-      }
-    }
-  }
+# Removed prompt_override_configuration to use default Bedrock Agent prompts
+  # Custom inference configuration is not compatible with DEFAULT prompt creation mode
 
   tags = merge(var.tags, {
     Agent = "orchestrator"
@@ -177,21 +176,8 @@ resource "aws_bedrockagent_agent" "content" {
 
   instruction = file("${path.module}/../../../agents/content/instructions.txt")
 
-  prompt_override_configuration {
-    prompt_configurations {
-      prompt_type          = "ORCHESTRATION"
-      prompt_creation_mode = "DEFAULT"
-      prompt_state         = "ENABLED"
-
-      inference_configuration {
-        temperature    = var.agents["content"].temperature
-        top_p          = var.agents["content"].top_p
-        top_k          = var.agents["content"].top_k
-        maximum_length = var.agents["content"].max_length
-        stop_sequences = []
-      }
-    }
-  }
+# Removed prompt_override_configuration to use default Bedrock Agent prompts
+  # Custom inference configuration is not compatible with DEFAULT prompt creation mode
 
   tags = merge(var.tags, {
     Agent = "content"
@@ -208,21 +194,8 @@ resource "aws_bedrockagent_agent" "visual" {
 
   instruction = file("${path.module}/../../../agents/visual/instructions.txt")
 
-  prompt_override_configuration {
-    prompt_configurations {
-      prompt_type          = "ORCHESTRATION"
-      prompt_creation_mode = "DEFAULT"
-      prompt_state         = "ENABLED"
-
-      inference_configuration {
-        temperature    = var.agents["visual"].temperature
-        top_p          = var.agents["visual"].top_p
-        top_k          = var.agents["visual"].top_k
-        maximum_length = var.agents["visual"].max_length
-        stop_sequences = []
-      }
-    }
-  }
+# Removed prompt_override_configuration to use default Bedrock Agent prompts
+  # Custom inference configuration is not compatible with DEFAULT prompt creation mode
 
   tags = merge(var.tags, {
     Agent = "visual"
@@ -239,21 +212,8 @@ resource "aws_bedrockagent_agent" "compiler" {
 
   instruction = file("${path.module}/../../../agents/compiler/instructions.txt")
 
-  prompt_override_configuration {
-    prompt_configurations {
-      prompt_type          = "ORCHESTRATION"
-      prompt_creation_mode = "DEFAULT"
-      prompt_state         = "ENABLED"
-
-      inference_configuration {
-        temperature    = var.agents["compiler"].temperature
-        top_p          = var.agents["compiler"].top_p
-        top_k          = var.agents["compiler"].top_k
-        maximum_length = var.agents["compiler"].max_length
-        stop_sequences = []
-      }
-    }
-  }
+# Removed prompt_override_configuration to use default Bedrock Agent prompts
+  # Custom inference configuration is not compatible with DEFAULT prompt creation mode
 
   tags = merge(var.tags, {
     Agent = "compiler"
@@ -301,7 +261,10 @@ resource "aws_bedrockagent_agent_alias" "compiler" {
   })
 }
 
-# Action Groups for each agent
+# Action Groups for each agent - Temporarily disabled for deployment
+# TODO: Fix OpenAPI 3.0 specification format and re-enable
+
+/*
 resource "aws_bedrockagent_agent_action_group" "orchestrator_actions" {
   agent_id                   = aws_bedrockagent_agent.orchestrator.id
   agent_version              = "DRAFT"
@@ -377,6 +340,7 @@ resource "aws_bedrockagent_agent_action_group" "compiler_actions" {
     }
   }
 }
+*/
 
 # Outputs
 output "agent_ids" {

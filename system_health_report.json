@@ -1,0 +1,156 @@
+{
+  "timestamp": "2025-09-10T00:30:20.530701",
+  "overall_status": "healthy",
+  "components": {
+    "lambda_functions": {
+      "total": 12,
+      "healthy": 12,
+      "details": [
+        {
+          "function_name": "ai-ppt-assistant-api-generate-presentation",
+          "state": "Active",
+          "runtime": "python3.12",
+          "memory_size": 768,
+          "timeout": 30,
+          "last_modified": "2025-09-09T15:22:22.339+0000",
+          "status": "healthy"
+        },
+        {
+          "function_name": "ai-ppt-assistant-api-presentation-status",
+          "state": "Active",
+          "runtime": "python3.12",
+          "memory_size": 512,
+          "timeout": 10,
+          "last_modified": "2025-09-09T15:22:37.475+0000",
+          "status": "healthy"
+        },
+        {
+          "function_name": "ai-ppt-assistant-api-presentation-download",
+          "state": "Active",
+          "runtime": "python3.12",
+          "memory_size": 512,
+          "timeout": 10,
+          "last_modified": "2025-09-09T15:22:30.186+0000",
+          "status": "healthy"
+        },
+        {
+          "function_name": "ai-ppt-assistant-api-modify-slide",
+          "state": "Active",
+          "runtime": "python3.12",
+          "memory_size": 768,
+          "timeout": 30,
+          "last_modified": "2025-09-09T15:22:45.393+0000",
+          "status": "healthy"
+        },
+        {
+          "function_name": "ai-ppt-assistant-list-presentations",
+          "state": "Active",
+          "runtime": "python3.12",
+          "memory_size": 256,
+          "timeout": 10,
+          "last_modified": "2025-09-09T15:23:07.249+0000",
+          "status": "healthy"
+        },
+        {
+          "function_name": "ai-ppt-assistant-get-task",
+          "state": "Active",
+          "runtime": "python3.12",
+          "memory_size": 256,
+          "timeout": 10,
+          "last_modified": "2025-09-09T15:22:59.434+0000",
+          "status": "healthy"
+        },
+        {
+          "function_name": "ai-ppt-assistant-create-outline",
+          "state": "Active",
+          "runtime": "python3.12",
+          "memory_size": 1536,
+          "timeout": 60,
+          "last_modified": "2025-09-09T15:22:01.309+0000",
+          "status": "healthy"
+        },
+        {
+          "function_name": "ai-ppt-assistant-generate-content",
+          "state": "Active",
+          "runtime": "python3.12",
+          "memory_size": 2048,
+          "timeout": 120,
+          "last_modified": "2025-09-09T15:22:15.337+0000",
+          "status": "healthy"
+        },
+        {
+          "function_name": "ai-ppt-assistant-generate-image",
+          "state": "Active",
+          "runtime": "python3.12",
+          "memory_size": 1536,
+          "timeout": 90,
+          "last_modified": "2025-09-09T15:22:08.349+0000",
+          "status": "healthy"
+        },
+        {
+          "function_name": "ai-ppt-assistant-compile-pptx",
+          "state": "Active",
+          "runtime": "python3.12",
+          "memory_size": 3008,
+          "timeout": 180,
+          "last_modified": "2025-09-09T15:21:29.584+0000",
+          "status": "healthy"
+        },
+        {
+          "function_name": "ai-ppt-assistant-find-image",
+          "state": "Active",
+          "runtime": "python3.12",
+          "memory_size": 768,
+          "timeout": 30,
+          "last_modified": "2025-09-09T15:22:52.408+0000",
+          "status": "healthy"
+        },
+        {
+          "function_name": "ai-ppt-assistant-generate-speaker-notes",
+          "state": "Active",
+          "runtime": "python3.12",
+          "memory_size": 1536,
+          "timeout": 60,
+          "last_modified": "2025-09-09T15:21:51.631+0000",
+          "status": "healthy"
+        }
+      ]
+    },
+    "api_gateway": {
+      "status": "healthy",
+      "response_code": 200
+    },
+    "dynamodb": {
+      "total_tables": 3,
+      "healthy_tables": 3,
+      "details": [
+        {
+          "table_name": "ai-ppt-assistant-dev-sessions",
+          "status": "ACTIVE",
+          "item_count": 0,
+          "health": "healthy"
+        },
+        {
+          "table_name": "ai-ppt-assistant-dev-tasks",
+          "status": "ACTIVE",
+          "item_count": 0,
+          "health": "healthy"
+        },
+        {
+          "table_name": "ai-ppt-assistant-dev-checkpoints",
+          "status": "ACTIVE",
+          "item_count": 0,
+          "health": "healthy"
+        }
+      ]
+    },
+    "cloudwatch": {
+      "total_alarms": 46,
+      "states": {
+        "INSUFFICIENT_DATA": 10,
+        "OK": 36
+      }
+    }
+  },
+  "issues": []
+}

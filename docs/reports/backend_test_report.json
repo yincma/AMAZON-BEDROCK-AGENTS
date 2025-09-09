@@ -1,0 +1,84 @@
+{
+  "test_summary": {
+    "timestamp": "2025-09-08T22:18:09.259151",
+    "total_tests": 9,
+    "passed_tests": 4,
+    "failed_tests": 3,
+    "warnings": 0,
+    "success_rate": "44.4%"
+  },
+  "detailed_results": [
+    {
+      "timestamp": "2025-09-08T22:12:59.604012",
+      "test_name": "创建演示文稿",
+      "status": "PASS",
+      "details": "任务ID: 94554ee9-ea14-427e-9d70-9566300a0c3c, 状态: pending",
+      "data": null
+    },
+    {
+      "timestamp": "2025-09-08T22:18:04.736935",
+      "test_name": "任务监控",
+      "status": "FAIL",
+      "details": "任务监控超时 (300秒)",
+      "data": null
+    },
+    {
+      "timestamp": "2025-09-08T22:18:05.443040",
+      "test_name": "任务数据验证",
+      "status": "FAIL",
+      "details": "任务在数据库中不存在",
+      "data": null
+    },
+    {
+      "timestamp": "2025-09-08T22:18:05.677678",
+      "test_name": "会话数据验证",
+      "status": "INFO",
+      "details": "会话数据不存在（可能正常）",
+      "data": null
+    },
+    {
+      "timestamp": "2025-09-08T22:18:06.277126",
+      "test_name": "文件下载",
+      "status": "FAIL",
+      "details": "下载失败: HTTP 403",
+      "data": null
+    },
+    {
+      "timestamp": "2025-09-08T22:18:07.091255",
+      "test_name": "Lambda调用",
+      "status": "PASS",
+      "details": "ai-ppt-assistant-list-presentations 调用成功",
+      "data": null
+    },
+    {
+      "timestamp": "2025-09-08T22:18:07.724949",
+      "test_name": "Lambda调用",
+      "status": "PASS",
+      "details": "ai-ppt-assistant-get-task 调用成功",
+      "data": null
+    },
+    {
+      "timestamp": "2025-09-08T22:18:09.259108",
+      "test_name": "并发请求测试",
+      "status": "PASS",
+      "details": "成功率: 100.0% (10/10)",
+      "data": null
+    },
+    {
+      "timestamp": "2025-09-08T22:18:09.259119",
+      "test_name": "响应时间统计",
+      "status": "INFO",
+      "details": "平均: 0.70s, 最大: 0.86s, 最小: 0.62s",
+      "data": null
+    }
+  ],
+  "test_resources": {
+    "session_id": "test_session_61c2d16d",
+    "presentation_ids": [
+      "94554ee9-ea14-427e-9d70-9566300a0c3c"
+    ],
+    "task_ids": [
+      "94554ee9-ea14-427e-9d70-9566300a0c3c"
+    ]
+  }
+}
