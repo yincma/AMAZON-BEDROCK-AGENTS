@@ -754,3 +754,107 @@ def generate_error_page() -> None:
     except Exception as e:
         print(f"生成错误页面失败: {str(e)}")
         raise
+
+
+def test_api_endpoints_with_timeout():
+    """
+    测试API端点，使用分层超时策略
+    """
+    import requests
+    import subprocess
+    import time
+    
+    # 分层超时配置
+    TIMEOUTS = {
+        'health_check': 5,      # 健康检查
+        'simple_api': 10,       # 简单API调用
+        'ai_generation': 60,    # AI内容生成
+        'file_processing': 120  # 文件处理
+    }
+    
+    def get_api_config():
+        """动态获取API配置"""
+        try:
+            current_dir = os.getcwd()
+            os.chdir('infrastructure')  
+            api_url = subprocess.check_output(['terraform', 'output', '-raw', 'api_gateway_url'], text=True).strip()
+            api_key = subprocess.check_output(['terraform', 'output', '-raw', 'api_gateway_api_key'], text=True).strip()
+            os.chdir(current_dir)
+            print(f"✅ 动态获取API配置: {api_url[:30]}...")
+            return api_url, api_key
+        except Exception as e:
+            print(f"⚠️ 无法动态获取配置，使用环境变量: {e}")
+            return API_GATEWAY_URL, os.environ.get('API_GATEWAY_API_KEY', '')
+    
+    def test_endpoint(endpoint, method='GET', timeout_type='simple_api', data=None):
+        """测试单个端点"""
+        api_url, api_key = get_api_config()
+        headers = {'x-api-key': api_key}
+        if data:
+            headers['Content-Type'] = 'application/json'
+        
+        timeout = TIMEOUTS.get(timeout_type, 10)
+        start_time = time.time()
+        
+        try:
+            if method == 'GET':
+                response = requests.get(f"{api_url}{endpoint}", headers=headers, timeout=timeout)
+            elif method == 'POST':
+                response = requests.post(f"{api_url}{endpoint}", headers=headers, json=data, timeout=timeout)
+            
+            elapsed = time.time() - start_time
+            print(f"✅ {endpoint}: {response.status_code} - {elapsed:.2f}s")
+            return True, response.status_code, elapsed
+            
+        except requests.exceptions.Timeout:
+            elapsed = time.time() - start_time
+            print(f"⏰ {endpoint}: 超时 - {elapsed:.2f}s (限制: {timeout}s)")
+            return False, 'TIMEOUT', elapsed
+        except Exception as e:
+            elapsed = time.time() - start_time
+            print(f"❌ {endpoint}: 错误 - {str(e)} - {elapsed:.2f}s")
+            return False, 'ERROR', elapsed
+    
+    # 测试端点列表
+    test_cases = [
+        ('/health', 'GET', 'health_check'),
+        ('/presentations', 'GET', 'simple_api'),
+        ('/tasks/test-task-id', 'GET', 'simple_api'),
+        # 注意：测试POST请求时需要提供数据
+        # ('/presentations', 'POST', 'ai_generation', {'title': 'Test', 'topic': 'Test Topic'})
+    ]
+    
+    print("🚀 开始API端点测试...")
+    results = []
+    
+    for test_case in test_cases:
+        endpoint = test_case[0]
+        method = test_case[1]
+        timeout_type = test_case[2]
+        data = test_case[3] if len(test_case) > 3 else None
+        
+        success, status, elapsed = test_endpoint(endpoint, method, timeout_type, data)
+        results.append({
+            'endpoint': endpoint,
+            'method': method,
+            'success': success,
+            'status': status,
+            'elapsed': elapsed
+        })
+    
+    # 统计结果
+    total_tests = len(results)
+    successful_tests = sum(1 for r in results if r['success'])
+    
+    print(f"\n📊 测试总结:")
+    print(f"总测试数: {total_tests}")
+    print(f"成功测试: {successful_tests}")
+    print(f"失败测试: {total_tests - successful_tests}")
+    print(f"成功率: {(successful_tests/total_tests)*100:.1f}%")
+    
+    return results
+
+
+if __name__ == "__main__":
+    # 当作为独立脚本运行时，执行API测试
+    test_api_endpoints_with_timeout()

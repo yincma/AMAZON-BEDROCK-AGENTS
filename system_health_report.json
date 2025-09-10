@@ -1,5 +1,5 @@
 🔍 开始系统健康状态检查...
-🕒 检查时间: 2025-09-10 01:16:24
+🕒 检查时间: 2025-09-10 15:07:46
 
 ============================================================
 🏥 系统健康状态报告
@@ -29,29 +29,29 @@
 
 🔍 检查CloudWatch告警状态...
 ⚠️ 数据不足: ai-ppt-assistant-api_generate_presentation-cold-start-duration
-✅ 正常: ai-ppt-assistant-api_generate_presentation-error-rate
+⚠️ 数据不足: ai-ppt-assistant-api_generate_presentation-error-rate
 ⚠️ 数据不足: ai-ppt-assistant-api_modify_slide-cold-start-duration
 ⚠️ 数据不足: ai-ppt-assistant-api_modify_slide-error-rate
 ⚠️ 数据不足: ai-ppt-assistant-api_presentation_download-cold-start-duration
 ⚠️ 数据不足: ai-ppt-assistant-api_presentation_download-error-rate
 ⚠️ 数据不足: ai-ppt-assistant-api_presentation_status-cold-start-duration
 ⚠️ 数据不足: ai-ppt-assistant-api_presentation_status-error-rate
-✅ 正常: ai-ppt-assistant-dev-api-gateway-4xx-errors
-⚠️ 数据不足: ai-ppt-assistant-dev-api-gateway-5xx-errors
-⚠️ 数据不足: ai-ppt-assistant-dev-api-gateway-high-traffic
+⚠️ 数据不足: ai-ppt-assistant-dev-api-gateway-4xx-errors
+✅ 正常: ai-ppt-assistant-dev-api-gateway-5xx-errors
+✅ 正常: ai-ppt-assistant-dev-api-gateway-high-traffic
 ⚠️ 数据不足: ai-ppt-assistant-dev-api-gateway-latency
 ⚠️ 数据不足: ai-ppt-assistant-dev-dlq-messages
 ⚠️ 数据不足: ai-ppt-assistant-dev-dynamodb-read-throttles
-⚠️ 数据不足: ai-ppt-assistant-dev-dynamodb-write-throttles
+✅ 正常: ai-ppt-assistant-dev-dynamodb-write-throttles
 ⚠️ 数据不足: ai-ppt-assistant-dev-lambda-compile_pptx-duration
-✅ 正常: ai-ppt-assistant-dev-lambda-compile_pptx-error-rate
+⚠️ 数据不足: ai-ppt-assistant-dev-lambda-compile_pptx-error-rate
 ⚠️ 数据不足: ai-ppt-assistant-dev-lambda-compile_pptx-throttles
-⚠️ 数据不足: ai-ppt-assistant-dev-lambda-create_outline-duration
+✅ 正常: ai-ppt-assistant-dev-lambda-create_outline-duration
 ⚠️ 数据不足: ai-ppt-assistant-dev-lambda-create_outline-error-rate
-✅ 正常: ai-ppt-assistant-dev-lambda-create_outline-throttles
+⚠️ 数据不足: ai-ppt-assistant-dev-lambda-create_outline-throttles
 ⚠️ 数据不足: ai-ppt-assistant-dev-lambda-find_image-duration
 ⚠️ 数据不足: ai-ppt-assistant-dev-lambda-find_image-error-rate
-⚠️ 数据不足: ai-ppt-assistant-dev-lambda-find_image-throttles
+✅ 正常: ai-ppt-assistant-dev-lambda-find_image-throttles
 ⚠️ 数据不足: ai-ppt-assistant-dev-lambda-generate_content-duration
 ⚠️ 数据不足: ai-ppt-assistant-dev-lambda-generate_content-error-rate
 ⚠️ 数据不足: ai-ppt-assistant-dev-lambda-generate_content-throttles
@@ -62,19 +62,19 @@
 ⚠️ 数据不足: ai-ppt-assistant-dev-lambda-generate_presentation-error-rate
 ⚠️ 数据不足: ai-ppt-assistant-dev-lambda-generate_presentation-throttles
 ⚠️ 数据不足: ai-ppt-assistant-dev-lambda-generate_speaker_notes-duration
-⚠️ 数据不足: ai-ppt-assistant-dev-lambda-generate_speaker_notes-error-rate
+✅ 正常: ai-ppt-assistant-dev-lambda-generate_speaker_notes-error-rate
 ⚠️ 数据不足: ai-ppt-assistant-dev-lambda-generate_speaker_notes-throttles
-✅ 正常: ai-ppt-assistant-dev-lambda-modify_slide-duration
+⚠️ 数据不足: ai-ppt-assistant-dev-lambda-modify_slide-duration
 ⚠️ 数据不足: ai-ppt-assistant-dev-lambda-modify_slide-error-rate
 ⚠️ 数据不足: ai-ppt-assistant-dev-lambda-modify_slide-throttles
 ⚠️ 数据不足: ai-ppt-assistant-dev-lambda-presentation_download-duration
 ⚠️ 数据不足: ai-ppt-assistant-dev-lambda-presentation_download-error-rate
-⚠️ 数据不足: ai-ppt-assistant-dev-lambda-presentation_download-throttles
+✅ 正常: ai-ppt-assistant-dev-lambda-presentation_download-throttles
 ✅ 正常: ai-ppt-assistant-dev-lambda-presentation_status-duration
-✅ 正常: ai-ppt-assistant-dev-lambda-presentation_status-error-rate
+⚠️ 数据不足: ai-ppt-assistant-dev-lambda-presentation_status-error-rate
 ⚠️ 数据不足: ai-ppt-assistant-dev-lambda-presentation_status-throttles
 ⚠️ 数据不足: ai-ppt-assistant-dev-sqs-processing-errors
-📊 告警统计: {'INSUFFICIENT_DATA': 39, 'OK': 7}
+📊 告警统计: {'INSUFFICIENT_DATA': 38, 'OK': 8}
 
 📋 健康状态总结:
 ✅ 总体状态: HEALTHY

@@ -9,14 +9,31 @@ import json
 import time
 import uuid
 import boto3
+import subprocess
+import os
 from datetime import datetime, timedelta
 from typing import Dict, Any, List, Optional
 import threading
 import concurrent.futures
 
-# 配置信息
-API_BASE_URL = "https://5vkle9t89e.execute-api.us-east-1.amazonaws.com/legacy"
-API_KEY = "JVuEiLVBtlaXN8ctsNIJIaPi3eROzEgc6Y3lb4gM"
+# 动态获取部署配置
+def get_api_config():
+    """从Terraform输出动态获取API配置"""
+    try:
+        current_dir = os.getcwd()
+        os.chdir('infrastructure')  
+        api_url = subprocess.check_output(['terraform', 'output', '-raw', 'api_gateway_url'], text=True).strip()
+        api_key = subprocess.check_output(['terraform', 'output', '-raw', 'api_gateway_api_key'], text=True).strip()
+        os.chdir(current_dir)
+        print(f"✅ 动态获取API配置: {api_url[:30]}...")
+        return api_url, api_key
+    except Exception as e:
+        print(f"⚠️ 无法动态获取配置，使用fallback值: {e}")
+        # 如果无法获取，使用当前值作为fallback
+        return "https://ps6c0rbpm0.execute-api.us-east-1.amazonaws.com/legacy", "Gnie9ahpBN1jP0r7VqYQ81qp1qWYR1pN5w7WduXa"
+
+# 配置信息 - 现在是动态获取的
+API_BASE_URL, API_KEY = get_api_config()
 REGION = "us-east-1"
 
 # API请求头

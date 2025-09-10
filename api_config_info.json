@@ -2,9 +2,9 @@
   "project": "ai-ppt-assistant",
   "environment": "dev",
   "region": "us-east-1",
-  "api_gateway_url": "https://5vkle9t89e.execute-api.us-east-1.amazonaws.com/legacy",
-  "api_key": "JVuEiLVBtlaXN8ctsNIJIaPi3eROzEgc6Y3lb4gM",
-  "updated_at": "2025-09-09T16:16:18Z",
+  "api_gateway_url": "https://dihvqgjzr8.execute-api.us-east-1.amazonaws.com/legacy",
+  "api_key": "lHwdh3vqIl69FEul3ZNRaadLA6GwBycf5y2JAD1F",
+  "updated_at": "2025-09-10T06:07:41Z",
   "updated_by": "update_api_config.sh",
   "files_updated": [
     "comprehensive_backend_test.py",

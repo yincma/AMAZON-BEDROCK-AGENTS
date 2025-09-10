@@ -569,11 +569,8 @@ resource "aws_api_gateway_deployment" "integration_deployment" {
       aws_api_gateway_integration.execute_agent,
       aws_api_gateway_integration.health,
       aws_api_gateway_integration.health_ready,
-      # Additional integrations from api_gateway_additional.tf
-      # aws_api_gateway_integration.get_task,
-      # aws_api_gateway_integration.get_templates,
-      # aws_api_gateway_integration.templates_options,
-      # aws_api_gateway_integration.task_options,
+      # Additional integrations
+      aws_api_gateway_integration.get_task,
       # Integration responses
       aws_api_gateway_integration_response.health_200,
       aws_api_gateway_integration_response.health_ready_200,
@@ -599,10 +596,7 @@ resource "aws_api_gateway_deployment" "integration_deployment" {
     # Ensure all method responses are created first
     aws_api_gateway_method_response.health_200,
     aws_api_gateway_method_response.health_ready_200,
-    # aws_api_gateway_method_response.get_task_200,
-    # aws_api_gateway_method_response.get_templates_200,
-    # aws_api_gateway_method_response.templates_options_200,
-    # aws_api_gateway_method_response.task_options_200,
+    aws_api_gateway_method_response.get_task_200,
     # Then integrations
     aws_api_gateway_integration.create_presentation,
     aws_api_gateway_integration.get_presentation,
@@ -613,10 +607,7 @@ resource "aws_api_gateway_deployment" "integration_deployment" {
     aws_api_gateway_integration.execute_agent,
     aws_api_gateway_integration.health,
     aws_api_gateway_integration.health_ready,
-    # aws_api_gateway_integration.get_task,
-    # aws_api_gateway_integration.get_templates,
-    # aws_api_gateway_integration.templates_options,
-    # aws_api_gateway_integration.task_options,
+    aws_api_gateway_integration.get_task,
     # Then integration responses
     aws_api_gateway_integration_response.health_200,
     aws_api_gateway_integration_response.health_ready_200,
@@ -627,6 +618,7 @@ resource "aws_api_gateway_deployment" "integration_deployment" {
     aws_lambda_permission.generate_presentation_permission,
     aws_lambda_permission.presentation_status_permission,
     aws_lambda_permission.presentation_download_permission,
+    # aws_lambda_permission.get_task_permission is defined in lambda_get_task.tf
     # Gateway responses for validation errors
     # Gateway responses commented out - resources not defined
     # aws_api_gateway_gateway_response.bad_request,
@@ -736,6 +728,72 @@ resource "aws_api_gateway_usage_plan_key" "main" {
   key_type      = "API_KEY"
   usage_plan_id = aws_api_gateway_usage_plan.main.id
 }
+
+# ============================================================================
+# Layer 6.5: Additional API Gateway Resources (/tasks endpoint)
+# ============================================================================
+
+# /tasks 资源
+resource "aws_api_gateway_resource" "tasks" {
+  rest_api_id = module.api_gateway.rest_api_id
+  parent_id   = module.api_gateway.rest_api_root_resource_id
+  path_part   = "tasks"
+}
+
+# /tasks/{taskId} 资源
+resource "aws_api_gateway_resource" "task_id" {
+  rest_api_id = module.api_gateway.rest_api_id
+  parent_id   = aws_api_gateway_resource.tasks.id
+  path_part   = "{taskId}"
+}
+
+# GET /tasks/{taskId} 方法
+resource "aws_api_gateway_method" "get_task" {
+  rest_api_id      = module.api_gateway.rest_api_id
+  resource_id      = aws_api_gateway_resource.task_id.id
+  http_method      = "GET"
+  authorization    = "NONE"
+  api_key_required = true
+
+  request_parameters = {
+    "method.request.path.taskId" = true
+  }
+}
+
+# GET /tasks/{taskId} 集成
+resource "aws_api_gateway_integration" "get_task" {
+  rest_api_id = module.api_gateway.rest_api_id
+  resource_id = aws_api_gateway_resource.task_id.id
+  http_method = aws_api_gateway_method.get_task.http_method
+
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = "arn:aws:apigateway:${var.aws_region}:lambda:path/2015-03-31/functions/${aws_lambda_function.get_task.arn}/invocations"
+
+  depends_on = [
+    aws_api_gateway_method.get_task
+  ]
+}
+
+# GET /tasks/{taskId} 方法响应
+resource "aws_api_gateway_method_response" "get_task_200" {
+  rest_api_id = module.api_gateway.rest_api_id
+  resource_id = aws_api_gateway_resource.task_id.id
+  http_method = aws_api_gateway_method.get_task.http_method
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin"  = true
+    "method.response.header.Access-Control-Allow-Headers" = true
+    "method.response.header.Access-Control-Allow-Methods" = true
+  }
+
+  response_models = {
+    "application/json" = "Empty"
+  }
+}
+
+# Lambda permission for get_task is defined in lambda_get_task.tf to avoid duplication
 
 # ============================================================================
 # Layer 7: Monitoring and Alerting (Depends on all infrastructure components)

@@ -1,51 +1,51 @@
 {
   "test_summary": {
-    "timestamp": "2025-09-10T01:17:11.591761",
+    "timestamp": "2025-09-10T02:02:25.461514",
     "total_tests": 5,
-    "passed_tests": 3,
-    "failed_tests": 1,
+    "passed_tests": 2,
+    "failed_tests": 2,
     "warnings": 0,
-    "success_rate": "60.0%"
+    "success_rate": "40.0%"
   },
   "detailed_results": [
     {
-      "timestamp": "2025-09-10T01:17:07.332395",
+      "timestamp": "2025-09-10T02:02:23.193282",
       "test_name": "创建演示文稿",
       "status": "FAIL",
-      "details": "响应格式错误: {'presentation_id': '9f09481a-6f9f-4f54-87cc-391529a4a996', 'title': '后台测试演示文稿 - 01:17:05', 'status': 'pending', 'progress': 0, 'created_at': '2025-09-09T16:17:07.047336Z', 'updated_at': '2025-09-09T16:17:07.047336Z', 'estimated_completion_time': '2025-09-09T16:18:57.276821Z', 'slide_count': 8, 'session_id': 'f6d7bec4-60d1-42fb-8238-e602e440a2ce'}",
+      "details": "请求异常: HTTPSConnectionPool(host='5vkle9t89e.execute-api.us-east-1.amazonaws.com', port=443): Max retries exceeded with url: /legacy/presentations (Caused by NameResolutionError(\"<urllib3.connection.HTTPSConnection object at 0x105721fd0>: Failed to resolve '5vkle9t89e.execute-api.us-east-1.amazonaws.com' ([Errno 8] nodename nor servname provided, or not known)\"))",
       "data": null
     },
     {
-      "timestamp": "2025-09-10T01:17:08.857364",
+      "timestamp": "2025-09-10T02:02:24.809938",
       "test_name": "Lambda调用",
       "status": "PASS",
       "details": "ai-ppt-assistant-list-presentations 调用成功",
       "data": null
     },
     {
-      "timestamp": "2025-09-10T01:17:09.601272",
+      "timestamp": "2025-09-10T02:02:25.452670",
       "test_name": "Lambda调用",
       "status": "PASS",
       "details": "ai-ppt-assistant-get-task 调用成功",
       "data": null
     },
     {
-      "timestamp": "2025-09-10T01:17:11.591622",
+      "timestamp": "2025-09-10T02:02:25.461488",
       "test_name": "并发请求测试",
-      "status": "PASS",
-      "details": "成功率: 100.0% (10/10)",
+      "status": "FAIL",
+      "details": "成功率: 0.0% (0/10)",
       "data": null
     },
     {
-      "timestamp": "2025-09-10T01:17:11.591651",
+      "timestamp": "2025-09-10T02:02:25.461501",
       "test_name": "响应时间统计",
       "status": "INFO",
-      "details": "平均: 0.79s, 最大: 1.47s, 最小: 0.63s",
+      "details": "平均: 0.00s, 最大: 0.01s, 最小: 0.00s",
       "data": null
     }
   ],
   "test_resources": {
-    "session_id": "test_session_9dfb58a1",
+    "session_id": "test_session_08a3e2fd",
     "presentation_ids": [],
     "task_ids": []
   }
