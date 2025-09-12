@@ -1,0 +1,15 @@
+{
+  "timestamp": "2025-09-11T21:39:26.664910",
+  "health_score": 100.0,
+  "passed": 6,
+  "failed": 0,
+  "total_checks": 6,
+  "details": [
+    "✅ api_config_info.json已清理明文密钥",
+    "✅ Makefile已修复自动覆盖问题",
+    "✅ 所有Lambda函数环境变量已修复",
+    "✅ API Gateway已清理legacy stage",
+    "✅ SSM配置完整（40个参数）",
+    "✅ 所有Bedrock Agent别名配置正确"
+  ]
+}

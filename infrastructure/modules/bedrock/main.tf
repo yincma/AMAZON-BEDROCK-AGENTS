@@ -354,10 +354,10 @@ output "agent_ids" {
 
 output "agent_alias_ids" {
   value = {
-    orchestrator = aws_bedrockagent_agent_alias.orchestrator.id
-    content      = aws_bedrockagent_agent_alias.content.id
-    visual       = aws_bedrockagent_agent_alias.visual.id
-    compiler     = aws_bedrockagent_agent_alias.compiler.id
+    orchestrator = aws_bedrockagent_agent_alias.orchestrator.agent_alias_id
+    content      = aws_bedrockagent_agent_alias.content.agent_alias_id
+    visual       = aws_bedrockagent_agent_alias.visual.agent_alias_id
+    compiler     = aws_bedrockagent_agent_alias.compiler.agent_alias_id
   }
 }
 

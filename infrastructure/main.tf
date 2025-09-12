@@ -521,7 +521,7 @@ resource "aws_api_gateway_integration_response" "health_ready_200" {
 resource "aws_lambda_permission" "generate_presentation_permission" {
   statement_id  = "AllowAPIGatewayInvoke-generate-presentation"
   action        = "lambda:InvokeFunction"
-  function_name = module.lambda.function_names["generate_presentation"]
+  function_name = module.lambda.function_names["api_generate_presentation"]
   principal     = "apigateway.amazonaws.com"
   source_arn    = "arn:aws:execute-api:${var.aws_region}:${data.aws_caller_identity.current.account_id}:${module.api_gateway.rest_api_id}/*/*"
 
@@ -531,7 +531,7 @@ resource "aws_lambda_permission" "generate_presentation_permission" {
 resource "aws_lambda_permission" "presentation_status_permission" {
   statement_id  = "AllowAPIGatewayInvoke-presentation-status"
   action        = "lambda:InvokeFunction"
-  function_name = module.lambda.function_names["presentation_status"]
+  function_name = module.lambda.function_names["api_presentation_status"]
   principal     = "apigateway.amazonaws.com"
   source_arn    = "arn:aws:execute-api:${var.aws_region}:${data.aws_caller_identity.current.account_id}:${module.api_gateway.rest_api_id}/*/*"
 
@@ -541,7 +541,7 @@ resource "aws_lambda_permission" "presentation_status_permission" {
 resource "aws_lambda_permission" "presentation_download_permission" {
   statement_id  = "AllowAPIGatewayInvoke-presentation-download"
   action        = "lambda:InvokeFunction"
-  function_name = module.lambda.function_names["presentation_download"]
+  function_name = module.lambda.function_names["api_presentation_download"]
   principal     = "apigateway.amazonaws.com"
   source_arn    = "arn:aws:execute-api:${var.aws_region}:${data.aws_caller_identity.current.account_id}:${module.api_gateway.rest_api_id}/*/*"
 
@@ -871,7 +871,7 @@ resource "null_resource" "update_lambda_bedrock_configs" {
       
       # Update generate_presentation function
       aws lambda update-function-configuration \
-        --function-name ${module.lambda.function_names["generate_presentation"]} \
+        --function-name ${module.lambda.function_names["api_generate_presentation"]} \
         --environment Variables="{
           S3_BUCKET=${module.s3.bucket_name},
           DYNAMODB_TABLE=${module.dynamodb.tasks_table_name},

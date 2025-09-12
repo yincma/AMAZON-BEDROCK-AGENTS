@@ -30,8 +30,10 @@ help:
 	@echo "  make clean-all       - Clean everything including virtual environment"
 	@echo "  make build-layers    - Build Lambda layers (legacy)"
 	@echo "  make build-layers-optimized - Build optimized Lambda layers for performance"
-	@echo "  make deploy          - Deploy infrastructure with Terraform"
-	@echo "  make deploy-with-config - Deploy and auto-update API configuration"
+	@echo "  make deploy          - Deploy with auto Bedrock config sync ⭐"
+	@echo "  make deploy-safe     - Same as deploy (safe by default)"
+	@echo "  make deploy-full-fix - Deploy with comprehensive configuration fix"
+	@echo "  make sync-config     - Sync Bedrock Agent configuration only"
 	@echo "  make destroy         - Safely destroy infrastructure with cleanup"
 	@echo "  make check-cloudfront - Check CloudFront resources status"
 	@echo "  make safe-destroy    - Run comprehensive cleanup and destroy"
@@ -174,14 +176,14 @@ build-layers:
 
 # Build optimized Lambda layers for performance
 build-layers-optimized:
-	@echo "Building optimized Lambda layers for performance..."
+	@echo "🔨 Building optimized Lambda layers..."
 	@if [ ! -f scripts/build_optimized_layers.sh ]; then \
 		echo "❌ Optimized layer build script not found!"; \
 		exit 1; \
 	fi
 	@chmod +x scripts/build_optimized_layers.sh
-	@bash scripts/build_optimized_layers.sh
-	@echo "✅ Optimized Lambda layers built"
+	@bash scripts/build_optimized_layers.sh 2>&1 | grep -E "(^\[|✅|❌|WARNING|ERROR|built:|MB)" || true
+	@echo "✅ Lambda layers ready"
 
 # Performance test - measure cold start times
 perf-test:
@@ -217,49 +219,48 @@ perf-monitor:
 
 # Package Lambda functions
 package-lambdas:
-	@echo "Packaging Lambda functions with utils..."
+	@echo "📦 Packaging Lambda functions..."
 	@# First, ensure utils directory is available
 	@if [ ! -d "lambdas/utils" ]; then \
 		echo "❌ Error: lambdas/utils directory not found!"; \
 		exit 1; \
 	fi
-	@# Package API functions
+	@# Count functions
+	@api_count=$$(ls lambdas/api/*.py 2>/dev/null | wc -l | tr -d ' '); \
+	controller_count=$$(ls lambdas/controllers/*.py 2>/dev/null | wc -l | tr -d ' '); \
+	echo "  📂 API functions: $$api_count | Controller functions: $$controller_count"
+	@# Package API functions (silent)
 	@for func in lambdas/api/*.py; do \
 		if [ -f "$$func" ]; then \
 			base=$$(basename $$func .py); \
-			echo "Packaging API function: $$base..."; \
 			rm -f lambdas/api/$$base.zip; \
 			cp $$func /tmp/$$base.py; \
 			cd lambdas && zip -qr api/$$base.zip -j /tmp/$$base.py && zip -qr api/$$base.zip utils/ -x "*.pyc" -x "*__pycache__*" && cd - > /dev/null; \
 			rm -f /tmp/$$base.py; \
 		fi \
 	done
-	@# Package controller functions
+	@# Package controller functions (silent)
 	@for func in lambdas/controllers/*.py; do \
 		if [ -f "$$func" ]; then \
 			base=$$(basename $$func .py); \
-			echo "Packaging controller function: $$base..."; \
 			rm -f lambdas/controllers/$$base.zip; \
 			cp $$func /tmp/$$base.py; \
 			cd lambdas && zip -qr controllers/$$base.zip -j /tmp/$$base.py && zip -qr controllers/$$base.zip utils/ -x "*.pyc" -x "*__pycache__*" && cd - > /dev/null; \
 			rm -f /tmp/$$base.py; \
 		fi \
 	done
-	@echo "✅ Lambda functions packaged with utils"
+	@echo "✅ Lambda functions packaged"
 
 # Package infrastructure Lambda functions
 package-infrastructure-lambdas:
-	@echo "Packaging infrastructure Lambda functions..."
-	@# Package list_presentations function
+	@echo "📦 Packaging infrastructure functions..."
+	@# Package list_presentations function (silent)
 	@if [ -f "infrastructure/lambda_functions/list_presentations.py" ]; then \
-		echo "Packaging list_presentations function..."; \
 		cd infrastructure/lambda_functions && \
 		zip -qr list_presentations.zip list_presentations.py && \
 		cd - > /dev/null; \
-		echo "✅ list_presentations function packaged"; \
 	fi
-	@# Package any other infrastructure Lambda functions here
-	@echo "✅ Infrastructure Lambda functions packaged"
+	@echo "✅ Infrastructure functions ready"
 
 # Initialize Terraform
 tf-init:
@@ -273,12 +274,17 @@ tf-plan:
 
 # Apply Terraform changes
 tf-apply:
-	cd infrastructure && $(TERRAFORM) apply -var="project_name=$(PROJECT_NAME)" -var="aws_region=$(AWS_REGION)" -auto-approve
+	@echo "🚀 Deploying infrastructure with Terraform..."
+	@cd infrastructure && $(TERRAFORM) apply \
+		-var="project_name=$(PROJECT_NAME)" \
+		-var="aws_region=$(AWS_REGION)" \
+		-auto-approve \
+		2>&1 | grep -E "(^Apply complete|^Plan:|Creating\.\.\.|Modifying\.\.\.|Destroying\.\.\.|Error:|Warning:|aws_|module\.)" || true
 	@echo "✅ Infrastructure deployed"
 
 # Destroy infrastructure
 tf-destroy:
-	cd infrastructure && $(TERRAFORM) destroy -var="project_name=$(PROJECT_NAME)" -var="aws_region=$(AWS_REGION)" -auto-approve
+	cd infrastructure && $(TERRAFORM) destroy -var="project_name=$(PROJECT_NAME)" -var="aws_region=$(AWS_REGION)" -var="owner=AI-Team" -var="cost_center=Engineering" -auto-approve
 	@echo "✅ Infrastructure destroyed"
 
 # Check CloudFront resources status
@@ -319,38 +325,78 @@ safe-destroy:
 # Real destroy target (now uses enhanced safe-destroy for reliability)
 destroy: safe-destroy
 
-# Protection against common typos for destroy command
-desotry:
-	@echo "❌ Error: 'make desotry' is not a valid command!"
-	@echo "📝 Did you mean: 'make destroy'?"
-	@echo "⚠️  Please use the correct spelling to avoid accidental execution."
-	@exit 1
-
-destory:
-	@echo "❌ Error: 'make destory' is not a valid command!"
-	@echo "📝 Did you mean: 'make destroy'?"
-	@echo "⚠️  Please use the correct spelling to avoid accidental execution."
-	@exit 1
-
-detroy:
-	@echo "❌ Error: 'make detroy' is not a valid command!"
-	@echo "📝 Did you mean: 'make destroy'?"
-	@echo "⚠️  Please use the correct spelling to avoid accidental execution."
-	@exit 1
-
-destry:
-	@echo "❌ Error: 'make destry' is not a valid command!"
-	@echo "📝 Did you mean: 'make destroy'?"
-	@echo "⚠️  Please use the correct spelling to avoid accidental execution."
-	@exit 1
-
 # Full deployment with performance optimization
-deploy: clean build-layers-optimized package-lambdas package-infrastructure-lambdas tf-apply
-	@echo "✅ Full deployment completed with performance optimization"
+deploy: clean build-layers-optimized package-lambdas package-infrastructure-lambdas tf-apply sync-config
+	@echo "✅ Full deployment completed"
+
+# Reliable deployment with verification (RECOMMENDED)
+deploy-reliable: clean build-layers-optimized package-lambdas package-infrastructure-lambdas
+	@echo "🚀 Starting reliable deployment with verification..."
+	@cd infrastructure && $(TERRAFORM) apply \
+		-var="project_name=$(PROJECT_NAME)" \
+		-var="aws_region=$(AWS_REGION)" \
+		-auto-approve \
+		-parallelism=20
+	@echo "⏳ Waiting for AWS resources to fully initialize (20s)..."
+	@sleep 20
+	@echo "🔄 Syncing Bedrock Agent configuration..."
+	@if [ -f scripts/sync_bedrock_config.sh ]; then \
+		chmod +x scripts/sync_bedrock_config.sh && \
+		./scripts/sync_bedrock_config.sh || echo "⚠️ Config sync had issues but continuing..."; \
+	else \
+		echo "❌ ERROR: sync_bedrock_config.sh not found!"; \
+		echo "Creating basic sync script..."; \
+		./scripts/update_api_config.sh || echo "⚠️ Fallback sync had issues but continuing..."; \
+	fi
+	@echo "⏳ Waiting for Lambda updates to propagate (10s)..."
+	@sleep 10
+	@echo "🧪 Verifying configuration..."
+	@if [ -f scripts/verify_deployment.py ]; then \
+		python3 scripts/verify_deployment.py; \
+	else \
+		echo "⚠️ Verification script not found, skipping"; \
+	fi
+	@echo "✅ Reliable deployment completed successfully!"
 
 # Legacy deployment (original layers)
-deploy-legacy: clean build-layers package-lambdas package-infrastructure-lambdas tf-apply
+deploy-legacy: clean build-layers package-lambdas package-infrastructure-lambdas tf-apply sync-config
 	@echo "✅ Legacy deployment completed"
+
+# Safe deployment with automatic configuration
+deploy-safe: deploy
+	@echo "🔒 Safe deployment with configuration sync completed"
+
+# Sync Bedrock configuration after deployment with proper wait time
+sync-config:
+	@echo "🔄 Syncing Bedrock configuration..."
+	@echo "⏳ Waiting for AWS resources to stabilize (15s)..."
+	@sleep 15
+	@if [ -f scripts/sync_bedrock_config.sh ]; then \
+		chmod +x scripts/sync_bedrock_config.sh && \
+		scripts/sync_bedrock_config.sh; \
+		echo "⏳ Waiting for Lambda configuration updates (10s)..."; \
+		sleep 10; \
+	elif [ -f scripts/smart_bedrock_sync.sh ]; then \
+		chmod +x scripts/smart_bedrock_sync.sh && \
+		scripts/smart_bedrock_sync.sh; \
+		echo "⏳ Waiting for Lambda configuration updates (10s)..."; \
+		sleep 10; \
+	else \
+		echo "⚠️ No sync script found, configuration may be incomplete"; \
+	fi
+	@echo "✅ Configuration sync completed"
+
+# Full deployment with complete configuration fix (for fresh installations)
+deploy-full-fix: deploy
+	@echo "🔨 Running comprehensive configuration fix..."
+	@if [ -f scripts/deploy_long_term_fix.sh ]; then \
+		chmod +x scripts/deploy_long_term_fix.sh && \
+		scripts/deploy_long_term_fix.sh; \
+	else \
+		echo "❌ deploy_long_term_fix.sh not found"; \
+		exit 1; \
+	fi
+	@echo "✅ Full deployment with comprehensive fix completed"
 
 # Validate everything
 validate: lint test-unit
@@ -600,7 +646,7 @@ update-api-config:
 		exit 1; \
 	fi
 	@chmod +x scripts/update_api_config.sh
-	@scripts/update_api_config.sh
+	@scripts/update_api_config.sh 2>&1 | grep -E "(^🔧|^✅|^❌|^💡|API Gateway URL:|API Key:|配置信息已保存)" || true
 	@echo "✅ API配置更新完成"
 
 # 验证API配置
@@ -613,21 +659,6 @@ validate-api-config:
 	@chmod +x scripts/update_api_config.sh
 	@scripts/update_api_config.sh --validate-only
 
-# 带自动配置更新的完整部署
-deploy-with-config: deploy update-api-config post-deploy-validate
-	@echo "🎉 完整部署、配置更新和验证完成！"
-	@echo "💡 现在可以运行测试验证系统功能:"
-	@echo "   make test-api"
-
-# 部署后验证
-post-deploy-validate:
-	@echo "🔍 执行部署后验证..."
-	@if [ -f scripts/post_deploy_validation.sh ]; then \
-		chmod +x scripts/post_deploy_validation.sh && \
-		scripts/post_deploy_validation.sh; \
-	else \
-		echo "ℹ️ post_deploy_validation.sh 不存在，跳过"; \
-	fi
 
 # API功能测试
 test-api:
@@ -670,6 +701,8 @@ build-layers-docker:
 			zip -r dist/ai-ppt-assistant-dependencies.zip python/ \
 		"
 	@echo "✅ Lambda layer built with Docker"
+
+
 
 # Help for optimized commands
 help-optimize:

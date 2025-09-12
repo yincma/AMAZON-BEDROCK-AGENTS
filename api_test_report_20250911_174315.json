@@ -1,0 +1,67 @@
+{
+  "summary": {
+    "total_tests": 6,
+    "success": 1,
+    "failed": 3,
+    "warning": 0,
+    "skipped": 2,
+    "duration_seconds": 2.444292,
+    "api_url": "https://otmr3noxg5.execute-api.us-east-1.amazonaws.com/dev",
+    "test_time": "2025-09-11T17:43:15.318859"
+  },
+  "results": [
+    {
+      "timestamp": "2025-09-11T17:43:15.908353",
+      "test": "无效API密钥测试",
+      "status": "SUCCESS",
+      "message": "正确拒绝无效密钥 (HTTP 403)",
+      "details": {
+        "status_code": 403
+      }
+    },
+    {
+      "timestamp": "2025-09-11T17:43:16.528867",
+      "test": "创建演示文稿",
+      "status": "FAILED",
+      "message": "HTTP 403",
+      "details": {
+        "status_code": 403,
+        "response": "{\"message\":\"Forbidden\"}"
+      }
+    },
+    {
+      "timestamp": "2025-09-11T17:43:16.530620",
+      "test": "获取演示文稿状态",
+      "status": "SKIPPED",
+      "message": "没有可用的演示文稿ID",
+      "details": {}
+    },
+    {
+      "timestamp": "2025-09-11T17:43:17.168102",
+      "test": "列出演示文稿",
+      "status": "FAILED",
+      "message": "HTTP 403",
+      "details": {
+        "status_code": 403,
+        "response": "{\"message\":\"Forbidden\"}"
+      }
+    },
+    {
+      "timestamp": "2025-09-11T17:43:17.169795",
+      "test": "下载演示文稿",
+      "status": "SKIPPED",
+      "message": "没有可用的演示文稿ID",
+      "details": {}
+    },
+    {
+      "timestamp": "2025-09-11T17:43:17.761441",
+      "test": "无效演示文稿ID测试",
+      "status": "FAILED",
+      "message": "未正确处理无效ID，返回 HTTP 403",
+      "details": {
+        "status_code": 403,
+        "response": "{\"message\":\"Forbidden\"}"
+      }
+    }
+  ]
+}

@@ -11,8 +11,8 @@ from datetime import datetime, timedelta
 import requests
 
 # 配置信息
-API_BASE_URL = "https://dihvqgjzr8.execute-api.us-east-1.amazonaws.com/legacy"
-API_KEY = "lHwdh3vqIl69FEul3ZNRaadLA6GwBycf5y2JAD1F"
+API_BASE_URL = "https://otmr3noxg5.execute-api.us-east-1.amazonaws.com/legacy"
+API_KEY = "9EQHqfmiuA5GrkMnK5PVf8OpbIcsMj1N2z6PFGR3	xRWDKPOB2j58CPOOyteeO3TVJef8tPdd9CC0GMEb"
 REGION = "us-east-1"
 
 # AWS客户端

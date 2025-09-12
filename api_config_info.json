@@ -2,13 +2,11 @@
   "project": "ai-ppt-assistant",
   "environment": "dev",
   "region": "us-east-1",
-  "api_gateway_url": "https://dihvqgjzr8.execute-api.us-east-1.amazonaws.com/legacy",
-  "api_key": "lHwdh3vqIl69FEul3ZNRaadLA6GwBycf5y2JAD1F",
-  "updated_at": "2025-09-10T06:07:41Z",
-  "updated_by": "update_api_config.sh",
-  "files_updated": [
-    "comprehensive_backend_test.py",
-    "test_all_backend_apis.py",
-    "system_health_check.py"
-  ]
+  "api_gateway_url": "https://otmr3noxg5.execute-api.us-east-1.amazonaws.com/dev",
+  "api_key_parameter": "/ai-ppt-assistant/dev/api-key",
+  "note": "API key stored securely in AWS SSM Parameter Store",
+  "updated_at": "2025-09-11T21:43:00Z",
+  "updated_by": "security_fix_final",
+  "security_note": "Never store API keys in plain text files",
+  "warning": "Do NOT run update_api_config.sh - it will overwrite this secure configuration"
 }

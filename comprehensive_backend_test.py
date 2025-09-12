@@ -30,7 +30,7 @@ def get_api_config():
     except Exception as e:
         print(f"⚠️ 无法动态获取配置，使用fallback值: {e}")
         # 如果无法获取，使用当前值作为fallback
-        return "https://ps6c0rbpm0.execute-api.us-east-1.amazonaws.com/legacy", "Gnie9ahpBN1jP0r7VqYQ81qp1qWYR1pN5w7WduXa"
+        return "https://2xbqtuq2t4.execute-api.us-east-1.amazonaws.com/legacy", "Gnie9ahpBN1jP0r7VqYQ81qp1qWYR1pN5w7WduXa"
 
 # 配置信息 - 现在是动态获取的
 API_BASE_URL, API_KEY = get_api_config()

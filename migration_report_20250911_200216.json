@@ -1,0 +1,17 @@
+{
+  "migration_time": "2025-09-11T20:02:16.122447",
+  "region": "us-east-1",
+  "target_table": "ai-ppt-assistant-dev-sessions",
+  "statistics": {
+    "total_scanned": 8,
+    "migrated": 0,
+    "skipped": 6,
+    "failed": 0,
+    "errors": []
+  },
+  "backup_data_summary": {
+    "tasks": 6,
+    "sessions": 2,
+    "checkpoints": 0
+  }
+}

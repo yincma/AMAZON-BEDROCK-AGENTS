@@ -1,0 +1,12 @@
+{
+  "project": "ai-ppt-assistant",
+  "environment": "dev",
+  "region": "us-east-1",
+  "api_id": "otmr3noxg5",
+  "api_name": "ai-ppt-assistant-dev-api",
+  "stage": "dev",
+  "api_url": "https://otmr3noxg5.execute-api.us-east-1.amazonaws.com/dev",
+  "usage_plan_id": "hpn38w",
+  "updated_at": "2025-09-11T12:29:25Z",
+  "updated_by": "unify_api_gateway.sh"
+}

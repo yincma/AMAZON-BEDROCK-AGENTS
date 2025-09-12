@@ -1,0 +1,80 @@
+{
+  "summary": {
+    "total_tests": 6,
+    "success": 4,
+    "failed": 2,
+    "warning": 0,
+    "skipped": 0,
+    "duration_seconds": 6.432385,
+    "api_url": "https://jp252q63wh.execute-api.us-east-1.amazonaws.com/legacy",
+    "test_time": "2025-09-12T18:22:32.960716"
+  },
+  "results": [
+    {
+      "timestamp": "2025-09-12T18:22:33.585424",
+      "test": "无效API密钥测试",
+      "status": "SUCCESS",
+      "message": "正确拒绝无效密钥 (HTTP 403)",
+      "details": {
+        "status_code": 403
+      }
+    },
+    {
+      "timestamp": "2025-09-12T18:22:34.837585",
+      "test": "创建演示文稿",
+      "status": "SUCCESS",
+      "message": "成功创建演示文稿，ID: 8a8d10b6-f54b-47ae-bd99-c75e8edda19d",
+      "details": {
+        "presentation_id": "8a8d10b6-f54b-47ae-bd99-c75e8edda19d",
+        "title": "AI技术测试演示",
+        "status": "pending",
+        "progress": 0,
+        "created_at": "2025-09-12T09:22:34.178184Z",
+        "updated_at": "2025-09-12T09:22:34.178184Z",
+        "estimated_completion_time": "2025-09-12T09:23:54.751440Z",
+        "slide_count": 5,
+        "session_id": "7b9d897d-6432-4e27-a1bb-76b8894b9848"
+      }
+    },
+    {
+      "timestamp": "2025-09-12T18:22:35.460802",
+      "test": "获取演示文稿状态",
+      "status": "FAILED",
+      "message": "HTTP 404",
+      "details": {
+        "status_code": 404,
+        "response": "{\"success\": false, \"error\": {\"code\": \"NOT_FOUND\", \"message\": \"Presentation not found\", \"request_id\": \"503e7150-b323-40e2-bcd5-7ce25f36ed28\", \"timestamp\": \"2025-09-12T09:22:35.373314+00:00\", \"details\": {\"task_id\": \"8a8d10b6-f54b-47ae-bd99-c75e8edda19d\"}}}"
+      }
+    },
+    {
+      "timestamp": "2025-09-12T18:22:36.916947",
+      "test": "列出演示文稿",
+      "status": "SUCCESS",
+      "message": "成功获取演示文稿列表，共 0 个，当前页 0 个",
+      "details": {
+        "total": 0,
+        "items_count": 0,
+        "first_item": null
+      }
+    },
+    {
+      "timestamp": "2025-09-12T18:22:38.768616",
+      "test": "下载演示文稿",
+      "status": "FAILED",
+      "message": "HTTP 404",
+      "details": {
+        "status_code": 404,
+        "response": "{\"success\": false, \"error\": {\"code\": \"NOT_FOUND\", \"message\": \"Presentation not found\", \"request_id\": \"5dd98c5d-3883-48b2-97cc-71e820998d50\", \"timestamp\": \"2025-09-12T09:22:38.674647+00:00\", \"details\": {\"presentation_id\": \"8a8d10b6-f54b-47ae-bd99-c75e8edda19d\", \"request_id\": \"8a96675f-e620-4a41-b62c-1d0ca1aaaa8a\"}}}"
+      }
+    },
+    {
+      "timestamp": "2025-09-12T18:22:39.391573",
+      "test": "无效演示文稿ID测试",
+      "status": "SUCCESS",
+      "message": "正确处理无效ID (HTTP 400)",
+      "details": {
+        "status_code": 400
+      }
+    }
+  ]
+}

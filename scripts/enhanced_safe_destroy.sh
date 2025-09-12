@@ -264,6 +264,8 @@ print_status "Destroying infrastructure with Terraform..."
 terraform destroy \
     -var="project_name=${PROJECT_NAME}" \
     -var="aws_region=${AWS_REGION}" \
+    -var="owner=AI-Team" \
+    -var="cost_center=Engineering" \
     -auto-approve
 
 # Step 5: Final Cleanup

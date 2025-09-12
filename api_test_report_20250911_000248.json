@@ -1,0 +1,161 @@
+{
+  "total_tests": 10,
+  "passed": 1,
+  "failed": 9,
+  "errors": [
+    {
+      "test": "列出演示文稿",
+      "error": "Expected status 200, got 403"
+    },
+    {
+      "test": "创建演示文稿",
+      "error": "Expected status 200, got 403"
+    },
+    {
+      "test": "创建大纲",
+      "error": "Expected status 200, got 403"
+    },
+    {
+      "test": "生成内容",
+      "error": "Expected status 200, got 403"
+    },
+    {
+      "test": "搜索图片",
+      "error": "Expected status 200, got 403"
+    },
+    {
+      "test": "生成图片",
+      "error": "Expected status 200, got 403"
+    },
+    {
+      "test": "错误处理 - 无效任务ID",
+      "error": "Expected status 404, got 403"
+    },
+    {
+      "test": "错误处理 - 缺少参数",
+      "error": "Expected status 400, got 403"
+    },
+    {
+      "test": "CORS预检请求",
+      "error": "Unsupported method: OPTIONS"
+    }
+  ],
+  "test_details": [
+    {
+      "test_name": "健康检查",
+      "endpoint": "/health",
+      "method": "GET",
+      "timestamp": "2025-09-11T00:02:43.060490",
+      "response": {
+        "status": "healthy",
+        "timestamp": "10/Sep/2025:15:02:42 +0000"
+      },
+      "status_code": 200,
+      "status": "PASSED"
+    },
+    {
+      "test_name": "列出演示文稿",
+      "endpoint": "/presentations",
+      "method": "GET",
+      "timestamp": "2025-09-11T00:02:43.682555",
+      "response": {
+        "message": "Forbidden"
+      },
+      "status_code": 403,
+      "status": "FAILED",
+      "error": "Expected status 200"
+    },
+    {
+      "test_name": "创建演示文稿",
+      "endpoint": "/presentations",
+      "method": "POST",
+      "timestamp": "2025-09-11T00:02:44.328154",
+      "response": {
+        "message": "Forbidden"
+      },
+      "status_code": 403,
+      "status": "FAILED",
+      "error": "Expected status 200"
+    },
+    {
+      "test_name": "创建大纲",
+      "endpoint": "/outline",
+      "method": "POST",
+      "timestamp": "2025-09-11T00:02:44.959083",
+      "response": {
+        "message": "Missing Authentication Token"
+      },
+      "status_code": 403,
+      "status": "FAILED",
+      "error": "Expected status 200"
+    },
+    {
+      "test_name": "生成内容",
+      "endpoint": "/content",
+      "method": "POST",
+      "timestamp": "2025-09-11T00:02:45.587344",
+      "response": {
+        "message": "Missing Authentication Token"
+      },
+      "status_code": 403,
+      "status": "FAILED",
+      "error": "Expected status 200"
+    },
+    {
+      "test_name": "搜索图片",
+      "endpoint": "/images/search",
+      "method": "POST",
+      "timestamp": "2025-09-11T00:02:46.190790",
+      "response": {
+        "message": "Missing Authentication Token"
+      },
+      "status_code": 403,
+      "status": "FAILED",
+      "error": "Expected status 200"
+    },
+    {
+      "test_name": "生成图片",
+      "endpoint": "/images/generate",
+      "method": "POST",
+      "timestamp": "2025-09-11T00:02:46.846602",
+      "response": {
+        "message": "Missing Authentication Token"
+      },
+      "status_code": 403,
+      "status": "FAILED",
+      "error": "Expected status 200"
+    },
+    {
+      "test_name": "错误处理 - 无效任务ID",
+      "endpoint": "/tasks/invalid-task-id-12345",
+      "method": "GET",
+      "timestamp": "2025-09-11T00:02:47.473929",
+      "response": {
+        "message": "Forbidden"
+      },
+      "status_code": 403,
+      "status": "FAILED",
+      "error": "Expected status 404"
+    },
+    {
+      "test_name": "错误处理 - 缺少参数",
+      "endpoint": "/presentations",
+      "method": "POST",
+      "timestamp": "2025-09-11T00:02:48.108886",
+      "response": {
+        "message": "Forbidden"
+      },
+      "status_code": 403,
+      "status": "FAILED",
+      "error": "Expected status 400"
+    },
+    {
+      "test_name": "CORS预检请求",
+      "endpoint": "/presentations",
+      "method": "OPTIONS",
+      "timestamp": "2025-09-11T00:02:48.108996",
+      "status": "FAILED",
+      "error": "Unsupported method: OPTIONS"
+    }
+  ]
+}

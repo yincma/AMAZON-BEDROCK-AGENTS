@@ -1,0 +1,241 @@
+{
+  "execution_time": "2025-09-11T19:59:55.773946",
+  "region": "us-east-1",
+  "project": "ai-ppt-assistant",
+  "environment": "dev",
+  "agent_configs": {
+    "orchestrator": {
+      "agent_id": "Q6RODNGFYR",
+      "alias_name": "dev",
+      "description": "Orchestrator Agent for PPT generation workflow",
+      "functions": [
+        "ai-ppt-assistant-api-generate-presentation",
+        "ai-ppt-assistant-task-processor"
+      ]
+    },
+    "content": {
+      "agent_id": "L0ZQHJSU4X",
+      "alias_name": "dev",
+      "description": "Content Generation Agent",
+      "functions": [
+        "ai-ppt-assistant-generate-content",
+        "ai-ppt-assistant-create-outline"
+      ]
+    },
+    "visual": {
+      "agent_id": "FO53FNXIRL",
+      "alias_name": "dev",
+      "description": "Visual Content Agent",
+      "functions": [
+        "ai-ppt-assistant-generate-image",
+        "ai-ppt-assistant-find-image"
+      ]
+    },
+    "compiler": {
+      "agent_id": "B02XIGCUKI",
+      "alias_name": "dev",
+      "description": "PPT Compiler Agent",
+      "functions": [
+        "ai-ppt-assistant-compile-pptx",
+        "ai-ppt-assistant-generate-speaker-notes"
+      ]
+    }
+  },
+  "results": [
+    {
+      "time": "2025-09-11 19:59:48",
+      "level": "INFO",
+      "message": "============================================================"
+    },
+    {
+      "time": "2025-09-11 19:59:48",
+      "level": "INFO",
+      "message": "\u5f00\u59cb\u4fee\u590dBedrock Agent\u914d\u7f6e"
+    },
+    {
+      "time": "2025-09-11 19:59:48",
+      "level": "INFO",
+      "message": "============================================================"
+    },
+    {
+      "time": "2025-09-11 19:59:48",
+      "level": "INFO",
+      "message": "\n\u5904\u7406 orchestrator Agent..."
+    },
+    {
+      "time": "2025-09-11 19:59:49",
+      "level": "ERROR",
+      "message": "\u5904\u7406Agent Q6RODNGFYR \u522b\u540d\u65f6\u51fa\u9519: 'aliasName'"
+    },
+    {
+      "time": "2025-09-11 19:59:49",
+      "level": "WARNING",
+      "message": "\u8df3\u8fc7 orchestrator Agent\uff08\u522b\u540d\u521b\u5efa\u5931\u8d25\uff09"
+    },
+    {
+      "time": "2025-09-11 19:59:49",
+      "level": "INFO",
+      "message": "\n\u5904\u7406 content Agent..."
+    },
+    {
+      "time": "2025-09-11 19:59:49",
+      "level": "ERROR",
+      "message": "\u5904\u7406Agent L0ZQHJSU4X \u522b\u540d\u65f6\u51fa\u9519: 'aliasName'"
+    },
+    {
+      "time": "2025-09-11 19:59:49",
+      "level": "WARNING",
+      "message": "\u8df3\u8fc7 content Agent\uff08\u522b\u540d\u521b\u5efa\u5931\u8d25\uff09"
+    },
+    {
+      "time": "2025-09-11 19:59:49",
+      "level": "INFO",
+      "message": "\n\u5904\u7406 visual Agent..."
+    },
+    {
+      "time": "2025-09-11 19:59:49",
+      "level": "ERROR",
+      "message": "\u5904\u7406Agent FO53FNXIRL \u522b\u540d\u65f6\u51fa\u9519: 'aliasName'"
+    },
+    {
+      "time": "2025-09-11 19:59:49",
+      "level": "WARNING",
+      "message": "\u8df3\u8fc7 visual Agent\uff08\u522b\u540d\u521b\u5efa\u5931\u8d25\uff09"
+    },
+    {
+      "time": "2025-09-11 19:59:49",
+      "level": "INFO",
+      "message": "\n\u5904\u7406 compiler Agent..."
+    },
+    {
+      "time": "2025-09-11 19:59:50",
+      "level": "ERROR",
+      "message": "\u5904\u7406Agent B02XIGCUKI \u522b\u540d\u65f6\u51fa\u9519: 'aliasName'"
+    },
+    {
+      "time": "2025-09-11 19:59:50",
+      "level": "WARNING",
+      "message": "\u8df3\u8fc7 compiler Agent\uff08\u522b\u540d\u521b\u5efa\u5931\u8d25\uff09"
+    },
+    {
+      "time": "2025-09-11 19:59:50",
+      "level": "INFO",
+      "message": "\n============================================================"
+    },
+    {
+      "time": "2025-09-11 19:59:50",
+      "level": "INFO",
+      "message": "\u9a8c\u8bc1\u914d\u7f6e"
+    },
+    {
+      "time": "2025-09-11 19:59:50",
+      "level": "INFO",
+      "message": "============================================================"
+    },
+    {
+      "time": "2025-09-11 19:59:50",
+      "level": "INFO",
+      "message": "\u5f00\u59cb\u9a8c\u8bc1\u914d\u7f6e..."
+    },
+    {
+      "time": "2025-09-11 19:59:55",
+      "level": "INFO",
+      "message": "\norchestrator Agent:"
+    },
+    {
+      "time": "2025-09-11 19:59:55",
+      "level": "INFO",
+      "message": "  SSM\u53c2\u6570: \u274c"
+    },
+    {
+      "time": "2025-09-11 19:59:55",
+      "level": "INFO",
+      "message": "  \u522b\u540d\u5b58\u5728: \u274c"
+    },
+    {
+      "time": "2025-09-11 19:59:55",
+      "level": "INFO",
+      "message": "  Lambda ai-ppt-assistant-api-generate-presentation: \u274c"
+    },
+    {
+      "time": "2025-09-11 19:59:55",
+      "level": "INFO",
+      "message": "  Lambda ai-ppt-assistant-task-processor: \u274c"
+    },
+    {
+      "time": "2025-09-11 19:59:55",
+      "level": "INFO",
+      "message": "\ncontent Agent:"
+    },
+    {
+      "time": "2025-09-11 19:59:55",
+      "level": "INFO",
+      "message": "  SSM\u53c2\u6570: \u274c"
+    },
+    {
+      "time": "2025-09-11 19:59:55",
+      "level": "INFO",
+      "message": "  \u522b\u540d\u5b58\u5728: \u274c"
+    },
+    {
+      "time": "2025-09-11 19:59:55",
+      "level": "INFO",
+      "message": "  Lambda ai-ppt-assistant-generate-content: \u274c"
+    },
+    {
+      "time": "2025-09-11 19:59:55",
+      "level": "INFO",
+      "message": "  Lambda ai-ppt-assistant-create-outline: \u274c"
+    },
+    {
+      "time": "2025-09-11 19:59:55",
+      "level": "INFO",
+      "message": "\nvisual Agent:"
+    },
+    {
+      "time": "2025-09-11 19:59:55",
+      "level": "INFO",
+      "message": "  SSM\u53c2\u6570: \u274c"
+    },
+    {
+      "time": "2025-09-11 19:59:55",
+      "level": "INFO",
+      "message": "  \u522b\u540d\u5b58\u5728: \u274c"
+    },
+    {
+      "time": "2025-09-11 19:59:55",
+      "level": "INFO",
+      "message": "  Lambda ai-ppt-assistant-generate-image: \u274c"
+    },
+    {
+      "time": "2025-09-11 19:59:55",
+      "level": "INFO",
+      "message": "  Lambda ai-ppt-assistant-find-image: \u274c"
+    },
+    {
+      "time": "2025-09-11 19:59:55",
+      "level": "INFO",
+      "message": "\ncompiler Agent:"
+    },
+    {
+      "time": "2025-09-11 19:59:55",
+      "level": "INFO",
+      "message": "  SSM\u53c2\u6570: \u274c"
+    },
+    {
+      "time": "2025-09-11 19:59:55",
+      "level": "INFO",
+      "message": "  \u522b\u540d\u5b58\u5728: \u274c"
+    },
+    {
+      "time": "2025-09-11 19:59:55",
+      "level": "INFO",
+      "message": "  Lambda ai-ppt-assistant-compile-pptx: \u274c"
+    },
+    {
+      "time": "2025-09-11 19:59:55",
+      "level": "INFO",
+      "message": "  Lambda ai-ppt-assistant-generate-speaker-notes: \u274c"
+    }
+  ]
+}

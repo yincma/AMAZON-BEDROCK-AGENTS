@@ -1,0 +1,221 @@
+{
+  "timestamp": "2025-09-11T15:04:37.053726",
+  "api_base_url": "https://t8jhz8li6e.execute-api.us-east-1.amazonaws.com/legacy",
+  "total_tests": 10,
+  "passed": 1,
+  "failed": 9,
+  "errors": [
+    {
+      "endpoint": "/presentations",
+      "error": "期望状态码 [200], 实际 403"
+    },
+    {
+      "endpoint": "/presentations",
+      "error": "期望状态码 [200, 201, 202], 实际 403"
+    },
+    {
+      "endpoint": "/presentations/test-id-123/status",
+      "error": "期望状态码 [200, 404], 实际 403"
+    },
+    {
+      "endpoint": "/tasks/test-task-123",
+      "error": "期望状态码 [200, 404], 实际 403"
+    },
+    {
+      "endpoint": "/presentations/test-id-123/slides/1",
+      "error": "期望状态码 [200, 404], 实际 403"
+    },
+    {
+      "endpoint": "/presentations/test-id-123/download",
+      "error": "期望状态码 [200, 404], 实际 403"
+    },
+    {
+      "endpoint": "/outline",
+      "error": "期望状态码 [200, 201], 实际 403"
+    },
+    {
+      "endpoint": "/content",
+      "error": "期望状态码 [200, 201], 实际 403"
+    },
+    {
+      "endpoint": "/images/generate",
+      "error": "期望状态码 [200, 201], 实际 403"
+    }
+  ],
+  "test_details": [
+    {
+      "endpoint": "/health",
+      "method": "GET",
+      "url": "https://t8jhz8li6e.execute-api.us-east-1.amazonaws.com/legacy/health",
+      "request_data": null,
+      "timestamp": "2025-09-11T15:04:37.053748",
+      "status_code": 200,
+      "response_time_ms": 640.306,
+      "response_body": {
+        "status": "healthy",
+        "timestamp": "11/Sep/2025:06:04:37 +0000"
+      },
+      "result": "PASSED"
+    },
+    {
+      "endpoint": "/presentations",
+      "method": "GET",
+      "url": "https://t8jhz8li6e.execute-api.us-east-1.amazonaws.com/legacy/presentations",
+      "request_data": null,
+      "timestamp": "2025-09-11T15:04:38.703437",
+      "status_code": 403,
+      "response_time_ms": 618.2579999999999,
+      "response_body": {
+        "message": "Forbidden"
+      },
+      "result": "FAILED",
+      "error": "期望状态码 [200], 实际 403"
+    },
+    {
+      "endpoint": "/presentations",
+      "method": "POST",
+      "url": "https://t8jhz8li6e.execute-api.us-east-1.amazonaws.com/legacy/presentations",
+      "request_data": {
+        "topic": "AI和机器学习的未来",
+        "num_slides": 5,
+        "style": "professional",
+        "language": "zh-CN"
+      },
+      "timestamp": "2025-09-11T15:04:40.334826",
+      "status_code": 403,
+      "response_time_ms": 711.1769999999999,
+      "response_body": {
+        "message": "Forbidden"
+      },
+      "result": "FAILED",
+      "error": "期望状态码 [200, 201, 202], 实际 403"
+    },
+    {
+      "endpoint": "/presentations/test-id-123/status",
+      "method": "GET",
+      "url": "https://t8jhz8li6e.execute-api.us-east-1.amazonaws.com/legacy/presentations/test-id-123/status",
+      "request_data": null,
+      "timestamp": "2025-09-11T15:04:42.058881",
+      "status_code": 403,
+      "response_time_ms": 635.5659999999999,
+      "response_body": {
+        "message": "Missing Authentication Token"
+      },
+      "result": "FAILED",
+      "error": "期望状态码 [200, 404], 实际 403"
+    },
+    {
+      "endpoint": "/tasks/test-task-123",
+      "method": "GET",
+      "url": "https://t8jhz8li6e.execute-api.us-east-1.amazonaws.com/legacy/tasks/test-task-123",
+      "request_data": null,
+      "timestamp": "2025-09-11T15:04:43.705099",
+      "status_code": 403,
+      "response_time_ms": 645.64,
+      "response_body": {
+        "message": "Forbidden"
+      },
+      "result": "FAILED",
+      "error": "期望状态码 [200, 404], 实际 403"
+    },
+    {
+      "endpoint": "/presentations/test-id-123/slides/1",
+      "method": "PUT",
+      "url": "https://t8jhz8li6e.execute-api.us-east-1.amazonaws.com/legacy/presentations/test-id-123/slides/1",
+      "request_data": {
+        "title": "更新的标题",
+        "content": "更新的内容"
+      },
+      "timestamp": "2025-09-11T15:04:45.362410",
+      "status_code": 403,
+      "response_time_ms": 617.589,
+      "response_body": {
+        "message": "Missing Authentication Token"
+      },
+      "result": "FAILED",
+      "error": "期望状态码 [200, 404], 实际 403"
+    },
+    {
+      "endpoint": "/presentations/test-id-123/download",
+      "method": "GET",
+      "url": "https://t8jhz8li6e.execute-api.us-east-1.amazonaws.com/legacy/presentations/test-id-123/download",
+      "request_data": null,
+      "timestamp": "2025-09-11T15:04:46.991855",
+      "status_code": 403,
+      "response_time_ms": 630.981,
+      "response_body": {
+        "message": "Forbidden"
+      },
+      "result": "FAILED",
+      "error": "期望状态码 [200, 404], 实际 403"
+    },
+    {
+      "endpoint": "/outline",
+      "method": "POST",
+      "url": "https://t8jhz8li6e.execute-api.us-east-1.amazonaws.com/legacy/outline",
+      "request_data": {
+        "topic": "云计算基础",
+        "num_slides": 3
+      },
+      "timestamp": "2025-09-11T15:04:48.630656",
+      "status_code": 403,
+      "response_time_ms": 660.104,
+      "response_body": {
+        "message": "Missing Authentication Token"
+      },
+      "result": "FAILED",
+      "error": "期望状态码 [200, 201], 实际 403"
+    },
+    {
+      "endpoint": "/content",
+      "method": "POST",
+      "url": "https://t8jhz8li6e.execute-api.us-east-1.amazonaws.com/legacy/content",
+      "request_data": {
+        "outline": {
+          "slides": [
+            {
+              "title": "介绍",
+              "key_points": [
+                "什么是云计算",
+                "为什么重要"
+              ]
+            },
+            {
+              "title": "主要服务",
+              "key_points": [
+                "IaaS",
+                "PaaS",
+                "SaaS"
+              ]
+            }
+          ]
+        }
+      },
+      "timestamp": "2025-09-11T15:04:50.296214",
+      "status_code": 403,
+      "response_time_ms": 625.949,
+      "response_body": {
+        "message": "Missing Authentication Token"
+      },
+      "result": "FAILED",
+      "error": "期望状态码 [200, 201], 实际 403"
+    },
+    {
+      "endpoint": "/images/generate",
+      "method": "POST",
+      "url": "https://t8jhz8li6e.execute-api.us-east-1.amazonaws.com/legacy/images/generate",
+      "request_data": {
+        "prompt": "未来科技城市",
+        "style": "realistic"
+      },
+      "timestamp": "2025-09-11T15:04:51.934572",
+      "status_code": 403,
+      "response_time_ms": 613.606,
+      "response_body": {
+        "message": "Missing Authentication Token"
+      },
+      "result": "FAILED",
+      "error": "期望状态码 [200, 201], 实际 403"
+    }
+  ]
+}

@@ -11,8 +11,8 @@ from datetime import datetime
 from typing import Dict, Any, Optional
 
 # API配置
-API_BASE_URL = "https://dihvqgjzr8.execute-api.us-east-1.amazonaws.com/legacy"
-API_KEY = "lHwdh3vqIl69FEul3ZNRaadLA6GwBycf5y2JAD1F"
+API_BASE_URL = "https://k4ona7g2x3.execute-api.us-east-1.amazonaws.com/legacy"
+API_KEY = "UCNx4NTHHk54TjO6KdfZV176vqJb7cWZ56HdI7tV"
 
 # 请求头
 HEADERS = {

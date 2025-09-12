@@ -1,82 +1,158 @@
-🔍 开始系统健康状态检查...
-🕒 检查时间: 2025-09-10 15:07:46
-
-============================================================
-🏥 系统健康状态报告
-============================================================
-
-🔍 检查Lambda函数状态...
-✅ ai-ppt-assistant-api-generate-presentation: Active (Runtime: python3.12, Memory: 768MB, Timeout: 30s)
-✅ ai-ppt-assistant-api-presentation-status: Active (Runtime: python3.12, Memory: 512MB, Timeout: 10s)
-✅ ai-ppt-assistant-api-presentation-download: Active (Runtime: python3.12, Memory: 512MB, Timeout: 10s)
-✅ ai-ppt-assistant-api-modify-slide: Active (Runtime: python3.12, Memory: 768MB, Timeout: 30s)
-✅ ai-ppt-assistant-list-presentations: Active (Runtime: python3.12, Memory: 256MB, Timeout: 10s)
-✅ ai-ppt-assistant-get-task: Active (Runtime: python3.12, Memory: 256MB, Timeout: 10s)
-✅ ai-ppt-assistant-create-outline: Active (Runtime: python3.12, Memory: 1536MB, Timeout: 60s)
-✅ ai-ppt-assistant-generate-content: Active (Runtime: python3.12, Memory: 2048MB, Timeout: 120s)
-✅ ai-ppt-assistant-generate-image: Active (Runtime: python3.12, Memory: 1536MB, Timeout: 90s)
-✅ ai-ppt-assistant-compile-pptx: Active (Runtime: python3.12, Memory: 3008MB, Timeout: 180s)
-✅ ai-ppt-assistant-find-image: Active (Runtime: python3.12, Memory: 768MB, Timeout: 30s)
-✅ ai-ppt-assistant-generate-speaker-notes: Active (Runtime: python3.12, Memory: 1536MB, Timeout: 60s)
-
-🔍 检查API Gateway状态...
-✅ API Gateway健康检查通过
-
-🔍 检查DynamoDB表状态...
-✅ ai-ppt-assistant-dev-sessions: ACTIVE (0 items)
-✅ ai-ppt-assistant-dev-tasks: ACTIVE (0 items)
-✅ ai-ppt-assistant-dev-checkpoints: ACTIVE (0 items)
-
-🔍 检查CloudWatch告警状态...
-⚠️ 数据不足: ai-ppt-assistant-api_generate_presentation-cold-start-duration
-⚠️ 数据不足: ai-ppt-assistant-api_generate_presentation-error-rate
-⚠️ 数据不足: ai-ppt-assistant-api_modify_slide-cold-start-duration
-⚠️ 数据不足: ai-ppt-assistant-api_modify_slide-error-rate
-⚠️ 数据不足: ai-ppt-assistant-api_presentation_download-cold-start-duration
-⚠️ 数据不足: ai-ppt-assistant-api_presentation_download-error-rate
-⚠️ 数据不足: ai-ppt-assistant-api_presentation_status-cold-start-duration
-⚠️ 数据不足: ai-ppt-assistant-api_presentation_status-error-rate
-⚠️ 数据不足: ai-ppt-assistant-dev-api-gateway-4xx-errors
-✅ 正常: ai-ppt-assistant-dev-api-gateway-5xx-errors
-✅ 正常: ai-ppt-assistant-dev-api-gateway-high-traffic
-⚠️ 数据不足: ai-ppt-assistant-dev-api-gateway-latency
-⚠️ 数据不足: ai-ppt-assistant-dev-dlq-messages
-⚠️ 数据不足: ai-ppt-assistant-dev-dynamodb-read-throttles
-✅ 正常: ai-ppt-assistant-dev-dynamodb-write-throttles
-⚠️ 数据不足: ai-ppt-assistant-dev-lambda-compile_pptx-duration
-⚠️ 数据不足: ai-ppt-assistant-dev-lambda-compile_pptx-error-rate
-⚠️ 数据不足: ai-ppt-assistant-dev-lambda-compile_pptx-throttles
-✅ 正常: ai-ppt-assistant-dev-lambda-create_outline-duration
-⚠️ 数据不足: ai-ppt-assistant-dev-lambda-create_outline-error-rate
-⚠️ 数据不足: ai-ppt-assistant-dev-lambda-create_outline-throttles
-⚠️ 数据不足: ai-ppt-assistant-dev-lambda-find_image-duration
-⚠️ 数据不足: ai-ppt-assistant-dev-lambda-find_image-error-rate
-✅ 正常: ai-ppt-assistant-dev-lambda-find_image-throttles
-⚠️ 数据不足: ai-ppt-assistant-dev-lambda-generate_content-duration
-⚠️ 数据不足: ai-ppt-assistant-dev-lambda-generate_content-error-rate
-⚠️ 数据不足: ai-ppt-assistant-dev-lambda-generate_content-throttles
-⚠️ 数据不足: ai-ppt-assistant-dev-lambda-generate_image-duration
-⚠️ 数据不足: ai-ppt-assistant-dev-lambda-generate_image-error-rate
-⚠️ 数据不足: ai-ppt-assistant-dev-lambda-generate_image-throttles
-⚠️ 数据不足: ai-ppt-assistant-dev-lambda-generate_presentation-duration
-⚠️ 数据不足: ai-ppt-assistant-dev-lambda-generate_presentation-error-rate
-⚠️ 数据不足: ai-ppt-assistant-dev-lambda-generate_presentation-throttles
-⚠️ 数据不足: ai-ppt-assistant-dev-lambda-generate_speaker_notes-duration
-✅ 正常: ai-ppt-assistant-dev-lambda-generate_speaker_notes-error-rate
-⚠️ 数据不足: ai-ppt-assistant-dev-lambda-generate_speaker_notes-throttles
-⚠️ 数据不足: ai-ppt-assistant-dev-lambda-modify_slide-duration
-⚠️ 数据不足: ai-ppt-assistant-dev-lambda-modify_slide-error-rate
-⚠️ 数据不足: ai-ppt-assistant-dev-lambda-modify_slide-throttles
-⚠️ 数据不足: ai-ppt-assistant-dev-lambda-presentation_download-duration
-⚠️ 数据不足: ai-ppt-assistant-dev-lambda-presentation_download-error-rate
-✅ 正常: ai-ppt-assistant-dev-lambda-presentation_download-throttles
-✅ 正常: ai-ppt-assistant-dev-lambda-presentation_status-duration
-⚠️ 数据不足: ai-ppt-assistant-dev-lambda-presentation_status-error-rate
-⚠️ 数据不足: ai-ppt-assistant-dev-lambda-presentation_status-throttles
-⚠️ 数据不足: ai-ppt-assistant-dev-sqs-processing-errors
-📊 告警统计: {'INSUFFICIENT_DATA': 38, 'OK': 8}
-
-📋 健康状态总结:
-✅ 总体状态: HEALTHY
-
-💾 健康报告已保存到: system_health_report.json
+{
+  "timestamp": "2025-09-11T21:51:37.148147",
+  "overall_status": "warning",
+  "components": {
+    "lambda_functions": {
+      "total": 12,
+      "healthy": 12,
+      "details": [
+        {
+          "function_name": "ai-ppt-assistant-api-generate-presentation",
+          "state": "Active",
+          "runtime": "python3.12",
+          "memory_size": 768,
+          "timeout": 30,
+          "last_modified": "2025-09-11T12:30:11.000+0000",
+          "status": "healthy"
+        },
+        {
+          "function_name": "ai-ppt-assistant-api-presentation-status",
+          "state": "Active",
+          "runtime": "python3.12",
+          "memory_size": 512,
+          "timeout": 10,
+          "last_modified": "2025-09-11T12:30:09.000+0000",
+          "status": "healthy"
+        },
+        {
+          "function_name": "ai-ppt-assistant-api-presentation-download",
+          "state": "Active",
+          "runtime": "python3.12",
+          "memory_size": 512,
+          "timeout": 10,
+          "last_modified": "2025-09-11T12:30:10.000+0000",
+          "status": "healthy"
+        },
+        {
+          "function_name": "ai-ppt-assistant-api-modify-slide",
+          "state": "Active",
+          "runtime": "python3.12",
+          "memory_size": 768,
+          "timeout": 30,
+          "last_modified": "2025-09-11T12:30:14.000+0000",
+          "status": "healthy"
+        },
+        {
+          "function_name": "ai-ppt-assistant-list-presentations",
+          "state": "Active",
+          "runtime": "python3.12",
+          "memory_size": 256,
+          "timeout": 10,
+          "last_modified": "2025-09-11T12:30:08.000+0000",
+          "status": "healthy"
+        },
+        {
+          "function_name": "ai-ppt-assistant-get-task",
+          "state": "Active",
+          "runtime": "python3.12",
+          "memory_size": 256,
+          "timeout": 10,
+          "last_modified": "2025-09-11T12:30:07.000+0000",
+          "status": "healthy"
+        },
+        {
+          "function_name": "ai-ppt-assistant-create-outline",
+          "state": "Active",
+          "runtime": "python3.12",
+          "memory_size": 1536,
+          "timeout": 60,
+          "last_modified": "2025-09-11T12:30:12.000+0000",
+          "status": "healthy"
+        },
+        {
+          "function_name": "ai-ppt-assistant-generate-content",
+          "state": "Active",
+          "runtime": "python3.12",
+          "memory_size": 2048,
+          "timeout": 120,
+          "last_modified": "2025-09-11T12:30:06.000+0000",
+          "status": "healthy"
+        },
+        {
+          "function_name": "ai-ppt-assistant-generate-image",
+          "state": "Active",
+          "runtime": "python3.12",
+          "memory_size": 1536,
+          "timeout": 90,
+          "last_modified": "2025-09-11T12:30:15.000+0000",
+          "status": "healthy"
+        },
+        {
+          "function_name": "ai-ppt-assistant-compile-pptx",
+          "state": "Active",
+          "runtime": "python3.12",
+          "memory_size": 3008,
+          "timeout": 180,
+          "last_modified": "2025-09-11T12:30:09.000+0000",
+          "status": "healthy"
+        },
+        {
+          "function_name": "ai-ppt-assistant-find-image",
+          "state": "Active",
+          "runtime": "python3.12",
+          "memory_size": 768,
+          "timeout": 30,
+          "last_modified": "2025-09-11T12:30:16.000+0000",
+          "status": "healthy"
+        },
+        {
+          "function_name": "ai-ppt-assistant-generate-speaker-notes",
+          "state": "Active",
+          "runtime": "python3.12",
+          "memory_size": 1536,
+          "timeout": 60,
+          "last_modified": "2025-09-11T12:30:13.000+0000",
+          "status": "healthy"
+        }
+      ]
+    },
+    "api_gateway": {
+      "status": "warning",
+      "response_code": 403
+    },
+    "dynamodb": {
+      "total_tables": 3,
+      "healthy_tables": 3,
+      "details": [
+        {
+          "table_name": "ai-ppt-assistant-dev-sessions",
+          "status": "ACTIVE",
+          "item_count": 2,
+          "health": "healthy"
+        },
+        {
+          "table_name": "ai-ppt-assistant-dev-tasks",
+          "status": "ACTIVE",
+          "item_count": 6,
+          "health": "healthy"
+        },
+        {
+          "table_name": "ai-ppt-assistant-dev-checkpoints",
+          "status": "ACTIVE",
+          "item_count": 0,
+          "health": "healthy"
+        }
+      ]
+    },
+    "cloudwatch": {
+      "total_alarms": 46,
+      "states": {
+        "INSUFFICIENT_DATA": 10,
+        "OK": 36
+      }
+    }
+  },
+  "issues": [
+    "API Gateway状态异常"
+  ]
+}
