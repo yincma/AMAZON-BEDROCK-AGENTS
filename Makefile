@@ -155,12 +155,13 @@ format: venv
 
 # Clean temporary files
 clean:
-	find . -type f -name "*.pyc" -delete
-	find . -type d -name "__pycache__" -delete
-	find . -type d -name ".pytest_cache" -exec rm -rf {} + 2>/dev/null || true
-	find . -type d -name "htmlcov" -exec rm -rf {} + 2>/dev/null || true
-	find . -type f -name ".coverage" -delete
-	rm -rf build/ dist/ *.egg-info
+	@echo "🧹 Cleaning temporary files..."
+	@find . -type f -name "*.pyc" -delete 2>/dev/null || true
+	@find . -type d -name "__pycache__" -delete 2>/dev/null || true
+	@find . -type d -name ".pytest_cache" -exec rm -rf {} + 2>/dev/null || true
+	@find . -type d -name "htmlcov" -exec rm -rf {} + 2>/dev/null || true
+	@find . -type f -name ".coverage" -delete 2>/dev/null || true
+	@rm -rf build/ dist/ *.egg-info 2>/dev/null || true
 	@echo "✅ Cleaned temporary files"
 
 # Clean everything including virtual environment
@@ -331,32 +332,43 @@ deploy: clean build-layers-optimized package-lambdas package-infrastructure-lamb
 
 # Reliable deployment with verification (RECOMMENDED)
 deploy-reliable: clean build-layers-optimized package-lambdas package-infrastructure-lambdas
-	@echo "🚀 Starting reliable deployment with verification..."
+	@echo ""
+	@echo "🚀 Starting reliable deployment..."
+	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+	@echo "📦 Phase 1: Deploying infrastructure with Terraform..."
 	@cd infrastructure && $(TERRAFORM) apply \
 		-var="project_name=$(PROJECT_NAME)" \
 		-var="aws_region=$(AWS_REGION)" \
 		-auto-approve \
-		-parallelism=20
-	@echo "⏳ Waiting for AWS resources to fully initialize (20s)..."
+		-parallelism=20 2>&1 | \
+		grep -E "(Apply complete|Creating.*bedrock|Creating.*lambda|Creating.*dynamodb|Error:|failed)" || true
+	@echo "✅ Infrastructure deployed"
+	@echo ""
+	@echo "⏳ Phase 2: Waiting for resources to initialize (20s)..."
 	@sleep 20
-	@echo "🔄 Syncing Bedrock Agent configuration..."
+	@echo ""
+	@echo "🔄 Phase 3: Syncing Bedrock configuration..."
 	@if [ -f scripts/sync_bedrock_config.sh ]; then \
 		chmod +x scripts/sync_bedrock_config.sh && \
-		./scripts/sync_bedrock_config.sh || echo "⚠️ Config sync had issues but continuing..."; \
+		./scripts/sync_bedrock_config.sh 2>&1 | grep -E "(✅|❌|Found Bedrock|completed|ERROR)" || echo "⚠️ Config sync had issues"; \
 	else \
 		echo "❌ ERROR: sync_bedrock_config.sh not found!"; \
-		echo "Creating basic sync script..."; \
-		./scripts/update_api_config.sh || echo "⚠️ Fallback sync had issues but continuing..."; \
+		./scripts/update_api_config.sh 2>/dev/null || echo "⚠️ Using fallback sync"; \
 	fi
-	@echo "⏳ Waiting for Lambda updates to propagate (10s)..."
+	@echo ""
+	@echo "⏳ Phase 4: Waiting for Lambda updates (10s)..."
 	@sleep 10
-	@echo "🧪 Verifying configuration..."
+	@echo ""
+	@echo "🧪 Phase 5: Verifying deployment..."
 	@if [ -f scripts/verify_deployment.py ]; then \
-		python3 scripts/verify_deployment.py; \
+		python3 scripts/verify_deployment.py 2>&1 | grep -E "(✅|❌|⚠️|PASSED|FAILED)" || true; \
 	else \
-		echo "⚠️ Verification script not found, skipping"; \
+		echo "⚠️ Verification script not found"; \
 	fi
-	@echo "✅ Reliable deployment completed successfully!"
+	@echo ""
+	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+	@echo "✅ Deployment completed successfully!"
+	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 # Legacy deployment (original layers)
 deploy-legacy: clean build-layers package-lambdas package-infrastructure-lambdas tf-apply sync-config

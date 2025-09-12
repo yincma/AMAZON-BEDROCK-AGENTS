@@ -25,29 +25,51 @@ if [ -z "$ORCHESTRATOR_ID" ] || [ "$ORCHESTRATOR_ID" == "None" ] || [[ "$ORCHEST
     exit 0  # 不阻止部署，但给出警告
 fi
 
-# 获取Agent Alias IDs
+# 获取Agent Alias IDs - 优先使用 production，否则使用第一个可用的
 if [ ! -z "$ORCHESTRATOR_ID" ] && [ "$ORCHESTRATOR_ID" != "None" ]; then
-    ORCHESTRATOR_ALIAS=$(aws bedrock-agent list-agent-aliases --agent-id "$ORCHESTRATOR_ID" --query "agentAliasSummaries[?agentAliasName=='TSTALIASID'].agentAliasId | [0]" --output text 2>/dev/null || echo "TSTALIASID")
+    ORCHESTRATOR_ALIAS=$(aws bedrock-agent list-agent-aliases --agent-id "$ORCHESTRATOR_ID" --query "agentAliasSummaries[?agentAliasName=='production'].agentAliasId | [0]" --output text --region us-east-1 2>/dev/null)
+    if [ "$ORCHESTRATOR_ALIAS" == "None" ] || [ -z "$ORCHESTRATOR_ALIAS" ]; then
+        ORCHESTRATOR_ALIAS=$(aws bedrock-agent list-agent-aliases --agent-id "$ORCHESTRATOR_ID" --query "agentAliasSummaries[0].agentAliasId" --output text --region us-east-1 2>/dev/null || echo "TSTALIASID")
+    fi
 else
     ORCHESTRATOR_ALIAS="TSTALIASID"
 fi
 
 if [ ! -z "$COMPILER_ID" ] && [ "$COMPILER_ID" != "None" ]; then
-    COMPILER_ALIAS=$(aws bedrock-agent list-agent-aliases --agent-id "$COMPILER_ID" --query "agentAliasSummaries[?agentAliasName=='TSTALIASID'].agentAliasId | [0]" --output text 2>/dev/null || echo "TSTALIASID")
+    COMPILER_ALIAS=$(aws bedrock-agent list-agent-aliases --agent-id "$COMPILER_ID" --query "agentAliasSummaries[?agentAliasName=='production'].agentAliasId | [0]" --output text --region us-east-1 2>/dev/null)
+    if [ "$COMPILER_ALIAS" == "None" ] || [ -z "$COMPILER_ALIAS" ]; then
+        COMPILER_ALIAS=$(aws bedrock-agent list-agent-aliases --agent-id "$COMPILER_ID" --query "agentAliasSummaries[0].agentAliasId" --output text --region us-east-1 2>/dev/null || echo "TSTALIASID")
+    fi
 else
     COMPILER_ALIAS="TSTALIASID"
 fi
 
 if [ ! -z "$CONTENT_ID" ] && [ "$CONTENT_ID" != "None" ]; then
-    CONTENT_ALIAS=$(aws bedrock-agent list-agent-aliases --agent-id "$CONTENT_ID" --query "agentAliasSummaries[?agentAliasName=='TSTALIASID'].agentAliasId | [0]" --output text 2>/dev/null || echo "TSTALIASID")
+    CONTENT_ALIAS=$(aws bedrock-agent list-agent-aliases --agent-id "$CONTENT_ID" --query "agentAliasSummaries[?agentAliasName=='production'].agentAliasId | [0]" --output text --region us-east-1 2>/dev/null)
+    if [ "$CONTENT_ALIAS" == "None" ] || [ -z "$CONTENT_ALIAS" ]; then
+        CONTENT_ALIAS=$(aws bedrock-agent list-agent-aliases --agent-id "$CONTENT_ID" --query "agentAliasSummaries[0].agentAliasId" --output text --region us-east-1 2>/dev/null || echo "TSTALIASID")
+    fi
 else
     CONTENT_ALIAS="TSTALIASID"
+fi
+
+# 获取 Visual Agent 信息
+VISUAL_ID=$(aws bedrock-agent list-agents --query "agentSummaries[?contains(agentName, 'visual')].agentId | [0]" --output text 2>/dev/null || echo "None")
+
+if [ ! -z "$VISUAL_ID" ] && [ "$VISUAL_ID" != "None" ]; then
+    VISUAL_ALIAS=$(aws bedrock-agent list-agent-aliases --agent-id "$VISUAL_ID" --query "agentAliasSummaries[?agentAliasName=='production'].agentAliasId | [0]" --output text --region us-east-1 2>/dev/null)
+    if [ "$VISUAL_ALIAS" == "None" ] || [ -z "$VISUAL_ALIAS" ]; then
+        VISUAL_ALIAS=$(aws bedrock-agent list-agent-aliases --agent-id "$VISUAL_ID" --query "agentAliasSummaries[0].agentAliasId" --output text --region us-east-1 2>/dev/null || echo "TSTALIASID")
+    fi
+else
+    VISUAL_ALIAS="TSTALIASID"
 fi
 
 echo -e "${GREEN}✅ 找到以下Bedrock Agents:${NC}"
 echo "  Orchestrator: $ORCHESTRATOR_ID (Alias: $ORCHESTRATOR_ALIAS)"
 echo "  Compiler: $COMPILER_ID (Alias: $COMPILER_ALIAS)"
 echo "  Content: $CONTENT_ID (Alias: $CONTENT_ALIAS)"
+echo "  Visual: $VISUAL_ID (Alias: $VISUAL_ALIAS)"
 
 # 更新SSM参数
 echo ""
@@ -120,6 +142,8 @@ for func in $LAMBDA_FUNCTIONS; do
             COMPILER_ALIAS_ID=$COMPILER_ALIAS,
             CONTENT_AGENT_ID=$CONTENT_ID,
             CONTENT_ALIAS_ID=$CONTENT_ALIAS,
+            VISUAL_AGENT_ID=$VISUAL_ID,
+            VISUAL_ALIAS_ID=$VISUAL_ALIAS,
             CONFIG_SOURCE=SSM_PARAMETER_STORE,
             SSM_PREFIX=/ai-ppt-assistant/dev,
             DYNAMODB_TABLE=ai-ppt-assistant-dev-sessions,
