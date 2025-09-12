@@ -1,0 +1,327 @@
+{
+  "timestamp": "2025-09-12T21:25:18.034392",
+  "api_tests": {
+    "health_check": {
+      "status": "PASS",
+      "timestamp": "2025-09-12T21:25:18.828950",
+      "details": {
+        "status_code": 200,
+        "success": true,
+        "headers": {
+          "Date": "Fri, 12 Sep 2025 12:25:18 GMT",
+          "Content-Type": "application/json",
+          "Content-Length": "61",
+          "Connection": "keep-alive",
+          "x-amzn-RequestId": "a29568f8-5f0d-4877-b43e-720acc22cba4",
+          "x-amz-apigw-id": "QyefXELboAMEXJQ=",
+          "X-Amzn-Trace-Id": "Root=1-68c4112e-4c47b1192b21f1215d012dea"
+        },
+        "response_time": 0.791134,
+        "response_body": {
+          "status": "healthy",
+          "timestamp": "12/Sep/2025:12:25:18 +0000"
+        }
+      }
+    },
+    "create_presentation": {
+      "status": "FAIL",
+      "timestamp": "2025-09-12T21:25:19.437957",
+      "details": {
+        "status_code": 400,
+        "success": false,
+        "headers": {
+          "Date": "Fri, 12 Sep 2025 12:25:19 GMT",
+          "Content-Type": "application/json",
+          "Content-Length": "35",
+          "Connection": "keep-alive",
+          "x-amzn-RequestId": "ca7e1ad8-3d98-44fd-94ac-cfc8ba48b407",
+          "x-amzn-ErrorType": "BadRequestException",
+          "x-amz-apigw-id": "QyefdFBYIAMEMhw=",
+          "X-Amzn-Trace-Id": "Root=1-68c4112f-733627fd3733db0f0b233ee6"
+        },
+        "response_time": 0.605348,
+        "response_body": {
+          "message": "Invalid request body"
+        }
+      }
+    },
+    "list_presentations": {
+      "status": "PASS",
+      "timestamp": "2025-09-12T21:25:20.922459",
+      "details": {
+        "status_code": 200,
+        "success": true,
+        "headers": {
+          "Date": "Fri, 12 Sep 2025 12:25:20 GMT",
+          "Content-Type": "application/json",
+          "Content-Length": "58",
+          "Connection": "keep-alive",
+          "x-amzn-RequestId": "a9998dde-e7f9-4b2d-878e-55d6e8ce17f5",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+          "x-amz-apigw-id": "QyefkEGBIAMEn8Q=",
+          "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+          "X-Amzn-Trace-Id": "Root=1-68c41130-1d3ab834271c82ea766dc4ba"
+        },
+        "response_time": 1.48057,
+        "response_body": {
+          "presentations": [],
+          "count": 0,
+          "next_page_token": null
+        }
+      }
+    },
+    "modify_slide": {
+      "status": "FAIL",
+      "timestamp": "2025-09-12T21:25:21.584992",
+      "details": {
+        "status_code": 403,
+        "success": false,
+        "headers": {
+          "Date": "Fri, 12 Sep 2025 12:25:21 GMT",
+          "Content-Type": "application/json",
+          "Content-Length": "42",
+          "Connection": "keep-alive",
+          "x-amzn-RequestId": "bb760c8e-ce16-455d-bca6-f5e928fffddf",
+          "x-amzn-ErrorType": "MissingAuthenticationTokenException",
+          "x-amz-apigw-id": "QyefzEAEoAMEjuw=",
+          "X-Amzn-Trace-Id": "Root=1-68c41131-4973134466ff4f8c2f0fc045"
+        },
+        "response_time": 0.659203,
+        "response_body": {
+          "message": "Missing Authentication Token"
+        }
+      }
+    }
+  },
+  "lambda_tests": {
+    "ai-ppt-assistant-api-generate-presentation": {
+      "status": "PASS",
+      "timestamp": "2025-09-12T21:25:23.411267",
+      "details": {
+        "status_code": 200,
+        "response": {
+          "statusCode": 404,
+          "headers": {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type, X-API-Key, Authorization",
+            "Access-Control-Max-Age": "86400",
+            "X-Content-Type-Options": "nosniff",
+            "X-Frame-Options": "DENY",
+            "X-XSS-Protection": "1; mode=block",
+            "Strict-Transport-Security": "max-age=31536000; includeSubDomains"
+          },
+          "body": "{\"success\": false, \"error\": {\"code\": \"NOT_FOUND\", \"message\": \"Endpoint   not found\", \"request_id\": \"f505a7a3-d628-4f57-8963-bc3f051095a1\", \"timestamp\": \"2025-09-12T12:25:23.257921+00:00\", \"details\": {\"request_id\": \"bcc5ff2a-005f-437a-a7be-1e93df0aff14\"}}}"
+        },
+        "function_error": null
+      }
+    },
+    "ai-ppt-assistant-api-get-task": {
+      "status": "FAIL",
+      "timestamp": "2025-09-12T21:25:23.626032",
+      "details": {
+        "error": "An error occurred (ResourceNotFoundException) when calling the Invoke operation: Function not found: arn:aws:lambda:us-east-1:375004070918:function:ai-ppt-assistant-api-get-task:$LATEST"
+      }
+    },
+    "ai-ppt-assistant-api-list-presentations": {
+      "status": "FAIL",
+      "timestamp": "2025-09-12T21:25:23.835616",
+      "details": {
+        "error": "An error occurred (ResourceNotFoundException) when calling the Invoke operation: Function not found: arn:aws:lambda:us-east-1:375004070918:function:ai-ppt-assistant-api-list-presentations:$LATEST"
+      }
+    },
+    "ai-ppt-assistant-api-modify-slide": {
+      "status": "PASS",
+      "timestamp": "2025-09-12T21:25:26.483232",
+      "details": {
+        "status_code": 200,
+        "response": {
+          "errorMessage": "Unable to import module 'modify_slide': No module named 'PIL'",
+          "errorType": "Runtime.ImportModuleError",
+          "requestId": "",
+          "stackTrace": []
+        },
+        "function_error": "Unhandled"
+      }
+    },
+    "ai-ppt-assistant-api-presentation-download": {
+      "status": "PASS",
+      "timestamp": "2025-09-12T21:25:28.326266",
+      "details": {
+        "status_code": 200,
+        "response": {
+          "statusCode": 400,
+          "headers": {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type, X-API-Key, Authorization",
+            "Access-Control-Max-Age": "86400",
+            "X-Content-Type-Options": "nosniff",
+            "X-Frame-Options": "DENY",
+            "X-XSS-Protection": "1; mode=block",
+            "Strict-Transport-Security": "max-age=31536000; includeSubDomains"
+          },
+          "body": "{\"success\": false, \"error\": {\"code\": \"INVALID_REQUEST\", \"message\": \"Presentation ID is required\", \"request_id\": \"f83fa97c-e47e-4db5-b9ff-a83ec91f9ebd\", \"timestamp\": \"2025-09-12T12:25:28.214567+00:00\", \"details\": {\"request_id\": \"f9620b5b-355d-4361-a769-577bb0f706f8\"}}}"
+        },
+        "function_error": null
+      }
+    },
+    "ai-ppt-assistant-api-presentation-status": {
+      "status": "PASS",
+      "timestamp": "2025-09-12T21:25:29.733099",
+      "details": {
+        "status_code": 200,
+        "response": {
+          "statusCode": 404,
+          "headers": {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type, X-API-Key, Authorization",
+            "Access-Control-Max-Age": "86400",
+            "X-Content-Type-Options": "nosniff",
+            "X-Frame-Options": "DENY",
+            "X-XSS-Protection": "1; mode=block",
+            "Strict-Transport-Security": "max-age=31536000; includeSubDomains"
+          },
+          "body": "{\"success\": false, \"error\": {\"code\": \"NOT_FOUND\", \"message\": \"Endpoint   not found\", \"request_id\": \"1657a120-e246-4145-b7c2-818c3ab667ea\", \"timestamp\": \"2025-09-12T12:25:29.671304+00:00\", \"details\": {\"request_id\": \"14d7ccad-872a-4a61-8b39-97347c3c7669\"}}}"
+        },
+        "function_error": null
+      }
+    },
+    "ai-ppt-assistant-api-task-processor": {
+      "status": "PASS",
+      "timestamp": "2025-09-12T21:25:31.195662",
+      "details": {
+        "status_code": 200,
+        "response": {
+          "batchItemFailures": []
+        },
+        "function_error": null
+      }
+    },
+    "ai-ppt-assistant-controllers-compile-pptx": {
+      "status": "FAIL",
+      "timestamp": "2025-09-12T21:25:31.431332",
+      "details": {
+        "error": "An error occurred (ResourceNotFoundException) when calling the Invoke operation: Function not found: arn:aws:lambda:us-east-1:375004070918:function:ai-ppt-assistant-controllers-compile-pptx:$LATEST"
+      }
+    },
+    "ai-ppt-assistant-controllers-create-outline": {
+      "status": "FAIL",
+      "timestamp": "2025-09-12T21:25:31.643578",
+      "details": {
+        "error": "An error occurred (ResourceNotFoundException) when calling the Invoke operation: Function not found: arn:aws:lambda:us-east-1:375004070918:function:ai-ppt-assistant-controllers-create-outline:$LATEST"
+      }
+    },
+    "ai-ppt-assistant-controllers-find-image": {
+      "status": "FAIL",
+      "timestamp": "2025-09-12T21:25:31.848953",
+      "details": {
+        "error": "An error occurred (ResourceNotFoundException) when calling the Invoke operation: Function not found: arn:aws:lambda:us-east-1:375004070918:function:ai-ppt-assistant-controllers-find-image:$LATEST"
+      }
+    },
+    "ai-ppt-assistant-controllers-generate-content": {
+      "status": "FAIL",
+      "timestamp": "2025-09-12T21:25:32.059756",
+      "details": {
+        "error": "An error occurred (ResourceNotFoundException) when calling the Invoke operation: Function not found: arn:aws:lambda:us-east-1:375004070918:function:ai-ppt-assistant-controllers-generate-content:$LATEST"
+      }
+    },
+    "ai-ppt-assistant-controllers-generate-image": {
+      "status": "FAIL",
+      "timestamp": "2025-09-12T21:25:32.322976",
+      "details": {
+        "error": "An error occurred (ResourceNotFoundException) when calling the Invoke operation: Function not found: arn:aws:lambda:us-east-1:375004070918:function:ai-ppt-assistant-controllers-generate-image:$LATEST"
+      }
+    },
+    "ai-ppt-assistant-controllers-generate-speaker-notes": {
+      "status": "FAIL",
+      "timestamp": "2025-09-12T21:25:32.534896",
+      "details": {
+        "error": "An error occurred (ResourceNotFoundException) when calling the Invoke operation: Function not found: arn:aws:lambda:us-east-1:375004070918:function:ai-ppt-assistant-controllers-generate-speaker-notes:$LATEST"
+      }
+    }
+  },
+  "dynamodb_tests": {
+    "ai-ppt-assistant-dev-sessions": {
+      "status": "PASS",
+      "timestamp": "2025-09-12T21:25:33.373820",
+      "details": {
+        "status": "ACTIVE",
+        "item_count": 0,
+        "write_test": false
+      }
+    },
+    "ai-ppt-assistant-dev-tasks": {
+      "status": "PASS",
+      "timestamp": "2025-09-12T21:25:33.772107",
+      "details": {
+        "status": "ACTIVE",
+        "item_count": 0,
+        "write_test": false
+      }
+    },
+    "ai-ppt-assistant-dev-checkpoints": {
+      "status": "PASS",
+      "timestamp": "2025-09-12T21:25:34.174641",
+      "details": {
+        "status": "ACTIVE",
+        "item_count": 0,
+        "write_test": false
+      }
+    }
+  },
+  "bedrock_tests": {
+    "compiler-agent": {
+      "status": "PASS",
+      "timestamp": "2025-09-12T21:25:36.128707",
+      "details": {
+        "agent_status": "PREPARED",
+        "agent_name": "ai-ppt-assistant-compiler-agent",
+        "invoke_test": true
+      }
+    },
+    "content-agent": {
+      "status": "PASS",
+      "timestamp": "2025-09-12T21:25:37.395840",
+      "details": {
+        "agent_status": "PREPARED",
+        "agent_name": "ai-ppt-assistant-content-agent",
+        "invoke_test": true
+      }
+    },
+    "orchestrator-agent": {
+      "status": "PASS",
+      "timestamp": "2025-09-12T21:25:38.658451",
+      "details": {
+        "agent_status": "PREPARED",
+        "agent_name": "ai-ppt-assistant-orchestrator-agent",
+        "invoke_test": true
+      }
+    },
+    "visual-agent": {
+      "status": "PASS",
+      "timestamp": "2025-09-12T21:25:39.907234",
+      "details": {
+        "agent_status": "PREPARED",
+        "agent_name": "ai-ppt-assistant-visual-agent",
+        "invoke_test": true
+      }
+    }
+  },
+  "integration_tests": {
+    "ppt_generation_flow": {
+      "status": "FAIL",
+      "timestamp": "2025-09-12T21:25:40.546259",
+      "details": {
+        "error": "Failed to create presentation"
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}
