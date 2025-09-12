@@ -199,9 +199,8 @@ def run_api_tests():
     
     # 测试PPT生成流程
     test_data = {
-        "title": "Test Presentation",
         "topic": "AI Technology",
-        "slide_count": 5,
+        "pages": 5,
         "language": "en"
     }
     
@@ -305,9 +304,8 @@ def run_integration_tests():
     
     # 测试完整的PPT生成流程
     test_data = {
-        "title": "Test Presentation",
         "topic": "Integration Test - Cloud Computing",
-        "slide_count": 3,
+        "pages": 3,
         "language": "en",
         "style": "professional"
     }

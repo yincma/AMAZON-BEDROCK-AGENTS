@@ -1,0 +1,499 @@
+{
+  "timestamp": "2025-09-12T22:47:57.892074",
+  "environment": "Production",
+  "region": "us-east-1",
+  "api_gateway_url": "https://zkag5thhk8.execute-api.us-east-1.amazonaws.com/legacy",
+  "tests": {
+    "api_tests": {
+      "health_check": {
+        "status": "PASS",
+        "timestamp": "2025-09-12T22:47:58.526029",
+        "details": {
+          "status_code": 200,
+          "elapsed_time": 0.631,
+          "headers": {
+            "Date": "Fri, 12 Sep 2025 13:47:58 GMT",
+            "Content-Type": "application/json",
+            "Content-Length": "61",
+            "Connection": "keep-alive",
+            "x-amzn-RequestId": "b5e4b7f6-0061-4f6c-83c4-cce7e924dce4",
+            "x-amz-apigw-id": "QyqmUF3HIAMETTQ=",
+            "X-Amzn-Trace-Id": "Root=1-68c4248e-38c0b78c0fe74168074e1997"
+          },
+          "expected_status": [
+            200
+          ],
+          "success": true,
+          "response_body": {
+            "status": "healthy",
+            "timestamp": "12/Sep/2025:13:47:58 +0000"
+          }
+        }
+      },
+      "create_presentation": {
+        "status": "PASS",
+        "timestamp": "2025-09-12T22:48:01.105951",
+        "details": {
+          "status_code": 202,
+          "elapsed_time": 2.579,
+          "headers": {
+            "Date": "Fri, 12 Sep 2025 13:48:01 GMT",
+            "Content-Type": "application/json",
+            "Content-Length": "356",
+            "Connection": "keep-alive",
+            "x-amzn-RequestId": "eff4a2a8-3ba4-42e4-8e05-d6679fd1db7f",
+            "X-XSS-Protection": "1; mode=block",
+            "Access-Control-Allow-Origin": "*",
+            "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+            "Access-Control-Allow-Headers": "Content-Type, X-API-Key, Authorization",
+            "X-Frame-Options": "DENY",
+            "x-amz-apigw-id": "QyqmbHUhoAMEIuA=",
+            "X-Content-Type-Options": "nosniff",
+            "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+            "X-Amzn-Trace-Id": "Root=1-68c4248f-4f447773593a7a351ed74f6b",
+            "Access-Control-Max-Age": "86400"
+          },
+          "expected_status": [
+            200,
+            202
+          ],
+          "success": true,
+          "response_body": {
+            "presentation_id": "1911516b-12c6-476e-91b6-781c77cc3e27",
+            "title": "AI Technology Presentation",
+            "status": "pending",
+            "progress": 0,
+            "created_at": "2025-09-12T13:48:00.575301Z",
+            "updated_at": "2025-09-12T13:48:00.575301Z",
+            "estimated_completion_time": "2025-09-12T13:49:21.075114Z",
+            "slide_count": 5,
+            "session_id": "ac5ebc0b-3166-4f35-b650-b0e6310e90e2"
+          }
+        }
+      },
+      "get_presentation_status": {
+        "status": "FAIL",
+        "timestamp": "2025-09-12T22:48:01.745501",
+        "details": {
+          "status_code": 403,
+          "elapsed_time": 0.639,
+          "headers": {
+            "Date": "Fri, 12 Sep 2025 13:48:01 GMT",
+            "Content-Type": "application/json",
+            "Content-Length": "42",
+            "Connection": "keep-alive",
+            "x-amzn-RequestId": "96fe9d2e-8625-49fd-98b7-618d842a150e",
+            "x-amzn-ErrorType": "MissingAuthenticationTokenException",
+            "x-amz-apigw-id": "Qyqm1FGioAMEYdg=",
+            "X-Amzn-Trace-Id": "Root=1-68c42491-462f3fa763d0e7cb4bac2a15"
+          },
+          "expected_status": [
+            200
+          ],
+          "success": false,
+          "response_body": {
+            "message": "Missing Authentication Token"
+          }
+        }
+      },
+      "add_slide": {
+        "status": "FAIL",
+        "timestamp": "2025-09-12T22:48:02.377948",
+        "details": {
+          "status_code": 403,
+          "elapsed_time": 0.631,
+          "headers": {
+            "Date": "Fri, 12 Sep 2025 13:48:02 GMT",
+            "Content-Type": "application/json",
+            "Content-Length": "42",
+            "Connection": "keep-alive",
+            "x-amzn-RequestId": "f58795cd-e1d8-4c0b-aad0-8956f3252bbd",
+            "x-amzn-ErrorType": "MissingAuthenticationTokenException",
+            "x-amz-apigw-id": "Qyqm7ESYoAMEd7w=",
+            "X-Amzn-Trace-Id": "Root=1-68c42492-172fa730068522067c19377a"
+          },
+          "expected_status": [
+            200,
+            201,
+            202
+          ],
+          "success": false,
+          "response_body": {
+            "message": "Missing Authentication Token"
+          }
+        }
+      },
+      "list_presentations": {
+        "status": "PASS",
+        "timestamp": "2025-09-12T22:48:03.877067",
+        "details": {
+          "status_code": 200,
+          "elapsed_time": 1.497,
+          "headers": {
+            "Date": "Fri, 12 Sep 2025 13:48:03 GMT",
+            "Content-Type": "application/json",
+            "Content-Length": "300",
+            "Connection": "keep-alive",
+            "x-amzn-RequestId": "e080b384-9217-41bc-a755-bf9defa86ed1",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+            "x-amz-apigw-id": "QyqnBESXIAMEFGg=",
+            "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+            "X-Amzn-Trace-Id": "Root=1-68c42492-0f47a03137e3fe4e22baafc9"
+          },
+          "expected_status": [
+            200
+          ],
+          "success": true,
+          "response_body": {
+            "presentations": [
+              {
+                "presentation_id": "1911516b-12c6-476e-91b6-781c77cc3e27",
+                "title": "AI Technology Presentation",
+                "status": "pending",
+                "created_at": "2025-09-12T13:48:00.575301Z",
+                "metadata": {
+                  "total_slides": 5.0,
+                  "language": "en",
+                  "style": "professional"
+                }
+              }
+            ],
+            "count": 1,
+            "next_page_token": null
+          }
+        }
+      }
+    },
+    "lambda_tests": {
+      "dev-api-generate-presentation": {
+        "status": "PASS",
+        "timestamp": "2025-09-12T22:48:04.555814",
+        "details": {
+          "status_code": 200,
+          "response": {
+            "statusCode": 404,
+            "headers": {
+              "Content-Type": "application/json",
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+              "Access-Control-Allow-Headers": "Content-Type, X-API-Key, Authorization",
+              "Access-Control-Max-Age": "86400",
+              "X-Content-Type-Options": "nosniff",
+              "X-Frame-Options": "DENY",
+              "X-XSS-Protection": "1; mode=block",
+              "Strict-Transport-Security": "max-age=31536000; includeSubDomains"
+            },
+            "body": "{\"success\": false, \"error\": {\"code\": \"NOT_FOUND\", \"message\": \"Endpoint   not found\", \"request_id\": \"71542519-ced7-4916-9e6a-eac106ca048b\", \"timestamp\": \"2025-09-12T13:48:04.535101+00:00\", \"details\": {\"request_id\": \"bd83b18b-f705-422f-a503-b1ffc6c49fb0\"}}}"
+          },
+          "function_error": null,
+          "actual_function_name": "ai-ppt-assistant-api-generate-presentation"
+        }
+      },
+      "dev-api-get-task": {
+        "status": "FAIL",
+        "timestamp": "2025-09-12T22:48:04.773499",
+        "details": {
+          "error": "Function not found",
+          "expected_name": "ai-ppt-assistant-dev-api-get-task",
+          "actual_name_tried": "ai-ppt-assistant-api-get-task"
+        }
+      },
+      "dev-api-list-presentations": {
+        "status": "FAIL",
+        "timestamp": "2025-09-12T22:48:04.994432",
+        "details": {
+          "error": "Function not found",
+          "expected_name": "ai-ppt-assistant-dev-api-list-presentations",
+          "actual_name_tried": "ai-ppt-assistant-api-list-presentations"
+        }
+      },
+      "dev-api-modify-slide": {
+        "status": "PASS",
+        "timestamp": "2025-09-12T22:48:08.276594",
+        "details": {
+          "status_code": 200,
+          "response": {
+            "errorMessage": "Unable to import module 'modify_slide': cannot import name '_imaging' from 'PIL' (/opt/python/PIL/__init__.py)",
+            "errorType": "Runtime.ImportModuleError",
+            "requestId": "",
+            "stackTrace": []
+          },
+          "function_error": "Unhandled",
+          "actual_function_name": "ai-ppt-assistant-api-modify-slide"
+        }
+      },
+      "dev-api-presentation-download": {
+        "status": "PASS",
+        "timestamp": "2025-09-12T22:48:10.020308",
+        "details": {
+          "status_code": 200,
+          "response": {
+            "statusCode": 400,
+            "headers": {
+              "Content-Type": "application/json",
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+              "Access-Control-Allow-Headers": "Content-Type, X-API-Key, Authorization",
+              "Access-Control-Max-Age": "86400",
+              "X-Content-Type-Options": "nosniff",
+              "X-Frame-Options": "DENY",
+              "X-XSS-Protection": "1; mode=block",
+              "Strict-Transport-Security": "max-age=31536000; includeSubDomains"
+            },
+            "body": "{\"success\": false, \"error\": {\"code\": \"INVALID_REQUEST\", \"message\": \"Presentation ID is required\", \"request_id\": \"8c40150f-d332-4dfe-8218-0216b00d47a7\", \"timestamp\": \"2025-09-12T13:48:09.998942+00:00\", \"details\": {\"request_id\": \"2d1d2ea9-8f4b-436b-8486-9d0bbf01df77\"}}}"
+          },
+          "function_error": null,
+          "actual_function_name": "ai-ppt-assistant-api-presentation-download"
+        }
+      },
+      "dev-api-presentation-status": {
+        "status": "PASS",
+        "timestamp": "2025-09-12T22:48:11.419834",
+        "details": {
+          "status_code": 200,
+          "response": {
+            "statusCode": 404,
+            "headers": {
+              "Content-Type": "application/json",
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+              "Access-Control-Allow-Headers": "Content-Type, X-API-Key, Authorization",
+              "Access-Control-Max-Age": "86400",
+              "X-Content-Type-Options": "nosniff",
+              "X-Frame-Options": "DENY",
+              "X-XSS-Protection": "1; mode=block",
+              "Strict-Transport-Security": "max-age=31536000; includeSubDomains"
+            },
+            "body": "{\"success\": false, \"error\": {\"code\": \"NOT_FOUND\", \"message\": \"Endpoint   not found\", \"request_id\": \"332bafe5-7a61-4a57-857c-866e56f70d70\", \"timestamp\": \"2025-09-12T13:48:11.399155+00:00\", \"details\": {\"request_id\": \"07e3c8da-f42f-48d9-927a-7c3868d75099\"}}}"
+          },
+          "function_error": null,
+          "actual_function_name": "ai-ppt-assistant-api-presentation-status"
+        }
+      },
+      "dev-api-task-processor": {
+        "status": "PASS",
+        "timestamp": "2025-09-12T22:48:13.396457",
+        "details": {
+          "status_code": 200,
+          "response": {
+            "batchItemFailures": []
+          },
+          "function_error": null,
+          "actual_function_name": "ai-ppt-assistant-api-task-processor"
+        }
+      },
+      "dev-controllers-compile-pptx": {
+        "status": "PASS",
+        "timestamp": "2025-09-12T22:48:16.013117",
+        "details": {
+          "status_code": 200,
+          "response": {
+            "errorMessage": "Unable to import module 'compile_pptx': No module named 'interfaces'",
+            "errorType": "Runtime.ImportModuleError",
+            "requestId": "",
+            "stackTrace": []
+          },
+          "function_error": "Unhandled",
+          "actual_function_name": "ai-ppt-assistant-compile-pptx"
+        }
+      },
+      "dev-controllers-create-outline": {
+        "status": "PASS",
+        "timestamp": "2025-09-12T22:48:18.618617",
+        "details": {
+          "status_code": 200,
+          "response": {
+            "errorMessage": "Unable to import module 'create_outline': No module named 'pydantic_core._pydantic_core'",
+            "errorType": "Runtime.ImportModuleError",
+            "requestId": "",
+            "stackTrace": []
+          },
+          "function_error": "Unhandled",
+          "actual_function_name": "ai-ppt-assistant-create-outline"
+        }
+      },
+      "dev-controllers-find-image": {
+        "status": "PASS",
+        "timestamp": "2025-09-12T22:48:21.288301",
+        "details": {
+          "status_code": 200,
+          "response": {
+            "errorMessage": "Unable to import module 'find_image': No module named 'pydantic'",
+            "errorType": "Runtime.ImportModuleError",
+            "requestId": "",
+            "stackTrace": []
+          },
+          "function_error": "Unhandled",
+          "actual_function_name": "ai-ppt-assistant-find-image"
+        }
+      },
+      "dev-controllers-generate-content": {
+        "status": "PASS",
+        "timestamp": "2025-09-12T22:48:23.574799",
+        "details": {
+          "status_code": 200,
+          "response": {
+            "errorMessage": "Unable to import module 'generate_content': No module named 'pydantic_core._pydantic_core'",
+            "errorType": "Runtime.ImportModuleError",
+            "requestId": "",
+            "stackTrace": []
+          },
+          "function_error": "Unhandled",
+          "actual_function_name": "ai-ppt-assistant-generate-content"
+        }
+      },
+      "dev-controllers-generate-image": {
+        "status": "PASS",
+        "timestamp": "2025-09-12T22:48:26.097143",
+        "details": {
+          "status_code": 200,
+          "response": {
+            "errorMessage": "Unable to import module 'generate_image': cannot import name '_imaging' from 'PIL' (/opt/python/PIL/__init__.py)",
+            "errorType": "Runtime.ImportModuleError",
+            "requestId": "",
+            "stackTrace": []
+          },
+          "function_error": "Unhandled",
+          "actual_function_name": "ai-ppt-assistant-generate-image"
+        }
+      },
+      "dev-controllers-generate-speaker-notes": {
+        "status": "PASS",
+        "timestamp": "2025-09-12T22:48:28.389310",
+        "details": {
+          "status_code": 200,
+          "response": {
+            "errorMessage": "Unable to import module 'generate_speaker_notes': No module named 'pydantic_core._pydantic_core'",
+            "errorType": "Runtime.ImportModuleError",
+            "requestId": "",
+            "stackTrace": []
+          },
+          "function_error": "Unhandled",
+          "actual_function_name": "ai-ppt-assistant-generate-speaker-notes"
+        }
+      }
+    },
+    "dynamodb_tests": {
+      "dev-sessions": {
+        "status": "PASS",
+        "timestamp": "2025-09-12T22:48:29.527530",
+        "details": {
+          "status": "ACTIVE",
+          "item_count": 0,
+          "write_test": true,
+          "write_error": null,
+          "key_schema": [
+            {
+              "AttributeName": "session_id",
+              "KeyType": "HASH"
+            }
+          ]
+        }
+      },
+      "dev-tasks": {
+        "status": "PASS",
+        "timestamp": "2025-09-12T22:48:30.191077",
+        "details": {
+          "status": "ACTIVE",
+          "item_count": 0,
+          "write_test": true,
+          "write_error": null,
+          "key_schema": [
+            {
+              "AttributeName": "task_id",
+              "KeyType": "HASH"
+            }
+          ]
+        }
+      },
+      "dev-checkpoints": {
+        "status": "PASS",
+        "timestamp": "2025-09-12T22:48:30.832766",
+        "details": {
+          "status": "ACTIVE",
+          "item_count": 0,
+          "write_test": true,
+          "write_error": null,
+          "key_schema": [
+            {
+              "AttributeName": "checkpoint_id",
+              "KeyType": "HASH"
+            }
+          ]
+        }
+      }
+    },
+    "bedrock_tests": {
+      "compiler-agent": {
+        "status": "FAIL",
+        "timestamp": "2025-09-12T22:48:31.525309",
+        "details": {
+          "error": "An error occurred (AccessDeniedException) when calling the GetAgent operation: User: arn:aws:iam::375004070918:root is not authorized to perform: bedrock:GetAgent",
+          "agent_name": "compiler-agent"
+        }
+      },
+      "content-agent": {
+        "status": "FAIL",
+        "timestamp": "2025-09-12T22:48:31.829709",
+        "details": {
+          "error": "An error occurred (ResourceNotFoundException) when calling the GetAgent operation: Failed to retrieve Agent with ID: CONTENT123 and Version: DRAFT because it doesn't exist. Retry the request with a different resource identifier.",
+          "agent_name": "content-agent"
+        }
+      },
+      "orchestrator-agent": {
+        "status": "FAIL",
+        "timestamp": "2025-09-12T22:48:32.070634",
+        "details": {
+          "error": "An error occurred (AccessDeniedException) when calling the GetAgent operation: User: arn:aws:iam::375004070918:root is not authorized to perform: bedrock:GetAgent",
+          "agent_name": "orchestrator-agent"
+        }
+      },
+      "visual-agent": {
+        "status": "FAIL",
+        "timestamp": "2025-09-12T22:48:32.333291",
+        "details": {
+          "error": "An error occurred (AccessDeniedException) when calling the GetAgent operation: User: arn:aws:iam::375004070918:root is not authorized to perform: bedrock:GetAgent",
+          "agent_name": "visual-agent"
+        }
+      }
+    },
+    "integration_tests": {
+      "ppt_generation_flow": {
+        "status": "FAIL",
+        "timestamp": "2025-09-12T22:48:32.930837",
+        "details": {
+          "error": "Failed to create presentation",
+          "details": {
+            "status_code": 400,
+            "elapsed_time": 0.596,
+            "headers": {
+              "Date": "Fri, 12 Sep 2025 13:48:32 GMT",
+              "Content-Type": "application/json",
+              "Content-Length": "35",
+              "Connection": "keep-alive",
+              "x-amzn-RequestId": "40373860-c2ae-4c96-a9c8-8026cf242434",
+              "x-amzn-ErrorType": "BadRequestException",
+              "x-amz-apigw-id": "QyqrtE5OoAMEFQA=",
+              "X-Amzn-Trace-Id": "Root=1-68c424b0-38907ea56bb8f5803cc4dafc"
+            },
+            "expected_status": [
+              200,
+              202
+            ],
+            "success": false,
+            "response_body": {
+              "message": "Invalid request body"
+            }
+          }
+        }
+      }
+    }
+  },
+  "summary": {
+    "total": 26,
+    "passed": 17,
+    "failed": 9
+  },
+  "test_presentation_id": "1911516b-12c6-476e-91b6-781c77cc3e27"
+}

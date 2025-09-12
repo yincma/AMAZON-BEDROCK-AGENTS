@@ -504,7 +504,7 @@ resource "aws_lambda_function" "api_modify_slide" {
   timeout       = 30
   memory_size   = 768   # Optimized memory for slide modifications
 
-  layers = [aws_lambda_layer_version.content_dependencies.arn]  # Fast cold start for modify API
+  layers = [aws_lambda_layer_version.minimal_dependencies.arn]  # Fast cold start for modify API
 
   environment {
     variables = {

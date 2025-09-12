@@ -1,0 +1,312 @@
+{
+  "timestamp": "2025-09-12T22:32:30.682541",
+  "environment": "Production",
+  "region": "us-east-1",
+  "api_gateway_url": "https://zkag5thhk8.execute-api.us-east-1.amazonaws.com/legacy",
+  "tests": {
+    "api_tests": {
+      "health_check": {
+        "status": "PASS",
+        "timestamp": "2025-09-12T22:32:31.331499",
+        "details": {
+          "status_code": 200,
+          "elapsed_time": 0.647,
+          "headers": {
+            "Date": "Fri, 12 Sep 2025 13:32:31 GMT",
+            "Content-Type": "application/json",
+            "Content-Length": "61",
+            "Connection": "keep-alive",
+            "x-amzn-RequestId": "a7e6218d-6fb3-4b4b-a719-a716a8b21654",
+            "x-amz-apigw-id": "QyoVdHPcIAMEWyQ=",
+            "X-Amzn-Trace-Id": "Root=1-68c420ef-7296c04d5d0d184831d100b7"
+          },
+          "expected_status": [
+            200
+          ],
+          "success": true,
+          "response_body": {
+            "status": "healthy",
+            "timestamp": "12/Sep/2025:13:32:31 +0000"
+          }
+        }
+      },
+      "create_presentation": {
+        "status": "FAIL",
+        "timestamp": "2025-09-12T22:32:31.964843",
+        "details": {
+          "status_code": 403,
+          "elapsed_time": 0.632,
+          "headers": {
+            "Date": "Fri, 12 Sep 2025 13:32:31 GMT",
+            "Content-Type": "application/json",
+            "Content-Length": "23",
+            "Connection": "keep-alive",
+            "x-amzn-RequestId": "8428bcdd-0b3e-4e43-a4d8-260d9cf72700",
+            "x-amzn-ErrorType": "ForbiddenException",
+            "x-amz-apigw-id": "QyoVjFoLoAMEPjQ=",
+            "X-Amzn-Trace-Id": "Root=1-68c420ef-74e080504324a7257030d27b"
+          },
+          "expected_status": [
+            200,
+            202
+          ],
+          "success": false,
+          "response_body": {
+            "message": "Forbidden"
+          }
+        }
+      },
+      "list_presentations": {
+        "status": "FAIL",
+        "timestamp": "2025-09-12T22:32:32.588643",
+        "details": {
+          "status_code": 403,
+          "elapsed_time": 0.621,
+          "headers": {
+            "Date": "Fri, 12 Sep 2025 13:32:32 GMT",
+            "Content-Type": "application/json",
+            "Content-Length": "23",
+            "Connection": "keep-alive",
+            "x-amzn-RequestId": "4a5590ed-0f08-440a-8dd1-5af5be5bd878",
+            "x-amzn-ErrorType": "ForbiddenException",
+            "x-amz-apigw-id": "QyoVpE5zIAMEeTA=",
+            "X-Amzn-Trace-Id": "Root=1-68c420f0-7ad9da6e34a7f3bc058a331f"
+          },
+          "expected_status": [
+            200
+          ],
+          "success": false,
+          "response_body": {
+            "message": "Forbidden"
+          }
+        }
+      }
+    },
+    "lambda_tests": {
+      "dev-api-generate-presentation": {
+        "status": "FAIL",
+        "timestamp": "2025-09-12T22:32:33.258730",
+        "details": {
+          "error": "Function not found",
+          "function_name": "ai-ppt-assistant-dev-api-generate-presentation"
+        }
+      },
+      "dev-api-get-task": {
+        "status": "FAIL",
+        "timestamp": "2025-09-12T22:32:33.466951",
+        "details": {
+          "error": "Function not found",
+          "function_name": "ai-ppt-assistant-dev-api-get-task"
+        }
+      },
+      "dev-api-list-presentations": {
+        "status": "FAIL",
+        "timestamp": "2025-09-12T22:32:33.673204",
+        "details": {
+          "error": "Function not found",
+          "function_name": "ai-ppt-assistant-dev-api-list-presentations"
+        }
+      },
+      "dev-api-modify-slide": {
+        "status": "FAIL",
+        "timestamp": "2025-09-12T22:32:33.896522",
+        "details": {
+          "error": "Function not found",
+          "function_name": "ai-ppt-assistant-dev-api-modify-slide"
+        }
+      },
+      "dev-api-presentation-download": {
+        "status": "FAIL",
+        "timestamp": "2025-09-12T22:32:34.133858",
+        "details": {
+          "error": "Function not found",
+          "function_name": "ai-ppt-assistant-dev-api-presentation-download"
+        }
+      },
+      "dev-api-presentation-status": {
+        "status": "FAIL",
+        "timestamp": "2025-09-12T22:32:34.345980",
+        "details": {
+          "error": "Function not found",
+          "function_name": "ai-ppt-assistant-dev-api-presentation-status"
+        }
+      },
+      "dev-api-task-processor": {
+        "status": "FAIL",
+        "timestamp": "2025-09-12T22:32:34.580194",
+        "details": {
+          "error": "Function not found",
+          "function_name": "ai-ppt-assistant-dev-api-task-processor"
+        }
+      },
+      "dev-controllers-compile-pptx": {
+        "status": "FAIL",
+        "timestamp": "2025-09-12T22:32:34.806036",
+        "details": {
+          "error": "Function not found",
+          "function_name": "ai-ppt-assistant-dev-controllers-compile-pptx"
+        }
+      },
+      "dev-controllers-create-outline": {
+        "status": "FAIL",
+        "timestamp": "2025-09-12T22:32:35.024556",
+        "details": {
+          "error": "Function not found",
+          "function_name": "ai-ppt-assistant-dev-controllers-create-outline"
+        }
+      },
+      "dev-controllers-find-image": {
+        "status": "FAIL",
+        "timestamp": "2025-09-12T22:32:35.232991",
+        "details": {
+          "error": "Function not found",
+          "function_name": "ai-ppt-assistant-dev-controllers-find-image"
+        }
+      },
+      "dev-controllers-generate-content": {
+        "status": "FAIL",
+        "timestamp": "2025-09-12T22:32:35.448256",
+        "details": {
+          "error": "Function not found",
+          "function_name": "ai-ppt-assistant-dev-controllers-generate-content"
+        }
+      },
+      "dev-controllers-generate-image": {
+        "status": "FAIL",
+        "timestamp": "2025-09-12T22:32:35.665671",
+        "details": {
+          "error": "Function not found",
+          "function_name": "ai-ppt-assistant-dev-controllers-generate-image"
+        }
+      },
+      "dev-controllers-generate-speaker-notes": {
+        "status": "FAIL",
+        "timestamp": "2025-09-12T22:32:35.878908",
+        "details": {
+          "error": "Function not found",
+          "function_name": "ai-ppt-assistant-dev-controllers-generate-speaker-notes"
+        }
+      }
+    },
+    "dynamodb_tests": {
+      "dev-sessions": {
+        "status": "PASS",
+        "timestamp": "2025-09-12T22:32:36.997981",
+        "details": {
+          "status": "ACTIVE",
+          "item_count": 0,
+          "write_test": true,
+          "write_error": null,
+          "key_schema": [
+            {
+              "AttributeName": "session_id",
+              "KeyType": "HASH"
+            }
+          ]
+        }
+      },
+      "dev-tasks": {
+        "status": "PASS",
+        "timestamp": "2025-09-12T22:32:37.658101",
+        "details": {
+          "status": "ACTIVE",
+          "item_count": 0,
+          "write_test": true,
+          "write_error": null,
+          "key_schema": [
+            {
+              "AttributeName": "task_id",
+              "KeyType": "HASH"
+            }
+          ]
+        }
+      },
+      "dev-checkpoints": {
+        "status": "PASS",
+        "timestamp": "2025-09-12T22:32:38.284430",
+        "details": {
+          "status": "ACTIVE",
+          "item_count": 0,
+          "write_test": true,
+          "write_error": null,
+          "key_schema": [
+            {
+              "AttributeName": "checkpoint_id",
+              "KeyType": "HASH"
+            }
+          ]
+        }
+      }
+    },
+    "bedrock_tests": {
+      "compiler-agent": {
+        "status": "FAIL",
+        "timestamp": "2025-09-12T22:32:38.945998",
+        "details": {
+          "error": "An error occurred (AccessDeniedException) when calling the GetAgent operation: User: arn:aws:iam::375004070918:root is not authorized to perform: bedrock:GetAgent",
+          "agent_name": "compiler-agent"
+        }
+      },
+      "content-agent": {
+        "status": "FAIL",
+        "timestamp": "2025-09-12T22:32:39.198821",
+        "details": {
+          "error": "An error occurred (ResourceNotFoundException) when calling the GetAgent operation: Failed to retrieve Agent with ID: CONTENT123 and Version: DRAFT because it doesn't exist. Retry the request with a different resource identifier.",
+          "agent_name": "content-agent"
+        }
+      },
+      "orchestrator-agent": {
+        "status": "FAIL",
+        "timestamp": "2025-09-12T22:32:39.429980",
+        "details": {
+          "error": "An error occurred (AccessDeniedException) when calling the GetAgent operation: User: arn:aws:iam::375004070918:root is not authorized to perform: bedrock:GetAgent",
+          "agent_name": "orchestrator-agent"
+        }
+      },
+      "visual-agent": {
+        "status": "FAIL",
+        "timestamp": "2025-09-12T22:32:39.679121",
+        "details": {
+          "error": "An error occurred (AccessDeniedException) when calling the GetAgent operation: User: arn:aws:iam::375004070918:root is not authorized to perform: bedrock:GetAgent",
+          "agent_name": "visual-agent"
+        }
+      }
+    },
+    "integration_tests": {
+      "ppt_generation_flow": {
+        "status": "FAIL",
+        "timestamp": "2025-09-12T22:32:40.282946",
+        "details": {
+          "error": "Failed to create presentation",
+          "details": {
+            "status_code": 403,
+            "elapsed_time": 0.601,
+            "headers": {
+              "Date": "Fri, 12 Sep 2025 13:32:40 GMT",
+              "Content-Type": "application/json",
+              "Content-Length": "23",
+              "Connection": "keep-alive",
+              "x-amzn-RequestId": "1b90e86a-61e4-4dd2-bda5-6874b24ed7c9",
+              "x-amzn-ErrorType": "ForbiddenException",
+              "x-amz-apigw-id": "QyoW2GG1IAMEKjw=",
+              "X-Amzn-Trace-Id": "Root=1-68c420f8-1c2413185a03b65953f46b5e"
+            },
+            "expected_status": [
+              200,
+              202
+            ],
+            "success": false,
+            "response_body": {
+              "message": "Forbidden"
+            }
+          }
+        }
+      }
+    }
+  },
+  "summary": {
+    "total": 24,
+    "passed": 4,
+    "failed": 20
+  }
+}

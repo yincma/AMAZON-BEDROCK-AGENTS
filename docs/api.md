@@ -32,7 +32,7 @@ Create a new presentation based on the provided topic and parameters.
 #### Request
 
 ```http
-POST /presentations/generate
+POST /presentations
 ```
 
 #### Headers
@@ -78,7 +78,7 @@ x-api-key: your-api-key
 #### Example
 
 ```bash
-curl -X POST https://api.ai-ppt-assistant.example.com/v1/presentations/generate \
+curl -X POST https://api.ai-ppt-assistant.example.com/v1/presentations \
   -H "Content-Type: application/json" \
   -H "x-api-key: your-api-key" \
   -d '{
@@ -584,7 +584,7 @@ def generate_presentation(topic, **kwargs):
     }
     
     response = requests.post(
-        f"{BASE_URL}/presentations/generate",
+        f"{BASE_URL}/presentations",
         json=payload,
         headers=headers
     )
@@ -662,7 +662,7 @@ const BASE_URL = 'https://api.ai-ppt-assistant.example.com/v1';
 async function generatePresentation(topic, options = {}) {
   try {
     const response = await axios.post(
-      `${BASE_URL}/presentations/generate`,
+      `${BASE_URL}/presentations`,
       {
         topic,
         ...options
@@ -743,7 +743,7 @@ API_KEY="your-api-key"
 BASE_URL="https://api.ai-ppt-assistant.example.com/v1"
 
 # Generate presentation
-response=$(curl -s -X POST "$BASE_URL/presentations/generate" \
+response=$(curl -s -X POST "$BASE_URL/presentations" \
   -H "x-api-key: $API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
