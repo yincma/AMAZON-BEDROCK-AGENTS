@@ -1,0 +1,174 @@
+{
+  "test_info": {
+    "timestamp": "2025-09-14T21:32:58.874530",
+    "api_endpoint": "https://fe2kf91287.execute-api.us-east-1.amazonaws.com/dev",
+    "total_test_scenarios": 9
+  },
+  "test_summaries": [
+    {
+      "test_name": "并发状态查询 (10个并发)",
+      "total_requests": 10,
+      "successful_requests": 10,
+      "failed_requests": 0,
+      "success_rate": 100.0,
+      "total_duration_seconds": 0.753046989440918,
+      "requests_per_second": 13.2793838103307,
+      "avg_response_time_ms": 701.7,
+      "min_response_time_ms": 652,
+      "max_response_time_ms": 751,
+      "median_response_time_ms": 702.5,
+      "p95_response_time_ms": 751,
+      "p99_response_time_ms": 751,
+      "error_distribution": {}
+    },
+    {
+      "test_name": "并发OPTIONS预检 (15个并发)",
+      "total_requests": 15,
+      "successful_requests": 15,
+      "failed_requests": 0,
+      "success_rate": 100.0,
+      "total_duration_seconds": 0.6368451118469238,
+      "requests_per_second": 23.553607809751856,
+      "avg_response_time_ms": 615.2666666666667,
+      "min_response_time_ms": 601,
+      "max_response_time_ms": 636,
+      "median_response_time_ms": 608,
+      "p95_response_time_ms": 636,
+      "p99_response_time_ms": 636,
+      "error_distribution": {}
+    },
+    {
+      "test_name": "并发下载请求 (10个并发)",
+      "total_requests": 10,
+      "successful_requests": 10,
+      "failed_requests": 0,
+      "success_rate": 100.0,
+      "total_duration_seconds": 1.9970219135284424,
+      "requests_per_second": 5.007456318960205,
+      "avg_response_time_ms": 1725.9,
+      "min_response_time_ms": 745,
+      "max_response_time_ms": 1996,
+      "median_response_time_ms": 1956.5,
+      "p95_response_time_ms": 1996,
+      "p99_response_time_ms": 1996,
+      "error_distribution": {}
+    },
+    {
+      "test_name": "混合并发请求 (15个请求)",
+      "total_requests": 15,
+      "successful_requests": 13,
+      "failed_requests": 2,
+      "success_rate": 86.66666666666667,
+      "total_duration_seconds": 29.623613119125366,
+      "requests_per_second": 0.5063528186005041,
+      "avg_response_time_ms": 674.5384615384615,
+      "min_response_time_ms": 620,
+      "max_response_time_ms": 743,
+      "median_response_time_ms": 661,
+      "p95_response_time_ms": 743,
+      "p99_response_time_ms": 743,
+      "error_distribution": {
+        "HTTP 504": 2
+      }
+    },
+    {
+      "test_name": "负载步骤1 (4并发)",
+      "total_requests": 4,
+      "successful_requests": 4,
+      "failed_requests": 0,
+      "success_rate": 100.0,
+      "total_duration_seconds": 0.6522479057312012,
+      "requests_per_second": 6.132637552152518,
+      "avg_response_time_ms": 635,
+      "min_response_time_ms": 616,
+      "max_response_time_ms": 651,
+      "median_response_time_ms": 636.5,
+      "p95_response_time_ms": 651,
+      "p99_response_time_ms": 651,
+      "error_distribution": {}
+    },
+    {
+      "test_name": "负载步骤2 (8并发)",
+      "total_requests": 8,
+      "successful_requests": 8,
+      "failed_requests": 0,
+      "success_rate": 100.0,
+      "total_duration_seconds": 0.7072389125823975,
+      "requests_per_second": 11.311594791622772,
+      "avg_response_time_ms": 665.75,
+      "min_response_time_ms": 637,
+      "max_response_time_ms": 706,
+      "median_response_time_ms": 652.0,
+      "p95_response_time_ms": 706,
+      "p99_response_time_ms": 706,
+      "error_distribution": {}
+    },
+    {
+      "test_name": "负载步骤3 (12并发)",
+      "total_requests": 12,
+      "successful_requests": 12,
+      "failed_requests": 0,
+      "success_rate": 100.0,
+      "total_duration_seconds": 0.6945431232452393,
+      "requests_per_second": 17.277544904526927,
+      "avg_response_time_ms": 662.0833333333334,
+      "min_response_time_ms": 638,
+      "max_response_time_ms": 693,
+      "median_response_time_ms": 665.0,
+      "p95_response_time_ms": 693,
+      "p99_response_time_ms": 693,
+      "error_distribution": {}
+    },
+    {
+      "test_name": "负载步骤4 (16并发)",
+      "total_requests": 16,
+      "successful_requests": 14,
+      "failed_requests": 2,
+      "success_rate": 87.5,
+      "total_duration_seconds": 0.6936948299407959,
+      "requests_per_second": 23.064897285403635,
+      "avg_response_time_ms": 657.0714285714286,
+      "min_response_time_ms": 647,
+      "max_response_time_ms": 692,
+      "median_response_time_ms": 656.0,
+      "p95_response_time_ms": 692,
+      "p99_response_time_ms": 692,
+      "error_distribution": {
+        "HTTP 500": 2
+      }
+    },
+    {
+      "test_name": "负载步骤5 (20并发)",
+      "total_requests": 20,
+      "successful_requests": 13,
+      "failed_requests": 7,
+      "success_rate": 65.0,
+      "total_duration_seconds": 0.7203278541564941,
+      "requests_per_second": 27.76513484046796,
+      "avg_response_time_ms": 673.5384615384615,
+      "min_response_time_ms": 624,
+      "max_response_time_ms": 720,
+      "median_response_time_ms": 672,
+      "p95_response_time_ms": 720,
+      "p99_response_time_ms": 720,
+      "error_distribution": {
+        "HTTP 500": 7
+      }
+    }
+  ],
+  "overall_analysis": {
+    "overall_success_rate": 90.0,
+    "overall_avg_response_time_ms": 778.9831501831502,
+    "max_requests_per_second": 27.76513484046796,
+    "performance_grade": "C",
+    "identified_issues": [
+      "成功率较低: 90.0%"
+    ],
+    "recommendations": [
+      "调查请求失败原因，检查错误日志",
+      "监控生产环境中的实际负载模式",
+      "设置性能告警阈值",
+      "定期进行负载测试以发现性能回归"
+    ]
+  }
+}

@@ -74,6 +74,31 @@ variable "lambda_memory_mb" {
   default     = 1024
 }
 
+# Lambda性能优化配置
+variable "lambda_reserved_concurrency" {
+  description = "Lambda预留并发执行数"
+  type        = number
+  default     = 10  # 预留10个并发，避免冷启动
+}
+
+variable "lambda_provisioned_concurrency" {
+  description = "Lambda预配置并发数（用于消除冷启动）"
+  type        = number
+  default     = 2  # 预热2个实例
+}
+
+variable "enable_lambda_snapstart" {
+  description = "是否启用Lambda SnapStart（Java运行时）"
+  type        = bool
+  default     = false
+}
+
+variable "lambda_ephemeral_storage" {
+  description = "Lambda临时存储大小（MB）"
+  type        = number
+  default     = 512  # 默认512MB，最大10240MB
+}
+
 # 图片处理配置变量
 variable "nova_model_id" {
   description = "Amazon Nova模型ID"
@@ -226,7 +251,7 @@ resource "aws_iam_role" "lambda_role" {
   })
 }
 
-# IAM Policy for Lambda
+# IAM Policy for Lambda - 遵循最小权限原则
 resource "aws_iam_role_policy" "lambda_policy" {
   name = "lambda-policy"
   role = aws_iam_role.lambda_role.id
@@ -234,66 +259,190 @@ resource "aws_iam_role_policy" "lambda_policy" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
+      # S3权限 - 仅限特定桶
       {
+        Sid    = "S3ObjectAccess"
         Effect = "Allow"
         Action = [
           "s3:GetObject",
           "s3:PutObject",
-          "s3:DeleteObject"
+          "s3:DeleteObject",
+          "s3:GetObjectVersion"
         ]
         Resource = "${aws_s3_bucket.presentations.arn}/*"
       },
       {
+        Sid    = "S3BucketAccess"
         Effect = "Allow"
-        Action = ["s3:ListBucket"]
+        Action = [
+          "s3:ListBucket",
+          "s3:GetBucketLocation",
+          "s3:GetBucketVersioning"
+        ]
         Resource = aws_s3_bucket.presentations.arn
       },
+      # Bedrock权限 - 特定模型
       {
+        Sid    = "BedrockModelAccess"
         Effect = "Allow"
         Action = [
           "bedrock:InvokeModel",
           "bedrock:InvokeModelWithResponseStream"
         ]
         Resource = [
-          "arn:aws:bedrock:*:*:foundation-model/anthropic.claude-*",
-          "arn:aws:bedrock:*:*:foundation-model/amazon.nova-*"
+          "arn:aws:bedrock:${var.aws_region}::foundation-model/anthropic.claude-3-*",
+          "arn:aws:bedrock:${var.aws_region}::foundation-model/anthropic.claude-instant-*",
+          "arn:aws:bedrock:${var.aws_region}::foundation-model/amazon.nova-*"
         ]
       },
+      # Lambda自调用权限（异步模式）
       {
+        Sid    = "LambdaSelfInvoke"
+        Effect = "Allow"
+        Action = [
+          "lambda:InvokeFunction",
+          "lambda:InvokeAsync"
+        ]
+        Resource = [
+          "arn:aws:lambda:${var.aws_region}:${data.aws_caller_identity.current.account_id}:function:ai-ppt-generate-${var.environment}"
+        ]
+      },
+      # CloudWatch Logs权限 - 限制到特定日志组
+      {
+        Sid    = "CloudWatchLogsAccess"
         Effect = "Allow"
         Action = [
           "logs:CreateLogGroup",
           "logs:CreateLogStream",
           "logs:PutLogEvents"
         ]
-        Resource = "arn:aws:logs:*:*:*"
+        Resource = [
+          "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/ai-ppt-*"
+        ]
       },
+      # DynamoDB权限 - 仅限特定表
       {
+        Sid    = "DynamoDBTableAccess"
         Effect = "Allow"
         Action = [
           "dynamodb:PutItem",
           "dynamodb:GetItem",
           "dynamodb:UpdateItem",
           "dynamodb:Query",
-          "dynamodb:Scan"
+          "dynamodb:Scan",
+          "dynamodb:DeleteItem"
         ]
         Resource = [
-          aws_dynamodb_table.presentations.arn
+          aws_dynamodb_table.presentations.arn,
+          "${aws_dynamodb_table.presentations.arn}/index/*"
+        ]
+      },
+      # X-Ray追踪权限
+      {
+        Sid    = "XRayAccess"
+        Effect = "Allow"
+        Action = [
+          "xray:PutTraceSegments",
+          "xray:PutTelemetryRecords"
+        ]
+        Resource = "*"  # X-Ray需要通配符
+      },
+      # KMS权限（用于S3加密）
+      {
+        Sid    = "KMSAccess"
+        Effect = "Allow"
+        Action = [
+          "kms:Decrypt",
+          "kms:GenerateDataKey"
+        ]
+        Resource = "arn:aws:kms:${var.aws_region}:${data.aws_caller_identity.current.account_id}:key/*"
+        Condition = {
+          StringEquals = {
+            "kms:ViaService" = "s3.${var.aws_region}.amazonaws.com"
+          }
+        }
+      }
+    ]
+  })
+}
+
+# VPC权限（如果启用VPC）
+resource "aws_iam_role_policy" "lambda_vpc_policy" {
+  count = var.enable_vpc ? 1 : 0
+  name  = "lambda-vpc-policy"
+  role  = aws_iam_role.lambda_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "VPCNetworkInterfaceAccess"
+        Effect = "Allow"
+        Action = [
+          "ec2:CreateNetworkInterface",
+          "ec2:DescribeNetworkInterfaces",
+          "ec2:DeleteNetworkInterface",
+          "ec2:AssignPrivateIpAddresses",
+          "ec2:UnassignPrivateIpAddresses"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+# Lambda基础执行策略附加
+resource "aws_iam_role_policy_attachment" "lambda_main_basic_execution" {
+  role       = aws_iam_role.lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+# Lambda函数间调用权限
+resource "aws_iam_role_policy" "lambda_invoke_policy" {
+  name = "lambda-invoke-policy"
+  role = aws_iam_role.lambda_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "LambdaInvokeAccess"
+        Effect = "Allow"
+        Action = [
+          "lambda:InvokeFunction",
+          "lambda:InvokeAsync"
+        ]
+        Resource = [
+          "arn:aws:lambda:${var.aws_region}:${data.aws_caller_identity.current.account_id}:function:ai-ppt-*"
         ]
       }
     ]
   })
 }
 
-# Lambda Function - API Handler
+# Lambda Function - API Handler（优化配置）
 resource "aws_lambda_function" "api_handler" {
   filename         = "../lambda-packages/api_handler.zip"
   function_name    = "ai-ppt-api-handler-${var.environment}"
   role            = aws_iam_role.lambda_role.arn
   handler         = "lambda_function.handler"
   runtime         = "python3.11"
-  memory_size     = 2048
+  memory_size     = 1024  # 降低内存，API Handler不需要太多内存
   timeout         = 30
+
+  # 预留并发执行数，避免冷启动
+  # 注释掉以避免账户并发限制问题
+  # reserved_concurrent_executions = 5
+
+  # 临时存储配置
+  ephemeral_storage {
+    size = 512  # MB
+  }
+
+  # 启用X-Ray追踪
+  tracing_config {
+    mode = var.enable_xray_tracing ? "Active" : "PassThrough"
+  }
 
   layers = [aws_lambda_layer_version.dependencies.arn]
 
@@ -301,6 +450,10 @@ resource "aws_lambda_function" "api_handler" {
     variables = {
       S3_BUCKET = aws_s3_bucket.presentations.id
       ENVIRONMENT = var.environment
+      # 性能优化环境变量
+      PYTHONPATH = "/opt/python"
+      PYTHONDONTWRITEBYTECODE = "1"  # 不生成.pyc文件，减少磁盘I/O
+      PYTHONUNBUFFERED = "1"  # 无缓冲输出，实时日志
     }
   }
 
@@ -310,15 +463,29 @@ resource "aws_lambda_function" "api_handler" {
   }
 }
 
-# Lambda Function - Generate PPT Complete
+# Lambda Function - Generate PPT Complete（优化配置）
 resource "aws_lambda_function" "generate_ppt" {
   filename         = "../lambda-packages/generate_ppt_complete.zip"
   function_name    = "ai-ppt-generate-${var.environment}"
   role            = aws_iam_role.lambda_role.arn
-  handler         = "lambda_function.handler"
+  handler         = "generate_ppt_complete.lambda_handler"
   runtime         = "python3.11"
-  memory_size     = 2048
-  timeout         = 300
+  memory_size     = 3008  # 增加内存到3GB，获得2个vCPU，提升计算性能
+  timeout         = 300   # 保持5分钟超时
+
+  # 预留并发执行数
+  # 注释掉以避免账户并发限制问题
+  # reserved_concurrent_executions = var.lambda_reserved_concurrency
+
+  # 临时存储配置（用于PPT生成的临时文件）
+  ephemeral_storage {
+    size = 2048  # 2GB临时存储
+  }
+
+  # 启用X-Ray追踪
+  tracing_config {
+    mode = var.enable_xray_tracing ? "Active" : "PassThrough"
+  }
 
   layers = [aws_lambda_layer_version.dependencies.arn]
 
@@ -326,6 +493,19 @@ resource "aws_lambda_function" "generate_ppt" {
     variables = {
       S3_BUCKET = aws_s3_bucket.presentations.id
       ENVIRONMENT = var.environment
+      ENABLE_ASYNC_MODE = "true"  # 启用异步模式
+      # 性能优化环境变量
+      PYTHONPATH = "/opt/python"
+      PYTHONDONTWRITEBYTECODE = "1"
+      PYTHONUNBUFFERED = "1"
+      # Bedrock优化
+      BEDROCK_MAX_RETRIES = "3"
+      BEDROCK_TIMEOUT = "120"
+      # 并发控制
+      MAX_CONCURRENT_BEDROCK_CALLS = "5"
+      # 缓存配置
+      ENABLE_RESPONSE_CACHE = "true"
+      CACHE_TTL = "3600"
     }
   }
 
@@ -335,15 +515,29 @@ resource "aws_lambda_function" "generate_ppt" {
   }
 }
 
-# Lambda Function - Status Check
+# Lambda Function - Status Check（优化配置）
 resource "aws_lambda_function" "status_check" {
   filename         = "../lambda-packages/status_check.zip"
   function_name    = "ai-ppt-status-${var.environment}"
   role            = aws_iam_role.lambda_role.arn
   handler         = "lambda_function.handler"
   runtime         = "python3.11"
-  memory_size     = 1024
-  timeout         = 30
+  memory_size     = 512   # 降低内存，状态检查不需要太多资源
+  timeout         = 10    # 降低超时，状态检查应该很快
+
+  # 预留并发执行数
+  # 注释掉以避免账户并发限制问题
+  # reserved_concurrent_executions = 5
+
+  # 临时存储配置
+  ephemeral_storage {
+    size = 512  # MB
+  }
+
+  # 启用X-Ray追踪
+  tracing_config {
+    mode = var.enable_xray_tracing ? "Active" : "PassThrough"
+  }
 
   layers = [aws_lambda_layer_version.dependencies.arn]
 
@@ -351,6 +545,13 @@ resource "aws_lambda_function" "status_check" {
     variables = {
       S3_BUCKET = aws_s3_bucket.presentations.id
       ENVIRONMENT = var.environment
+      # 性能优化环境变量
+      PYTHONPATH = "/opt/python"
+      PYTHONDONTWRITEBYTECODE = "1"
+      PYTHONUNBUFFERED = "1"
+      # DynamoDB优化
+      DYNAMODB_MAX_RETRIES = "2"
+      DYNAMODB_TIMEOUT = "5"
     }
   }
 
@@ -360,15 +561,29 @@ resource "aws_lambda_function" "status_check" {
   }
 }
 
-# Lambda Function - Download PPT
+# Lambda Function - Download PPT（优化配置）
 resource "aws_lambda_function" "download_ppt" {
   filename         = "../lambda-packages/download_ppt.zip"
   function_name    = "ai-ppt-download-${var.environment}"
   role            = aws_iam_role.lambda_role.arn
   handler         = "lambda_function.handler"
   runtime         = "python3.11"
-  memory_size     = 1024
+  memory_size     = 1024  # 保持1GB用于文件传输
   timeout         = 30
+
+  # 预留并发执行数
+  # 注释掉以避免账户并发限制问题
+  # reserved_concurrent_executions = 5
+
+  # 临时存储配置
+  ephemeral_storage {
+    size = 1024  # 1GB用于临时文件存储
+  }
+
+  # 启用X-Ray追踪
+  tracing_config {
+    mode = var.enable_xray_tracing ? "Active" : "PassThrough"
+  }
 
   layers = [aws_lambda_layer_version.dependencies.arn]
 
@@ -376,6 +591,16 @@ resource "aws_lambda_function" "download_ppt" {
     variables = {
       S3_BUCKET = aws_s3_bucket.presentations.id
       ENVIRONMENT = var.environment
+      # 性能优化环境变量
+      PYTHONPATH = "/opt/python"
+      PYTHONDONTWRITEBYTECODE = "1"
+      PYTHONUNBUFFERED = "1"
+      # S3优化
+      S3_TRANSFER_ACCELERATION = "true"
+      S3_MAX_RETRIES = "3"
+      S3_TIMEOUT = "20"
+      # 预签名URL配置
+      PRESIGNED_URL_EXPIRY = "3600"  # 1小时有效期
     }
   }
 
@@ -392,6 +617,70 @@ resource "aws_api_gateway_rest_api" "api" {
 
   endpoint_configuration {
     types = ["REGIONAL"]
+  }
+}
+
+# Gateway Response for 4XX errors with CORS headers
+resource "aws_api_gateway_gateway_response" "response_4xx" {
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  response_type = "DEFAULT_4XX"
+
+  response_parameters = {
+    "gatewayresponse.header.Access-Control-Allow-Origin"  = "'*'"
+    "gatewayresponse.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Accept'"
+    "gatewayresponse.header.Access-Control-Allow-Methods" = "'GET,POST,OPTIONS'"
+  }
+
+  response_templates = {
+    "application/json" = "{\"error\":\"$context.error.message\",\"requestId\":\"$context.requestId\"}"
+  }
+}
+
+# Gateway Response for 5XX errors with CORS headers
+resource "aws_api_gateway_gateway_response" "response_5xx" {
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  response_type = "DEFAULT_5XX"
+
+  response_parameters = {
+    "gatewayresponse.header.Access-Control-Allow-Origin"  = "'*'"
+    "gatewayresponse.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Accept'"
+    "gatewayresponse.header.Access-Control-Allow-Methods" = "'GET,POST,OPTIONS'"
+  }
+
+  response_templates = {
+    "application/json" = "{\"error\":\"Internal server error\",\"requestId\":\"$context.requestId\"}"
+  }
+}
+
+# Gateway Response for timeout errors with CORS headers
+resource "aws_api_gateway_gateway_response" "timeout" {
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  response_type = "INTEGRATION_TIMEOUT"
+
+  response_parameters = {
+    "gatewayresponse.header.Access-Control-Allow-Origin"  = "'*'"
+    "gatewayresponse.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Accept'"
+    "gatewayresponse.header.Access-Control-Allow-Methods" = "'GET,POST,OPTIONS'"
+  }
+
+  response_templates = {
+    "application/json" = "{\"error\":\"Request timeout\",\"requestId\":\"$context.requestId\"}"
+  }
+}
+
+# Gateway Response for missing authentication token with CORS headers
+resource "aws_api_gateway_gateway_response" "missing_authentication_token" {
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  response_type = "MISSING_AUTHENTICATION_TOKEN"
+
+  response_parameters = {
+    "gatewayresponse.header.Access-Control-Allow-Origin"  = "'*'"
+    "gatewayresponse.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Accept'"
+    "gatewayresponse.header.Access-Control-Allow-Methods" = "'GET,POST,OPTIONS'"
+  }
+
+  response_templates = {
+    "application/json" = "{\"error\":\"Missing authentication token\",\"requestId\":\"$context.requestId\"}"
   }
 }
 
@@ -448,6 +737,11 @@ resource "aws_api_gateway_method_response" "generate_options" {
     "method.response.header.Access-Control-Allow-Headers" = true
     "method.response.header.Access-Control-Allow-Methods" = true
     "method.response.header.Access-Control-Allow-Origin"  = true
+    "method.response.header.Access-Control-Max-Age"       = true
+  }
+
+  response_models = {
+    "application/json" = "Empty"
   }
 }
 
@@ -458,10 +752,15 @@ resource "aws_api_gateway_integration_response" "generate_options" {
   status_code = aws_api_gateway_method_response.generate_options.status_code
 
   response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
-    "method.response.header.Access-Control-Allow-Methods" = "'GET,POST,OPTIONS'"
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Accept,Accept-Language'"
+    "method.response.header.Access-Control-Allow-Methods" = "'POST,OPTIONS'"
     "method.response.header.Access-Control-Allow-Origin"  = "'*'"
+    "method.response.header.Access-Control-Max-Age"       = "'86400'"
   }
+
+  depends_on = [
+    aws_api_gateway_integration.generate_options
+  ]
 }
 
 # Method Response for POST /generate
@@ -472,7 +771,13 @@ resource "aws_api_gateway_method_response" "generate_post" {
   status_code = "200"
 
   response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
+    "method.response.header.Access-Control-Allow-Origin"      = true
+    "method.response.header.Access-Control-Allow-Headers"     = true
+    "method.response.header.Access-Control-Allow-Credentials" = true
+  }
+
+  response_models = {
+    "application/json" = "Empty"
   }
 }
 
@@ -535,6 +840,11 @@ resource "aws_api_gateway_method_response" "status_options" {
     "method.response.header.Access-Control-Allow-Headers" = true
     "method.response.header.Access-Control-Allow-Methods" = true
     "method.response.header.Access-Control-Allow-Origin"  = true
+    "method.response.header.Access-Control-Max-Age"       = true
+  }
+
+  response_models = {
+    "application/json" = "Empty"
   }
 }
 
@@ -545,10 +855,15 @@ resource "aws_api_gateway_integration_response" "status_options" {
   status_code = aws_api_gateway_method_response.status_options.status_code
 
   response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
-    "method.response.header.Access-Control-Allow-Methods" = "'GET,POST,OPTIONS'"
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Accept,Accept-Language'"
+    "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS'"
     "method.response.header.Access-Control-Allow-Origin"  = "'*'"
+    "method.response.header.Access-Control-Max-Age"       = "'86400'"
   }
+
+  depends_on = [
+    aws_api_gateway_integration.status_options
+  ]
 }
 
 # Method Response for GET /status/{id}
@@ -559,7 +874,13 @@ resource "aws_api_gateway_method_response" "status_get" {
   status_code = "200"
 
   response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
+    "method.response.header.Access-Control-Allow-Origin"      = true
+    "method.response.header.Access-Control-Allow-Headers"     = true
+    "method.response.header.Access-Control-Allow-Credentials" = true
+  }
+
+  response_models = {
+    "application/json" = "Empty"
   }
 }
 
@@ -622,6 +943,11 @@ resource "aws_api_gateway_method_response" "download_options" {
     "method.response.header.Access-Control-Allow-Headers" = true
     "method.response.header.Access-Control-Allow-Methods" = true
     "method.response.header.Access-Control-Allow-Origin"  = true
+    "method.response.header.Access-Control-Max-Age"       = true
+  }
+
+  response_models = {
+    "application/json" = "Empty"
   }
 }
 
@@ -632,10 +958,15 @@ resource "aws_api_gateway_integration_response" "download_options" {
   status_code = aws_api_gateway_method_response.download_options.status_code
 
   response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
-    "method.response.header.Access-Control-Allow-Methods" = "'GET,POST,OPTIONS'"
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Accept,Accept-Language'"
+    "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS'"
     "method.response.header.Access-Control-Allow-Origin"  = "'*'"
+    "method.response.header.Access-Control-Max-Age"       = "'86400'"
   }
+
+  depends_on = [
+    aws_api_gateway_integration.download_options
+  ]
 }
 
 # Method Response for GET /download/{id}
@@ -646,54 +977,161 @@ resource "aws_api_gateway_method_response" "download_get" {
   status_code = "200"
 
   response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
+    "method.response.header.Access-Control-Allow-Origin"      = true
+    "method.response.header.Access-Control-Allow-Headers"     = true
+    "method.response.header.Access-Control-Allow-Credentials" = true
+    "method.response.header.Content-Type"                     = true
+    "method.response.header.Content-Disposition"              = true
+  }
+
+  response_models = {
+    "application/json"              = "Empty"
+    "application/vnd.ms-powerpoint" = "Empty"
   }
 }
 
-# API Gateway Deployment
+# API Gateway Deployment with automatic triggers
 resource "aws_api_gateway_deployment" "api" {
   rest_api_id = aws_api_gateway_rest_api.api.id
-  stage_name  = var.environment
+  stage_name  = var.environment  # 直接在deployment中管理stage
+
+  # Trigger redeployment when configuration changes
+  triggers = {
+    redeployment = sha1(jsonencode([
+      # Include all method configurations
+      aws_api_gateway_method.generate_post.id,
+      aws_api_gateway_method.generate_options.id,
+      aws_api_gateway_method.status_get.id,
+      # Include gateway responses for CORS
+      aws_api_gateway_gateway_response.response_4xx.id,
+      aws_api_gateway_gateway_response.response_5xx.id,
+      aws_api_gateway_gateway_response.timeout.id,
+      aws_api_gateway_gateway_response.missing_authentication_token.id,
+      aws_api_gateway_method.status_options.id,
+      aws_api_gateway_method.download_get.id,
+      aws_api_gateway_method.download_options.id,
+
+      # Include all integration configurations
+      aws_api_gateway_integration.generate_integration.id,
+      aws_api_gateway_integration.generate_options.id,
+      aws_api_gateway_integration.status_integration.id,
+      aws_api_gateway_integration.status_options.id,
+      aws_api_gateway_integration.download_integration.id,
+      aws_api_gateway_integration.download_options.id,
+
+      # Include all integration response configurations
+      aws_api_gateway_integration_response.generate_options.id,
+      aws_api_gateway_integration_response.status_options.id,
+      aws_api_gateway_integration_response.download_options.id,
+
+      # Include all method response configurations
+      aws_api_gateway_method_response.generate_post.id,
+      aws_api_gateway_method_response.generate_options.id,
+      aws_api_gateway_method_response.status_get.id,
+      aws_api_gateway_method_response.status_options.id,
+      aws_api_gateway_method_response.download_get.id,
+      aws_api_gateway_method_response.download_options.id,
+
+      # Include resource configurations
+      aws_api_gateway_resource.generate.id,
+      aws_api_gateway_resource.status.id,
+      aws_api_gateway_resource.status_id.id,
+      aws_api_gateway_resource.download.id,
+      aws_api_gateway_resource.download_id.id
+    ]))
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 
   depends_on = [
+    # Methods
+    aws_api_gateway_method.generate_post,
+    aws_api_gateway_method.generate_options,
+    aws_api_gateway_method.status_get,
+    aws_api_gateway_method.status_options,
+    aws_api_gateway_method.download_get,
+    aws_api_gateway_method.download_options,
+
+    # Integrations
     aws_api_gateway_integration.generate_integration,
     aws_api_gateway_integration.generate_options,
-    aws_api_gateway_integration_response.generate_options,
-    aws_api_gateway_method_response.generate_post,
     aws_api_gateway_integration.status_integration,
     aws_api_gateway_integration.status_options,
-    aws_api_gateway_integration_response.status_options,
-    aws_api_gateway_method_response.status_get,
     aws_api_gateway_integration.download_integration,
     aws_api_gateway_integration.download_options,
+
+    # Integration Responses
+    aws_api_gateway_integration_response.generate_options,
+    aws_api_gateway_integration_response.status_options,
     aws_api_gateway_integration_response.download_options,
-    aws_api_gateway_method_response.download_get
+
+    # Method Responses
+    aws_api_gateway_method_response.generate_post,
+    aws_api_gateway_method_response.generate_options,
+    aws_api_gateway_method_response.status_get,
+    aws_api_gateway_method_response.status_options,
+    aws_api_gateway_method_response.download_get,
+    aws_api_gateway_method_response.download_options,
+
+    # Gateway Responses for CORS
+    aws_api_gateway_gateway_response.response_4xx,
+    aws_api_gateway_gateway_response.response_5xx,
+    aws_api_gateway_gateway_response.timeout,
+    aws_api_gateway_gateway_response.missing_authentication_token
   ]
 }
 
-# Lambda Permissions for API Gateway
+# API Gateway Stage with proper configuration
+# 注释掉独立的stage资源，因为deployment已经创建了stage
+# resource "aws_api_gateway_stage" "api" {
+#   deployment_id = aws_api_gateway_deployment.api.id
+#   rest_api_id   = aws_api_gateway_rest_api.api.id
+#   stage_name    = var.environment
+#
+#   # Enable CloudWatch logging
+#   xray_tracing_enabled = var.enable_xray_tracing
+#
+#   # 缓存集群配置（可选，需要额外成本）
+#   # cache_cluster_enabled = true
+#   # cache_cluster_size   = "0.5"  # 0.5 GB缓存
+#
+#   # Stage settings
+#   variables = {
+#     environment = var.environment
+#     deployed_at = timestamp()
+#   }
+#
+#   tags = {
+#     Environment = var.environment
+#     Project     = var.project_name
+#   }
+# }
+
+# Lambda Permissions for API Gateway - 限制到特定路径和方法
 resource "aws_lambda_permission" "api_gateway_generate" {
-  statement_id  = "AllowAPIGatewayInvoke"
+  statement_id  = "AllowAPIGatewayInvokeGenerate"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.generate_ppt.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*"
+  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/POST/generate"
 }
 
 resource "aws_lambda_permission" "api_gateway_status" {
-  statement_id  = "AllowAPIGatewayInvoke"
+  statement_id  = "AllowAPIGatewayInvokeStatus"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.status_check.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*"
+  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/GET/status/*"
 }
 
 resource "aws_lambda_permission" "api_gateway_download" {
-  statement_id  = "AllowAPIGatewayInvoke"
+  statement_id  = "AllowAPIGatewayInvokeDownload"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.download_ppt.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*"
+  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/GET/download/*"
 }
 
 # CloudWatch Log Groups
@@ -709,6 +1147,118 @@ resource "aws_lambda_permission" "api_gateway_download" {
 #   name              = "/aws/lambda/${each.value}"
 #   retention_in_days = 7
 # }
+
+# API Gateway Method Settings for better performance
+resource "aws_api_gateway_method_settings" "api_settings" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  stage_name  = var.environment
+  method_path = "*/*"
+
+  settings {
+    metrics_enabled        = var.enable_monitoring
+    logging_level         = var.log_level == "DEBUG" ? "INFO" : "ERROR"
+    data_trace_enabled    = var.log_level == "DEBUG"
+    throttling_burst_limit = 5000
+    throttling_rate_limit  = 10000
+    caching_enabled       = false  # 全局缓存关闭，仅在特定端点启用
+  }
+
+  depends_on = [
+    aws_api_gateway_deployment.api
+  ]
+}
+
+# API Gateway缓存策略 - 仅对GET请求启用
+resource "aws_api_gateway_method_settings" "status_cache" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  stage_name  = var.environment
+  method_path = "status/*/GET"  # 仅对status端点的GET请求启用缓存
+
+  settings {
+    metrics_enabled        = var.enable_monitoring
+    logging_level         = var.log_level == "DEBUG" ? "INFO" : "ERROR"
+    data_trace_enabled    = var.log_level == "DEBUG"
+    throttling_burst_limit = 5000
+    throttling_rate_limit  = 10000
+    caching_enabled       = true
+    cache_ttl_in_seconds  = 30  # 30秒缓存
+    cache_data_encrypted  = true
+  }
+
+  depends_on = [
+    aws_api_gateway_deployment.api
+  ]
+}
+
+resource "aws_api_gateway_method_settings" "download_cache" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  stage_name  = var.environment
+  method_path = "download/*/GET"  # 对download端点的GET请求启用缓存
+
+  settings {
+    metrics_enabled        = var.enable_monitoring
+    logging_level         = var.log_level == "DEBUG" ? "INFO" : "ERROR"
+    data_trace_enabled    = var.log_level == "DEBUG"
+    throttling_burst_limit = 5000
+    throttling_rate_limit  = 10000
+    caching_enabled       = true
+    cache_ttl_in_seconds  = 300  # 5分钟缓存
+    cache_data_encrypted  = true
+  }
+
+  depends_on = [
+    aws_api_gateway_deployment.api
+  ]
+}
+
+# Lambda预配置并发（消除冷启动）
+# 注释掉，因为需要先发布Lambda版本才能使用
+# resource "aws_lambda_provisioned_concurrency_config" "generate_ppt_concurrency" {
+#   count = var.lambda_provisioned_concurrency > 0 ? 1 : 0
+#
+#   function_name                     = aws_lambda_function.generate_ppt.function_name
+#   provisioned_concurrent_executions = var.lambda_provisioned_concurrency
+#   qualifier                         = aws_lambda_function.generate_ppt.version
+#
+#   depends_on = [aws_lambda_function.generate_ppt]
+# }
+
+# API Gateway使用计划和API密钥（可选，用于限流管理）
+resource "aws_api_gateway_usage_plan" "api_usage_plan" {
+  name         = "${var.project_name}-usage-plan-${var.environment}"
+  description  = "Usage plan for API rate limiting"
+
+  api_stages {
+    api_id = aws_api_gateway_rest_api.api.id
+    stage  = var.environment
+  }
+
+  quota_settings {
+    limit  = 10000  # 每天10000个请求
+    period = "DAY"
+  }
+
+  throttle_settings {
+    rate_limit  = 100   # 每秒100个请求
+    burst_limit = 200   # 突发200个请求
+  }
+
+  depends_on = [aws_api_gateway_deployment.api]
+}
+
+# API密钥（可选）
+resource "aws_api_gateway_api_key" "api_key" {
+  name        = "${var.project_name}-api-key-${var.environment}"
+  description = "API key for ${var.project_name}"
+  enabled     = true
+}
+
+# 关联API密钥到使用计划
+resource "aws_api_gateway_usage_plan_key" "api_usage_plan_key" {
+  key_id        = aws_api_gateway_api_key.api_key.id
+  key_type      = "API_KEY"
+  usage_plan_id = aws_api_gateway_usage_plan.api_usage_plan.id
+}
 
 # Outputs
 output "api_gateway_url" {

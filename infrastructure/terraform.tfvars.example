@@ -1,41 +1,107 @@
-# AWS Configuration
-aws_region  = "us-east-1"
-environment = "dev"
+# Terraform变量配置示例
+# 复制此文件为terraform.tfvars并根据需要调整参数
 
-# Project Configuration
+# ========== 基础配置 ==========
+aws_region   = "us-east-1"
+environment  = "dev"
 project_name = "ai-ppt-assistant"
 
-# DynamoDB Configuration
-dynamodb_table_name = "ai-ppt-presentations"
+# ========== Lambda性能优化配置 ==========
+# 内存配置（MB）- 根据函数需求调整
+lambda_memory_mb = 1024  # 默认内存大小
 
-# Image Processing Configuration
-enable_vpc        = false
+# 超时配置（秒）
+lambda_timeout_seconds = 300  # PPT生成函数超时时间
+
+# 并发优化配置（性能优化重点）
+lambda_reserved_concurrency = 10      # 预留并发执行数（避免冷启动）
+lambda_provisioned_concurrency = 0    # 预配置并发数（0表示禁用，生产环境建议2-5）
+
+# 临时存储配置（MB）
+lambda_ephemeral_storage = 512  # Lambda临时存储空间（最大10240MB）
+
+# ========== VPC配置 ==========
+enable_vpc = false  # 通常不需要VPC，除非需要访问私有资源
+# private_subnet_ids = ["subnet-xxx", "subnet-yyy"]  # 如果启用VPC，需要提供子网ID
+
+# Lambda函数URL（用于直接HTTP访问）
 enable_lambda_url = true
 
-# VPC Configuration (仅在enable_vpc=true时需要)
-# private_subnet_ids = ["subnet-12345", "subnet-67890"]
+# ========== 监控和追踪 ==========
+enable_xray_tracing = true   # X-Ray分布式追踪（帮助识别性能瓶颈）
+enable_monitoring = true      # CloudWatch监控
+log_level = "INFO"           # 日志级别: DEBUG, INFO, WARNING, ERROR
 
-# Monitoring Configuration
-alert_email = "your-email@example.com"
+# ========== 缓存优化配置 ==========
+enable_caching = true         # 启用缓存优化
+cache_ttl_seconds = 3600     # 缓存有效期（秒）
 
-# Lambda Configuration
-lambda_timeout_seconds = 300
-lambda_memory_mb      = 1024
+# ========== 批处理优化 ==========
+enable_batching = true        # 启用批处理优化（提高吞吐量）
 
-# Bedrock Configuration
+# ========== DynamoDB配置 ==========
+dynamodb_table_name = "ai-ppt-presentations"
+
+# ========== 图片处理配置 ==========
 nova_model_id = "amazon.nova-canvas-v1:0"
-
-# Image Processing Settings
-default_image_width  = 1200
+default_image_width = 1200
 default_image_height = 800
-max_retry_attempts   = 3
+max_retry_attempts = 3
 
-# Performance Settings
-enable_caching    = true
-enable_monitoring = true
-enable_batching   = true
-cache_ttl_seconds = 3600
+# ========== 告警配置 ==========
+alert_email = ""  # 留空则不发送邮件告警，填写邮箱地址接收告警
 
-# Security Settings
-enable_xray_tracing = true
-log_level          = "INFO"
+# ===================================
+# ===== 预设配置模板（取消注释使用） =====
+# ===================================
+
+# ---------- 生产环境推荐配置 ----------
+# 提供最佳稳定性和性能平衡
+#
+# environment = "prod"
+# lambda_reserved_concurrency = 20     # 更高的预留并发
+# lambda_provisioned_concurrency = 5   # 预热5个实例，完全消除冷启动
+# lambda_ephemeral_storage = 1024     # 更大临时存储
+# enable_xray_tracing = true
+# enable_monitoring = true
+# enable_caching = true
+# cache_ttl_seconds = 7200             # 2小时缓存
+# log_level = "WARNING"                # 生产环境减少日志量
+# alert_email = "ops-team@company.com"
+
+# ---------- 成本优化配置 ----------
+# 最小化成本，可能影响性能
+#
+# lambda_reserved_concurrency = 5      # 降低预留并发
+# lambda_provisioned_concurrency = 0   # 禁用预配置并发（节省成本）
+# lambda_ephemeral_storage = 512      # 标准存储
+# enable_xray_tracing = false         # 禁用X-Ray节省成本
+# enable_monitoring = false            # 减少监控成本
+# log_level = "ERROR"                 # 仅记录错误日志
+# cache_ttl_seconds = 300              # 短缓存时间
+
+# ---------- 高性能配置 ----------
+# 最佳性能，成本较高
+#
+# lambda_memory_mb = 3008              # 最大内存，获得2个vCPU
+# lambda_reserved_concurrency = 50     # 高预留并发
+# lambda_provisioned_concurrency = 10  # 预热10个实例
+# lambda_ephemeral_storage = 2048     # 2GB临时存储
+# enable_xray_tracing = true
+# enable_monitoring = true
+# enable_caching = true
+# enable_batching = true
+# cache_ttl_seconds = 7200             # 2小时缓存
+# log_level = "DEBUG"                  # 详细日志
+
+# ---------- 开发环境配置 ----------
+# 适合开发和测试
+#
+# environment = "dev"
+# lambda_reserved_concurrency = 5
+# lambda_provisioned_concurrency = 0   # 开发环境不需要预配置
+# lambda_ephemeral_storage = 512
+# enable_xray_tracing = true           # 开发时启用追踪
+# enable_monitoring = true
+# log_level = "DEBUG"                  # 详细日志便于调试
+# cache_ttl_seconds = 60               # 短缓存便于测试

@@ -4,11 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI PPT 生成助手</title>
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Bootstrap 5 CSS - 优化加载 -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" media="all">
+    <!-- Bootstrap Icons - 延迟加载 -->
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css"></noscript>
     <style>
+        /* 性能优化：CSS containment */
+        .card {
+            contain: layout style;
+        }
+
+        .history-item {
+            contain: layout;
+        }
+
+        /* 使用 will-change 优化动画性能 */
+        .progress-bar,
+        .alert,
+        .dropdown-menu {
+            will-change: transform, opacity;
+        }
+
+        /* 减少重绘和重排 */
+        .list-group {
+            transform: translateZ(0);
+            backface-visibility: hidden;
+        }
+
+        /* 优化滚动性能 */
+        #historyList {
+            overflow-y: auto;
+            max-height: 400px;
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+        }
+
         .spinner-container {
             display: none;
         }
@@ -29,14 +62,234 @@
             from { opacity: 0; }
             to { opacity: 1; }
         }
+
+        /* 语言切换器优化样式 */
+        .language-switcher {
+            position: relative;
+        }
+
+        .language-switcher .dropdown-toggle {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 0.375rem 0.75rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            min-width: 120px;
+            justify-content: center;
+        }
+
+        .language-switcher .dropdown-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .language-switcher .dropdown-toggle:focus {
+            box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
+        }
+
+        .language-switcher .dropdown-toggle::after {
+            margin-left: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .language-switcher .dropdown-toggle[aria-expanded="true"]::after {
+            transform: rotate(180deg);
+        }
+
+        .language-switcher .dropdown-menu {
+            border: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+            padding: 0.5rem 0;
+            min-width: 140px;
+            animation: slideDown 0.3s ease;
+            transform-origin: top;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px) scaleY(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scaleY(1);
+            }
+        }
+
+        .language-switcher .dropdown-item {
+            padding: 0.5rem 1rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
+        }
+
+        .language-switcher .dropdown-item:hover {
+            background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+            color: #0d6efd;
+            padding-left: 1.25rem;
+        }
+
+        .language-switcher .dropdown-item.active {
+            background: linear-gradient(45deg, #0d6efd, #0b5ed7);
+            color: white;
+            font-weight: 500;
+        }
+
+        .language-switcher .dropdown-item.active::before {
+            content: "✓";
+            position: absolute;
+            right: 1rem;
+            font-weight: bold;
+        }
+
+        .language-flag {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            background: linear-gradient(45deg, #dee2e6, #f8f9fa);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .language-flag.zh {
+            background: linear-gradient(45deg, #dc3545, #c82333);
+            color: #ffd700;
+        }
+
+        .language-flag.en {
+            background: linear-gradient(45deg, #0d6efd, #0b5ed7);
+            color: white;
+        }
+
+        /* 语言切换动画效果 */
+        .language-switch-animation {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .language-switch-animation::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .language-switch-animation.switching::before {
+            left: 100%;
+        }
+
+        /* 响应式设计优化 */
+        @media (max-width: 768px) {
+            .language-switcher {
+                margin-left: auto;
+            }
+
+            .language-switcher .dropdown-toggle {
+                min-width: 90px;
+                padding: 0.25rem 0.5rem;
+                font-size: 0.875rem;
+            }
+
+            .language-switcher .dropdown-menu {
+                min-width: 120px;
+                font-size: 0.875rem;
+            }
+
+            .language-flag {
+                width: 16px;
+                height: 16px;
+                font-size: 10px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .navbar .container {
+                flex-wrap: nowrap;
+            }
+
+            .navbar-brand {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .navbar-brand span {
+                display: none;
+            }
+
+            .navbar-brand::after {
+                content: "AI PPT";
+            }
+
+            .language-switcher .dropdown-toggle .bi-translate {
+                display: none;
+            }
+        }
+
+        /* 文本长度适应 */
+        .text-adaptive {
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 主题色过渡 */
+        body {
+            transition: background-color 0.3s ease;
+        }
+
+        .card {
+            transition: all 0.3s ease;
+        }
     </style>
 </head>
 <body>
     <nav class="navbar navbar-dark bg-primary">
         <div class="container">
             <span class="navbar-brand mb-0 h1">
-                <i class="bi bi-file-earmark-slides"></i> AI PPT 生成助手
+                <i class="bi bi-file-earmark-slides"></i> <span data-i18n="app.title">AI PPT 生成助手</span>
             </span>
+            <!-- 优化的语言切换器 -->
+            <div class="navbar-nav">
+                <div class="nav-item dropdown language-switcher">
+                    <a class="nav-link dropdown-toggle text-white language-switch-animation"
+                       href="#" id="languageDropdown" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false"
+                       title="选择语言 / Select Language">
+                        <i class="bi bi-translate"></i>
+                        <span class="text-adaptive" id="currentLanguageLabel" data-i18n="nav.language">语言</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="languageDropdown">
+                        <li>
+                            <a class="dropdown-item language-option" href="#" data-language="zh-CN">
+                                <span class="language-flag zh">中</span>
+                                <span data-i18n="nav.language_zh">中文</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item language-option" href="#" data-language="en-US">
+                                <span class="language-flag en">En</span>
+                                <span data-i18n="nav.language_en">English</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </nav>
 
@@ -47,17 +300,18 @@
                 <!-- 配置面板 -->
                 <div class="card mb-4">
                     <div class="card-header">
-                        <i class="bi bi-gear"></i> API 配置
+                        <i class="bi bi-gear"></i> <span data-i18n="config.title">API 配置</span>
                     </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-8">
                                 <input type="text" class="form-control" id="apiEndpoint"
-                                       placeholder="API Gateway URL"
-                                       value="https://your-api-gateway.execute-api.us-east-1.amazonaws.com/prod">
+                                       data-i18n="config.endpoint_placeholder"
+                                       placeholder="API Gateway URL">
                             </div>
                             <div class="col-md-4">
                                 <input type="password" class="form-control" id="apiKey"
+                                       data-i18n="config.api_key_placeholder"
                                        placeholder="API Key">
                             </div>
                         </div>
@@ -67,34 +321,42 @@
                 <!-- 生成表单 -->
                 <div class="card mb-4">
                     <div class="card-header">
-                        <i class="bi bi-magic"></i> 生成新的演示文稿
+                        <i class="bi bi-magic"></i> <span data-i18n="form.title">生成新的演示文稿</span>
                     </div>
                     <div class="card-body">
                         <form id="generateForm">
                             <div class="mb-3">
-                                <label for="topic" class="form-label">演示主题 *</label>
+                                <label for="topic" class="form-label">
+                                    <span data-i18n="form.topic_label">演示主题</span> *
+                                </label>
                                 <input type="text" class="form-control" id="topic" required
+                                       data-i18n="form.topic_placeholder"
                                        placeholder="例如：人工智能在医疗领域的应用">
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="pageCount" class="form-label">页数</label>
+                                    <label for="pageCount" class="form-label" data-i18n="form.page_count_label">页数</label>
                                     <input type="number" class="form-control" id="pageCount"
                                            min="5" max="30" value="10">
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="audience" class="form-label">目标受众</label>
+                                    <label for="audience" class="form-label" data-i18n="form.audience_label">目标受众</label>
                                     <select class="form-select" id="audience">
-                                        <option value="general">普通观众</option>
-                                        <option value="technical">技术人员</option>
-                                        <option value="executive">高层管理</option>
-                                        <option value="academic">学术研究</option>
+                                        <option value="general" data-i18n="form.audience_general">普通观众</option>
+                                        <option value="technical" data-i18n="form.audience_technical">技术人员</option>
+                                        <option value="executive" data-i18n="form.audience_executive">高层管理</option>
+                                        <option value="academic" data-i18n="form.audience_academic">学术研究</option>
                                     </select>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-play-circle"></i> 开始生成
-                            </button>
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary" id="generateButton">
+                                    <i class="bi bi-play-circle"></i> <span data-i18n="form.generate_button">开始生成</span>
+                                </button>
+                                <button type="button" class="btn btn-outline-danger d-none" id="cancelButton">
+                                    <i class="bi bi-x-circle"></i> <span data-i18n="form.cancel_button">取消</span>
+                                </button>
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -102,12 +364,12 @@
                 <!-- 进度显示 -->
                 <div class="card progress-container mb-4 fade-in">
                     <div class="card-header">
-                        <i class="bi bi-hourglass-split"></i> 生成进度
+                        <i class="bi bi-hourglass-split"></i> <span data-i18n="progress.title">生成进度</span>
                     </div>
                     <div class="card-body">
                         <div class="mb-3">
                             <div class="d-flex justify-content-between mb-1">
-                                <span id="statusText">准备中...</span>
+                                <span id="statusText" data-i18n="progress.initializing">准备中...</span>
                                 <span id="progressPercent">0%</span>
                             </div>
                             <div class="progress">
@@ -122,21 +384,21 @@
                 <!-- 结果显示 -->
                 <div class="card d-none" id="resultCard">
                     <div class="card-header bg-success text-white">
-                        <i class="bi bi-check-circle"></i> 生成完成！
+                        <i class="bi bi-check-circle"></i> <span data-i18n="result.title">生成完成！</span>
                     </div>
                     <div class="card-body">
                         <h5 class="card-title" id="resultTitle"></h5>
                         <p class="card-text">
                             <small class="text-muted">
-                                生成时间：<span id="generationTime"></span> |
-                                文件大小：<span id="fileSize">计算中...</span>
+                                <span data-i18n="result.generation_time">生成时间</span>：<span id="generationTime"></span> |
+                                <span data-i18n="result.file_size">文件大小</span>：<span id="fileSize" data-i18n="result.calculating">计算中...</span>
                             </small>
                         </p>
                         <button class="btn btn-success" id="downloadBtn">
-                            <i class="bi bi-download"></i> 下载 PPT
+                            <i class="bi bi-download"></i> <span data-i18n="result.download_button">下载 PPT</span>
                         </button>
                         <button class="btn btn-outline-primary" id="newBtn">
-                            <i class="bi bi-plus-circle"></i> 生成新的
+                            <i class="bi bi-plus-circle"></i> <span data-i18n="result.new_button">生成新的</span>
                         </button>
                     </div>
                 </div>
@@ -153,14 +415,14 @@
                 <!-- 历史记录 -->
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <span><i class="bi bi-clock-history"></i> 历史记录</span>
+                        <span><i class="bi bi-clock-history"></i> <span data-i18n="history.title">历史记录</span></span>
                         <button class="btn btn-sm btn-outline-danger" id="clearHistory">
-                            清除
+                            <span data-i18n="history.clear">清除</span>
                         </button>
                     </div>
                     <div class="card-body">
                         <div class="list-group" id="historyList">
-                            <div class="text-muted text-center py-3">暂无历史记录</div>
+                            <div class="text-muted text-center py-3" data-i18n="history.empty">暂无历史记录</div>
                         </div>
                     </div>
                 </div>
@@ -168,15 +430,15 @@
                 <!-- 使用提示 -->
                 <div class="card mt-3">
                     <div class="card-header">
-                        <i class="bi bi-lightbulb"></i> 使用提示
+                        <i class="bi bi-lightbulb"></i> <span data-i18n="tips.title">使用提示</span>
                     </div>
                     <div class="card-body">
                         <ul class="small mb-0">
-                            <li>主题描述越详细，生成效果越好</li>
-                            <li>建议页数控制在 10-15 页</li>
-                            <li>生成过程约需 2-3 分钟</li>
-                            <li>支持中英文内容生成</li>
-                            <li>生成的 PPT 可直接编辑</li>
+                            <li data-i18n="tips.tip1">主题描述越详细，生成效果越好</li>
+                            <li data-i18n="tips.tip2">建议页数控制在 10-15 页</li>
+                            <li data-i18n="tips.tip3">生成过程约需 2-3 分钟</li>
+                            <li data-i18n="tips.tip4">支持中英文内容生成</li>
+                            <li data-i18n="tips.tip5">生成的 PPT 可直接编辑</li>
                         </ul>
                     </div>
                 </div>
@@ -184,13 +446,55 @@
         </div>
     </div>
 
-    <!-- Bootstrap 5 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- 性能优化：使用 defer 确保按顺序加载 -->
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- API 配置 -->
-    <script src="js/config.js"></script>
+    <script defer src="js/config.js"></script>
+    <!-- 国际化 -->
+    <script defer src="js/i18n.js"></script>
     <!-- 应用脚本 -->
-    <script src="js/app.js"></script>
-    <script src="js/status.js"></script>
-    <script src="js/download.js"></script>
+    <script defer src="js/app.js"></script>
+    <script defer src="js/status.js"></script>
+    <script defer src="js/download.js"></script>
+
+    <!-- 添加性能监控脚本 -->
+    <script>
+        // 性能监控
+        window.addEventListener('load', function() {
+            if (window.performance && window.performance.timing) {
+                const timing = window.performance.timing;
+                const loadTime = timing.loadEventEnd - timing.navigationStart;
+                const domReadyTime = timing.domContentLoadedEventEnd - timing.navigationStart;
+                const resourcesTime = timing.loadEventEnd - timing.responseEnd;
+
+                console.log('性能指标:');
+                console.log(`页面总加载时间: ${loadTime}ms`);
+                console.log(`DOM就绪时间: ${domReadyTime}ms`);
+                console.log(`资源加载时间: ${resourcesTime}ms`);
+
+                // 发送性能指标到控制台
+                if (loadTime > 3000) {
+                    console.warn('页面加载时间超过3秒，建议优化');
+                }
+            }
+        });
+
+        // 网络状态监控
+        if ('connection' in navigator) {
+            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            if (connection) {
+                console.log(`网络类型: ${connection.effectiveType}`);
+                console.log(`下行速度: ${connection.downlink}Mbps`);
+
+                // 根据网络状态调整配置
+                connection.addEventListener('change', () => {
+                    if (connection.effectiveType === 'slow-2g' || connection.effectiveType === '2g') {
+                        console.log('检测到慢速网络，启用节能模式');
+                        // 可以在这里调整轮询间隔等参数
+                    }
+                });
+            }
+        }
+    </script>
 </body>
 </html>

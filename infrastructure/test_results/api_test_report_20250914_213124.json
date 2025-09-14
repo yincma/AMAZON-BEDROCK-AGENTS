@@ -1,0 +1,151 @@
+{
+  "test_summary": {
+    "timestamp": "2025-09-14T21:31:24.028917",
+    "api_endpoint": "https://fe2kf91287.execute-api.us-east-1.amazonaws.com/dev",
+    "total_tests": 9,
+    "passed": 6,
+    "failed": 2,
+    "warnings": 1,
+    "success_rate": 66.7,
+    "duration_seconds": 54,
+    "avg_response_time_ms": 4890,
+    "max_response_time_ms": 29207
+  },
+  "test_results": [
+    {
+      "test_name": "基本连通性测试",
+      "status": "FAIL",
+      "details": "连通性异常 (状态码: 403)",
+      "response_time": 627,
+      "status_code": 403,
+      "response_data": null,
+      "error_message": null
+    },
+    {
+      "test_name": "CORS预检请求测试",
+      "status": "PASS",
+      "details": "CORS预检成功 (状态码: 200)",
+      "response_time": 200,
+      "status_code": 200,
+      "response_data": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token"
+      },
+      "error_message": null
+    },
+    {
+      "test_name": "PPT生成请求 - 正常场景",
+      "status": "FAIL",
+      "details": "请求失败 (状态码: 504)",
+      "response_time": 29207,
+      "status_code": 504,
+      "response_data": null,
+      "error_message": null
+    },
+    {
+      "test_name": "输入参数验证测试",
+      "status": "PASS",
+      "details": "参数验证正常 (5/5 通过)",
+      "response_time": 0,
+      "status_code": null,
+      "response_data": {
+        "validation_details": [
+          "✓ 空请求 - 正确返回400",
+          "✓ 空主题 - 正确返回400",
+          "✓ 负数页数 - 正确返回400",
+          "✓ 页数过大 - 正确返回400",
+          "✓ 主题过长 - 正确返回400"
+        ]
+      },
+      "error_message": null
+    },
+    {
+      "test_name": "状态查询测试",
+      "status": "PASS",
+      "details": "状态查询成功 (状态: completed)",
+      "response_time": 1681,
+      "status_code": 200,
+      "response_data": {
+        "presentation_id": "test-presentation-id-12345",
+        "status": "completed",
+        "progress": 100,
+        "topic": "演示文稿主题",
+        "page_count": 10,
+        "created_at": "2025-09-14T12:31:16.319334",
+        "updated_at": "2025-09-14T12:31:16.319351",
+        "current_step": "completed",
+        "message": "PPT生成完成",
+        "download_url": "https://example.com/download/test-presentation-id-12345",
+        "download_expires_in": 3600
+      },
+      "error_message": null
+    },
+    {
+      "test_name": "下载端点测试",
+      "status": "PASS",
+      "details": "下载端点响应正常",
+      "response_time": 1654,
+      "status_code": 404,
+      "response_data": null,
+      "error_message": null
+    },
+    {
+      "test_name": "并发请求测试 (5个并发)",
+      "status": "PASS",
+      "details": "并发测试成功 (5/5, 成功率: 100.0%)",
+      "response_time": 631,
+      "status_code": null,
+      "response_data": {
+        "successful_requests": 5,
+        "total_requests": 5,
+        "success_rate": 100.0,
+        "avg_response_time": 631,
+        "max_response_time": 817,
+        "total_test_time": 819
+      },
+      "error_message": null
+    },
+    {
+      "test_name": "性能基准测试 (10次请求)",
+      "status": "PASS",
+      "details": "性能测试通过 (平均: 231ms, 中位数: 233ms)",
+      "response_time": 231,
+      "status_code": null,
+      "response_data": {
+        "iterations": 10,
+        "successful_requests": 10,
+        "avg_response_time": 231,
+        "min_response_time": 219,
+        "max_response_time": 247,
+        "median_response_time": 233
+      },
+      "error_message": null
+    },
+    {
+      "test_name": "基本安全性检查",
+      "status": "WARN",
+      "details": "安全检查需要关注 (1/3)",
+      "response_time": 0,
+      "status_code": null,
+      "response_data": {
+        "security_test_details": [
+          "✗ SQL注入防护可能存在问题",
+          "✓ XSS测试处理正常",
+          "✗ 超长输入处理需要检查"
+        ]
+      },
+      "error_message": null
+    }
+  ],
+  "recommendations": [
+    "调查并修复失败的测试用例",
+    "检查警告项目，考虑改进API响应格式",
+    "成功率低于80%，建议全面检查API实现",
+    "平均响应时间较长，考虑性能优化",
+    "定期运行此测试套件确保API稳定性",
+    "添加更多边界条件和压力测试",
+    "实施API监控和告警机制",
+    "考虑添加缓存机制提高性能"
+  ]
+}

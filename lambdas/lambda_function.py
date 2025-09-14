@@ -23,7 +23,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
-def handler(event, context):
+def lambda_handler(event, context):
     """完整的PPT生成处理函数"""
     presentation_id = None
     status_manager = None
@@ -88,7 +88,7 @@ def handler(event, context):
         except Exception as e:
             logger.error(f"大纲生成失败: {str(e)}")
             status_manager.mark_failed(presentation_id, f"大纲生成失败: {str(e)}", "OUTLINE_GENERATION_FAILED")
-            return error_response(500, f"大纲生成失败: {str(e)}")
+            return format_error_response(500, f"大纲生成失败: {str(e)}")
 
         # 5. 生成详细内容
         logger.info("开始生成详细内容")
@@ -105,7 +105,7 @@ def handler(event, context):
         except Exception as e:
             logger.error(f"内容生成失败: {str(e)}")
             status_manager.mark_failed(presentation_id, f"内容生成失败: {str(e)}", "CONTENT_GENERATION_FAILED")
-            return error_response(500, f"内容生成失败: {str(e)}")
+            return format_error_response(500, f"内容生成失败: {str(e)}")
 
         # 6. 保存内容到S3
         logger.info("保存内容到S3")
@@ -128,7 +128,7 @@ def handler(event, context):
         except Exception as e:
             logger.error(f"保存内容到S3失败: {str(e)}")
             status_manager.mark_failed(presentation_id, f"保存内容失败: {str(e)}", "CONTENT_SAVE_FAILED")
-            return error_response(500, f"保存内容失败: {str(e)}")
+            return format_error_response(500, f"保存内容失败: {str(e)}")
 
         # 7. 生成图片
         logger.info("开始生成幻灯片图片")
@@ -219,7 +219,7 @@ def handler(event, context):
         except Exception as e:
             logger.error(f"PPT编译失败: {str(e)}")
             status_manager.mark_failed(presentation_id, f"PPT编译失败: {str(e)}", "PPT_COMPILATION_FAILED")
-            return error_response(500, f"PPT编译失败: {str(e)}")
+            return format_error_response(500, f"PPT编译失败: {str(e)}")
 
         # 9. 标记完成
         logger.info("PPT生成流程完成")
@@ -244,7 +244,7 @@ def handler(event, context):
             'headers': {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
+                'Access-Control-Allow-Headers': 'Content-Type,X-Api-Key,Accept',
                 'Access-Control-Allow-Methods': 'GET,POST,OPTIONS'
             },
             'body': json.dumps(response_data, ensure_ascii=False)
@@ -254,23 +254,23 @@ def handler(event, context):
         logger.error(f"JSON解析错误: {str(e)}")
         if presentation_id and status_manager:
             status_manager.mark_failed(presentation_id, f"请求格式错误: {str(e)}", "JSON_PARSE_ERROR")
-        return error_response(400, "Invalid JSON format")
+        return format_error_response(400, "Invalid JSON format")
 
     except Exception as e:
         logger.error(f"PPT生成过程中发生未预期错误: {str(e)}")
         if presentation_id and status_manager:
             status_manager.mark_failed(presentation_id, f"系统错误: {str(e)}", "SYSTEM_ERROR")
-        return error_response(500, "Internal server error")
+        return format_error_response(500, "Internal server error")
 
 
-def error_response(status_code: int, message: str) -> dict:
+def format_error_response(status_code: int, message: str) -> dict:
     """构建错误响应"""
     return {
         'statusCode': status_code,
         'headers': {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
+            'Access-Control-Allow-Headers': 'Content-Type,X-Api-Key,Accept',
             'Access-Control-Allow-Methods': 'GET,POST,OPTIONS'
         },
         'body': json.dumps({'error': message})
@@ -336,7 +336,7 @@ def handle_generate_request_with_retry(request_data: Dict, max_retries: int = 3)
     if isinstance(last_error, dict):
         return last_error
     else:
-        return error_response(503, f"Service temporarily unavailable after {max_retries} retries")
+        return format_error_response(503, f"Service temporarily unavailable after {max_retries} retries")
 
 
 # 测试用的简化函数

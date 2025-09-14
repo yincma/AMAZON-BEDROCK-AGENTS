@@ -13,7 +13,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
-def handler(event, context):
+def lambda_handler(event, context):
     """下载处理Lambda函数"""
     try:
         logger.info("开始处理下载请求")
@@ -35,7 +35,7 @@ def handler(event, context):
 
         if not presentation_id:
             logger.error("未提供presentation_id")
-            return error_response(400, 'Presentation ID required')
+            return format_error_response(400, 'Presentation ID required')
 
         logger.info(f"处理下载请求，presentation_id: {presentation_id}")
 
@@ -57,10 +57,10 @@ def handler(event, context):
             error_code = e.response['Error']['Code']
             if error_code == '404':
                 logger.warning(f"文件不存在: {pptx_key}")
-                return error_response(404, 'Presentation file not found')
+                return format_error_response(404, 'Presentation file not found')
             else:
                 logger.error(f"检查文件时出错: {str(e)}")
-                return error_response(500, 'Error checking file availability')
+                return format_error_response(500, 'Error checking file availability')
 
         # 检查查询参数以确定返回类型
         query_params = event.get('queryStringParameters') or {}
@@ -75,7 +75,7 @@ def handler(event, context):
             try:
                 if file_size > 10 * 1024 * 1024:  # 10MB限制
                     logger.warning(f"文件过大，不支持直接下载: {file_size} bytes")
-                    return error_response(413, 'File too large for direct download')
+                    return format_error_response(413, 'File too large for direct download')
 
                 # 获取文件内容
                 obj = s3_client.get_object(Bucket=bucket_name, Key=pptx_key)
@@ -96,7 +96,7 @@ def handler(event, context):
 
             except Exception as e:
                 logger.error(f"获取文件内容失败: {str(e)}")
-                return error_response(500, 'Error retrieving file content')
+                return format_error_response(500, 'Error retrieving file content')
 
         else:
             # 生成预签名下载URL（默认方式）
@@ -149,7 +149,7 @@ def handler(event, context):
                     'headers': {
                         'Content-Type': 'application/json',
                         'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
+                        'Access-Control-Allow-Headers': 'Content-Type,X-Api-Key,Accept',
                         'Access-Control-Allow-Methods': 'GET,POST,OPTIONS'
                     },
                     'body': json.dumps(response_data, ensure_ascii=False)
@@ -157,21 +157,21 @@ def handler(event, context):
 
             except Exception as e:
                 logger.error(f"生成预签名URL失败: {str(e)}")
-                return error_response(500, 'Error generating download URL')
+                return format_error_response(500, 'Error generating download URL')
 
     except Exception as e:
         logger.error(f"下载请求处理失败: {str(e)}")
-        return error_response(500, 'Internal server error')
+        return format_error_response(500, 'Internal server error')
 
 
-def error_response(status_code: int, message: str) -> dict:
+def format_error_response(status_code: int, message: str) -> dict:
     """构建错误响应"""
     return {
         'statusCode': status_code,
         'headers': {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
+            'Access-Control-Allow-Headers': 'Content-Type,X-Api-Key,Accept',
             'Access-Control-Allow-Methods': 'GET,POST,OPTIONS'
         },
         'body': json.dumps({'error': message})
@@ -211,7 +211,7 @@ def handle_download_request(presentation_id: str, s3_client=None, bucket_name: s
     if bucket_name:
         os.environ['S3_BUCKET'] = bucket_name
 
-    return handler(event, None)
+    return lambda_handler(event, None)
 
 
 def generate_presigned_download_url(presentation_id: str, s3_client=None, bucket_name: str = None,

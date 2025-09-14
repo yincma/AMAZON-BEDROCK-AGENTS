@@ -13,7 +13,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
-def handler(event, context):
+def lambda_handler(event, context):
     """状态查询Lambda函数 - 简化版"""
     try:
         logger.info("开始处理状态查询请求")
@@ -32,7 +32,7 @@ def handler(event, context):
 
         if not presentation_id:
             logger.error("未提供presentation_id")
-            return error_response(400, 'Presentation ID required')
+            return format_error_response(400, 'Presentation ID required')
 
         logger.info(f"查询presentation_id: {presentation_id}")
 
@@ -92,7 +92,7 @@ def handler(event, context):
             'headers': {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
+                'Access-Control-Allow-Headers': 'Content-Type,X-Api-Key,Accept',
                 'Access-Control-Allow-Methods': 'GET,POST,OPTIONS'
             },
             'body': json.dumps(response_data, ensure_ascii=False)
@@ -100,17 +100,17 @@ def handler(event, context):
 
     except Exception as e:
         logger.error(f"状态查询失败: {str(e)}")
-        return error_response(500, 'Internal server error')
+        return format_error_response(500, 'Internal server error')
 
 
-def error_response(status_code: int, message: str) -> dict:
+def format_error_response(status_code: int, message: str) -> dict:
     """构建错误响应"""
     return {
         'statusCode': status_code,
         'headers': {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
+            'Access-Control-Allow-Headers': 'Content-Type,X-Api-Key,Accept',
             'Access-Control-Allow-Methods': 'GET,POST,OPTIONS'
         },
         'body': json.dumps({'error': message})
@@ -126,7 +126,7 @@ def get_presentation_status(presentation_id: str) -> dict:
         'httpMethod': 'GET'
     }
 
-    return handler(event, None)
+    return lambda_handler(event, None)
 
 
 def check_multiple_statuses(presentation_ids: list) -> list:

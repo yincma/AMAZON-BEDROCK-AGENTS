@@ -69,7 +69,7 @@ def init_globals():
         logger.info("Initialized parallel processor")
 
 
-def handler(event, context):
+def lambda_handler(event, context):
     """
     优化的Lambda处理函数
 

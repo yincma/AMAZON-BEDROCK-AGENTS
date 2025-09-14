@@ -4,27 +4,45 @@ class DownloadManager {
         this.generator = generator;
     }
 
+    // 国际化辅助方法
+    t(key, fallback = '') {
+        return window.i18n ? window.i18n.t(key) : fallback;
+    }
+
     async downloadPresentation(presentationId) {
         try {
             // 显示下载中状态
             const downloadBtn = document.getElementById('downloadBtn');
             const originalText = downloadBtn.innerHTML;
-            downloadBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> 获取下载链接...';
+            downloadBtn.innerHTML = `<span class="spinner-border spinner-border-sm"></span> ${this.t('messages.download_started', '获取下载链接...')}`;
             downloadBtn.disabled = true;
 
+            // 使用统一的API端点和Key
+            const endpoint = getAPIEndpoint();
+            const apiKey = getAPIKey();
+
             // 获取下载链接
+            const headers = {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            };
+
+            // 如果有API Key，添加到headers
+            if (apiKey) {
+                headers['X-API-Key'] = apiKey;
+            }
+
             const response = await fetch(
-                `${this.generator.apiEndpoint}/download/${presentationId}`,
+                `${endpoint}/download/${presentationId}`,
                 {
                     method: 'GET',
-                    headers: {
-                        'X-API-Key': this.generator.apiKey
-                    }
+                    headers
                 }
             );
 
+            // 使用主应用的错误处理
             if (!response.ok) {
-                throw new Error(`获取下载链接失败: ${response.status}`);
+                await this.generator.handleHTTPResponse(response);
             }
 
             const data = await response.json();
@@ -33,7 +51,7 @@ class DownloadManager {
             if (data.download_url) {
                 // 如果是模拟链接，显示提示
                 if (data.download_url.includes('example.com')) {
-                    this.generator.showError('PPT下载功能仅在完整部署后可用');
+                    this.generator.showError(this.t('errors.download_not_available', 'PPT下载功能仅在完整部署后可用'));
                     return;
                 }
 
@@ -56,11 +74,11 @@ class DownloadManager {
 
         } catch (error) {
             console.error('下载失败:', error);
-            this.generator.showError(`下载失败: ${error.message}`);
+            this.generator.showError(`${this.t('errors.download_failed', '下载失败')}: ${error.message}`);
 
             // 恢复按钮
             const downloadBtn = document.getElementById('downloadBtn');
-            downloadBtn.innerHTML = '<i class="bi bi-download"></i> 下载 PPT';
+            downloadBtn.innerHTML = `<i class="bi bi-download"></i> ${this.t('result.download_button', '下载 PPT')}`;
             downloadBtn.disabled = false;
         }
     }
@@ -140,11 +158,11 @@ class DownloadManager {
             <div class="toast show" role="alert">
                 <div class="toast-header bg-success text-white">
                     <i class="bi bi-check-circle me-2"></i>
-                    <strong class="me-auto">下载成功</strong>
+                    <strong class="me-auto">${this.t('messages.download_completed', '下载成功')}</strong>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
                 </div>
                 <div class="toast-body">
-                    PPT 文件已开始下载，请查看浏览器下载列表。
+                    ${this.t('messages.download_check_browser', 'PPT 文件已开始下载，请查看浏览器下载列表。')}
                 </div>
             </div>
         `;
@@ -172,14 +190,14 @@ class DownloadManager {
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">演示文稿内容预览</h5>
+                        <h5 class="modal-title">${this.t('preview.title', '演示文稿内容预览')}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
                         <pre>${JSON.stringify(data, null, 2)}</pre>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">${this.t('common.close', '关闭')}</button>
                     </div>
                 </div>
             </div>
@@ -214,18 +232,30 @@ class DownloadManager {
     // 检查下载链接是否有效
     async checkDownloadLink(presentationId) {
         try {
+            const endpoint = getAPIEndpoint();
+            const apiKey = getAPIKey();
+
+            const headers = {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            };
+
+            // 如果有API Key，添加到headers
+            if (apiKey) {
+                headers['X-API-Key'] = apiKey;
+            }
+
             const response = await fetch(
-                `${this.generator.apiEndpoint}/download/${presentationId}`,
+                `${endpoint}/download/${presentationId}`,
                 {
-                    method: 'GET',
-                    headers: {
-                        'X-API-Key': this.generator.apiKey
-                    }
+                    method: 'HEAD', // 使用HEAD请求更高效
+                    headers
                 }
             );
 
             return response.ok;
         } catch (error) {
+            console.error('检查下载链接失败:', error);
             return false;
         }
     }

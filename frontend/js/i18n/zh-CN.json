@@ -1,0 +1,133 @@
+{
+  "app": {
+    "title": "AI PPT 生成助手",
+    "subtitle": "智能演示文稿生成器"
+  },
+  "nav": {
+    "language": "语言",
+    "language_zh": "中文",
+    "language_en": "English",
+    "select_language": "选择语言"
+  },
+  "config": {
+    "title": "API 配置",
+    "endpoint_placeholder": "API Gateway URL",
+    "api_key_placeholder": "API Key",
+    "save": "保存配置",
+    "test_connection": "测试连接"
+  },
+  "form": {
+    "title": "生成新的演示文稿",
+    "topic_label": "演示主题",
+    "topic_placeholder": "例如：人工智能在医疗领域的应用",
+    "topic_required": "请输入演示主题",
+    "page_count_label": "页数",
+    "audience_label": "目标受众",
+    "audience_general": "普通观众",
+    "audience_technical": "技术人员",
+    "audience_executive": "高层管理",
+    "audience_academic": "学术研究",
+    "generate_button": "开始生成",
+    "generating": "生成中..."
+  },
+  "progress": {
+    "title": "生成进度",
+    "initializing": "正在初始化...",
+    "creating_outline": "正在创建大纲...",
+    "generating_content": "正在生成内容...",
+    "processing_images": "正在处理图片...",
+    "compiling": "正在编译演示文稿...",
+    "finalizing": "正在完成最后步骤...",
+    "completed": "生成完成！",
+    "analyzing": "解析主题，准备生成大纲",
+    "ai_structure": "使用 AI 创建演示文稿结构",
+    "detailed_content": "为每页生成详细内容和演讲备注",
+    "suitable_images": "为幻灯片创建或搜索合适的图片",
+    "final_assembly": "组装最终的演示文稿文件",
+    "success_generated": "演示文稿已生成成功",
+    "preparing_download": "正在准备下载..."
+  },
+  "result": {
+    "title": "生成完成！",
+    "generation_time": "生成时间",
+    "file_size": "文件大小",
+    "download_button": "下载 PPT",
+    "new_button": "生成新的",
+    "calculating": "计算中..."
+  },
+  "history": {
+    "title": "历史记录",
+    "clear": "清除",
+    "clear_confirm": "确定要清除所有历史记录吗？",
+    "empty": "暂无历史记录",
+    "status_processing": "生成中",
+    "status_completed": "已完成",
+    "status_failed": "失败",
+    "status_pending": "等待中",
+    "pages": "页",
+    "minutes_ago": "分钟前",
+    "hours_ago": "小时前"
+  },
+  "tips": {
+    "title": "使用提示",
+    "tip1": "主题描述越详细，生成效果越好",
+    "tip2": "建议页数控制在 10-15 页",
+    "tip3": "生成过程约需 2-3 分钟",
+    "tip4": "支持中英文内容生成",
+    "tip5": "生成的 PPT 可直接编辑"
+  },
+  "errors": {
+    "config_missing": "请先配置 API Gateway URL 和 API Key",
+    "api_error": "API 错误",
+    "network_error": "网络连接错误",
+    "timeout_error": "请求超时",
+    "generation_failed": "生成失败",
+    "download_failed": "下载失败",
+    "invalid_response": "服务器响应无效",
+    "retry_later": "请稍后重试",
+    "language_switch_failed": "语言切换失败"
+  },
+  "messages": {
+    "config_saved": "配置已保存",
+    "connection_test_success": "连接测试成功",
+    "connection_test_failed": "连接测试失败",
+    "generation_started": "开始生成演示文稿...",
+    "download_started": "获取下载链接...",
+    "download_completed": "下载成功",
+    "download_check_browser": "PPT 文件已开始下载，请查看浏览器下载列表。",
+    "language_switched": "语言已切换至",
+    "page_loaded": "页面加载完成"
+  },
+  "status": {
+    "ready": "就绪",
+    "connecting": "连接中...",
+    "processing": "处理中...",
+    "error": "错误",
+    "success": "成功",
+    "retrying": "重试中..."
+  },
+  "preview": {
+    "title": "演示文稿内容预览"
+  },
+  "common": {
+    "close": "关闭",
+    "cancel": "取消",
+    "confirm": "确认"
+  },
+  "demo": {
+    "title": "语言切换器UI优化演示",
+    "description": "这个演示展示了优化后的语言切换器设计，包含视觉反馈、动画效果和响应式设计",
+    "features_title": "优化特性",
+    "visual_feedback": "视觉反馈",
+    "responsive": "响应式设计",
+    "feature1": "悬停动画效果",
+    "feature2": "活动状态指示",
+    "feature3": "国旗图标标识",
+    "feature4": "移动端优化",
+    "feature5": "文本自适应",
+    "feature6": "布局一致性",
+    "test_area": "测试区域",
+    "test_instruction": "点击导航栏右上角的语言切换器进行测试：",
+    "test_tips": "切换语言时会看到动画效果和成功通知"
+  }
+}

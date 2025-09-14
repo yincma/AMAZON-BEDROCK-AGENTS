@@ -31,7 +31,7 @@ resource "aws_iam_role_policy_attachment" "lambda_basic_execution" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
-# Bedrock访问策略
+# Bedrock访问策略 - 精确权限控制
 resource "aws_iam_role_policy" "lambda_bedrock_policy" {
   name = "${var.project_name}-lambda-bedrock-policy-${var.environment}"
   role = aws_iam_role.image_lambda_role.id
@@ -40,18 +40,26 @@ resource "aws_iam_role_policy" "lambda_bedrock_policy" {
     Version = "2012-10-17"
     Statement = [
       {
+        Sid    = "BedrockModelInvoke"
         Effect = "Allow"
         Action = [
           "bedrock:InvokeModel",
-          "bedrock:InvokeModelWithResponseStream",
+          "bedrock:InvokeModelWithResponseStream"
+        ]
+        Resource = [
+          "arn:aws:bedrock:${var.aws_region}::foundation-model/amazon.nova-canvas-v1:0",
+          "arn:aws:bedrock:${var.aws_region}::foundation-model/stability.stable-diffusion-xl-v1",
+          "arn:aws:bedrock:${var.aws_region}::foundation-model/anthropic.claude-3-*"
+        ]
+      },
+      {
+        Sid    = "BedrockModelList"
+        Effect = "Allow"
+        Action = [
           "bedrock:ListFoundationModels",
           "bedrock:GetFoundationModel"
         ]
-        Resource = [
-          "arn:aws:bedrock:*::foundation-model/amazon.nova-canvas-v1*",
-          "arn:aws:bedrock:*::foundation-model/stability.stable-diffusion-xl-v1*",
-          "arn:aws:bedrock:*::foundation-model/*"
-        ]
+        Resource = "*"  # List操作需要通配符
       }
     ]
   })
@@ -83,7 +91,7 @@ resource "aws_iam_role_policy" "lambda_s3_policy" {
   })
 }
 
-# CloudWatch监控策略
+# CloudWatch监控策略 - 遵循最小权限原则
 resource "aws_iam_role_policy" "lambda_cloudwatch_policy" {
   name = "${var.project_name}-lambda-cloudwatch-policy-${var.environment}"
   role = aws_iam_role.image_lambda_role.id
@@ -92,16 +100,33 @@ resource "aws_iam_role_policy" "lambda_cloudwatch_policy" {
     Version = "2012-10-17"
     Statement = [
       {
+        Sid    = "CloudWatchMetricsAccess"
         Effect = "Allow"
         Action = [
-          "cloudwatch:PutMetricData",
+          "cloudwatch:PutMetricData"
+        ]
+        Resource = "*"  # CloudWatch指标需要通配符
+      },
+      {
+        Sid    = "CloudWatchLogsAccess"
+        Effect = "Allow"
+        Action = [
           "logs:CreateLogGroup",
           "logs:CreateLogStream",
-          "logs:PutLogEvents",
+          "logs:PutLogEvents"
+        ]
+        Resource = [
+          "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.project_name}-image-*"
+        ]
+      },
+      {
+        Sid    = "XRayTraceAccess"
+        Effect = "Allow"
+        Action = [
           "xray:PutTraceSegments",
           "xray:PutTelemetryRecords"
         ]
-        Resource = "*"
+        Resource = "*"  # X-Ray需要通配符
       }
     ]
   })

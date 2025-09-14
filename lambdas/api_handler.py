@@ -191,7 +191,7 @@ class APIHandler:
 
 
 
-def handler(event, context):
+def lambda_handler(event, context):
     """Lambda主处理函数"""
     try:
         # 处理OPTIONS请求（CORS预检）

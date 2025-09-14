@@ -145,7 +145,7 @@ class TraceManager:
         }
 
 
-def handler(event, context):
+def lambda_handler(event, context):
     """Lambda处理函数"""
     try:
         # 获取最近5分钟的追踪
@@ -240,6 +240,12 @@ def handler(event, context):
 
         return {
             'statusCode': 200,
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': 'Content-Type,X-Api-Key,Accept',
+                'Access-Control-Allow-Methods': 'GET,POST,OPTIONS'
+            },
             'body': json.dumps({
                 'traces_analyzed': len(trace_summaries),
                 'metrics_published': len(metrics_to_publish),
@@ -250,10 +256,21 @@ def handler(event, context):
 
     except Exception as e:
         print(f"Error processing traces: {e}")
-        return {
-            'statusCode': 500,
-            'body': json.dumps({'error': str(e)})
-        }
+        return format_error_response(500, 'Internal server error')
+
+
+def format_error_response(status_code: int, message: str) -> dict:
+    """构建标准化错误响应"""
+    return {
+        'statusCode': status_code,
+        'headers': {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': 'Content-Type,X-Api-Key,Accept',
+            'Access-Control-Allow-Methods': 'GET,POST,OPTIONS'
+        },
+        'body': json.dumps({'error': message})
+    }
 
 
 # 全局追踪管理器实例

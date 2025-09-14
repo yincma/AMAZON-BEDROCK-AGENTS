@@ -19,7 +19,7 @@ from src.config import DEFAULT_PAGE_COUNT, MIN_PAGE_COUNT, MAX_PAGE_COUNT
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-def handler(event, context):
+def lambda_handler(event, context):
     """Lambda处理函数
 
     Args:
@@ -118,37 +118,35 @@ def handler(event, context):
             'statusCode': 200,
             'headers': {
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': 'Content-Type,X-Api-Key,Accept',
+                'Access-Control-Allow-Methods': 'GET,POST,OPTIONS'
             },
             'body': json.dumps(response)
         }
 
     except ValueError as e:
         logger.error(f"参数错误: {str(e)}")
-        return {
-            'statusCode': 400,
-            'headers': {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-            },
-            'body': json.dumps({
-                'error': str(e)
-            })
-        }
+        return format_error_response(400, str(e))
 
     except Exception as e:
         logger.error(f"处理请求时出错: {str(e)}", exc_info=True)
-        return {
-            'statusCode': 500,
-            'headers': {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-            },
-            'body': json.dumps({
-                'error': '内部服务器错误',
-                'message': str(e)
-            })
-        }
+        return format_error_response(500, 'Internal server error')
+
+
+def format_error_response(status_code: int, message: str) -> dict:
+    """构建标准化错误响应"""
+    return {
+        'statusCode': status_code,
+        'headers': {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': 'Content-Type,X-Api-Key,Accept',
+            'Access-Control-Allow-Methods': 'GET,POST,OPTIONS'
+        },
+        'body': json.dumps({'error': message})
+    }
+
 
 # 本地测试
 if __name__ == "__main__":
@@ -164,5 +162,5 @@ if __name__ == "__main__":
     test_context = {}
 
     # 调用处理器
-    result = handler(test_event, test_context)
+    result = lambda_handler(test_event, test_context)
     print(json.dumps(result, indent=2, ensure_ascii=False))

@@ -24,7 +24,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
-def handler(event, context):
+def lambda_handler(event, context):
     """
     PPT编译Lambda处理函数
 
@@ -41,7 +41,7 @@ def handler(event, context):
         # 1. 解析请求
         presentation_id = extract_presentation_id(event)
         if not presentation_id:
-            return create_error_response(400, "presentation_id is required")
+            return format_error_response(400, "presentation_id is required")
 
         # 2. 检查临时空间
         try:
@@ -63,8 +63,8 @@ def handler(event, context):
             'headers': {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
-                'Access-Control-Allow-Methods': 'POST,OPTIONS'
+                'Access-Control-Allow-Headers': 'Content-Type,X-Api-Key,Accept',
+                'Access-Control-Allow-Methods': 'GET,POST,OPTIONS'
             },
             'body': json.dumps({
                 'presentation_id': presentation_id,
@@ -79,7 +79,7 @@ def handler(event, context):
 
     except Exception as e:
         logger.error(f"PPT compilation failed: {str(e)}", exc_info=True)
-        return create_error_response(500, f"Compilation failed: {str(e)}")
+        return format_error_response(500, f"Compilation failed: {str(e)}")
 
     finally:
         # 清理临时文件
@@ -129,7 +129,7 @@ def extract_presentation_id(event):
     return None
 
 
-def create_error_response(status_code, error_message):
+def format_error_response(status_code, error_message):
     """
     创建错误响应
 

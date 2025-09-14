@@ -1,0 +1,133 @@
+{
+  "app": {
+    "title": "AI PPT Generator",
+    "subtitle": "Intelligent Presentation Generator"
+  },
+  "nav": {
+    "language": "Language",
+    "language_zh": "中文",
+    "language_en": "English",
+    "select_language": "Select Language"
+  },
+  "config": {
+    "title": "API Configuration",
+    "endpoint_placeholder": "API Gateway URL",
+    "api_key_placeholder": "API Key",
+    "save": "Save Configuration",
+    "test_connection": "Test Connection"
+  },
+  "form": {
+    "title": "Generate New Presentation",
+    "topic_label": "Presentation Topic",
+    "topic_placeholder": "e.g., Application of Artificial Intelligence in Healthcare",
+    "topic_required": "Please enter presentation topic",
+    "page_count_label": "Page Count",
+    "audience_label": "Target Audience",
+    "audience_general": "General Audience",
+    "audience_technical": "Technical Personnel",
+    "audience_executive": "Executive Management",
+    "audience_academic": "Academic Research",
+    "generate_button": "Start Generation",
+    "generating": "Generating..."
+  },
+  "progress": {
+    "title": "Generation Progress",
+    "initializing": "Initializing...",
+    "creating_outline": "Creating outline...",
+    "generating_content": "Generating content...",
+    "processing_images": "Processing images...",
+    "compiling": "Compiling presentation...",
+    "finalizing": "Finalizing...",
+    "completed": "Generation completed!",
+    "analyzing": "Analyzing topic, preparing outline generation",
+    "ai_structure": "Using AI to create presentation structure",
+    "detailed_content": "Generating detailed content and speaker notes for each page",
+    "suitable_images": "Creating or searching for suitable images for slides",
+    "final_assembly": "Assembling final presentation file",
+    "success_generated": "Presentation generated successfully",
+    "preparing_download": "Preparing download..."
+  },
+  "result": {
+    "title": "Generation Completed!",
+    "generation_time": "Generation Time",
+    "file_size": "File Size",
+    "download_button": "Download PPT",
+    "new_button": "Generate New",
+    "calculating": "Calculating..."
+  },
+  "history": {
+    "title": "History",
+    "clear": "Clear",
+    "clear_confirm": "Are you sure you want to clear all history records?",
+    "empty": "No history records",
+    "status_processing": "Processing",
+    "status_completed": "Completed",
+    "status_failed": "Failed",
+    "status_pending": "Pending",
+    "pages": "pages",
+    "minutes_ago": "minutes ago",
+    "hours_ago": "hours ago"
+  },
+  "tips": {
+    "title": "Usage Tips",
+    "tip1": "More detailed topic descriptions yield better results",
+    "tip2": "Recommended page count: 10-15 pages",
+    "tip3": "Generation process takes approximately 2-3 minutes",
+    "tip4": "Supports both Chinese and English content generation",
+    "tip5": "Generated PPT files can be directly edited"
+  },
+  "errors": {
+    "config_missing": "Please configure API Gateway URL and API Key first",
+    "api_error": "API Error",
+    "network_error": "Network connection error",
+    "timeout_error": "Request timeout",
+    "generation_failed": "Generation failed",
+    "download_failed": "Download failed",
+    "invalid_response": "Invalid server response",
+    "retry_later": "Please retry later",
+    "language_switch_failed": "Language switch failed"
+  },
+  "messages": {
+    "config_saved": "Configuration saved",
+    "connection_test_success": "Connection test successful",
+    "connection_test_failed": "Connection test failed",
+    "generation_started": "Starting presentation generation...",
+    "download_started": "Getting download link...",
+    "download_completed": "Download successful",
+    "download_check_browser": "PPT file download started, please check your browser's download list.",
+    "language_switched": "Language switched to",
+    "page_loaded": "Page loaded successfully"
+  },
+  "status": {
+    "ready": "Ready",
+    "connecting": "Connecting...",
+    "processing": "Processing...",
+    "error": "Error",
+    "success": "Success",
+    "retrying": "Retrying..."
+  },
+  "preview": {
+    "title": "Presentation Content Preview"
+  },
+  "common": {
+    "close": "Close",
+    "cancel": "Cancel",
+    "confirm": "Confirm"
+  },
+  "demo": {
+    "title": "Language Switcher UI Optimization Demo",
+    "description": "This demo showcases the optimized language switcher design with visual feedback, animation effects, and responsive design",
+    "features_title": "Optimization Features",
+    "visual_feedback": "Visual Feedback",
+    "responsive": "Responsive Design",
+    "feature1": "Hover animation effects",
+    "feature2": "Active state indication",
+    "feature3": "Flag icon identification",
+    "feature4": "Mobile optimization",
+    "feature5": "Text adaptation",
+    "feature6": "Layout consistency",
+    "test_area": "Test Area",
+    "test_instruction": "Click the language switcher in the top right corner of the navigation bar to test:",
+    "test_tips": "You will see animation effects and success notifications when switching languages"
+  }
+}

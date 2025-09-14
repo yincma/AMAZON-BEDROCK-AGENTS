@@ -23,20 +23,37 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
-def handler(event, context):
-    """完整的PPT生成处理函数"""
+def lambda_handler(event, context):
+    """完整的PPT生成处理函数 - 支持异步模式"""
     presentation_id = None
     status_manager = None
+
+    # 处理OPTIONS请求（CORS预检）
+    if event.get('httpMethod') == 'OPTIONS':
+        return {
+            'statusCode': 200,
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': 'Content-Type,X-Api-Key,Accept,X-Amz-Date,Authorization,X-Amz-Security-Token',
+                'Access-Control-Allow-Methods': 'GET,POST,OPTIONS'
+            },
+            'body': json.dumps({'message': 'OK'})
+        }
+
+    # 检查是否是异步调用（来自SQS或Step Functions）
+    is_async_invocation = event.get('async_mode', False) or 'Records' in event
 
     try:
         # 获取环境变量
         bucket_name = os.environ.get('S3_BUCKET', 'ai-ppt-presentations-dev')
+        enable_async = os.environ.get('ENABLE_ASYNC_MODE', 'true').lower() == 'true'
 
         # 1. 解析和验证请求
-        logger.info("开始处理PPT生成请求")
+        logger.info(f"开始处理PPT生成请求 (异步模式: {enable_async})")
 
         # 添加随机初始延迟，减少并发冲突
-        ThrottleManager.add_initial_delay(max_delay=3.0)
+        ThrottleManager.add_initial_delay(max_delay=1.0 if enable_async else 3.0)
 
         body_str = event.get('body', '{}')
         if isinstance(body_str, dict):
@@ -51,7 +68,9 @@ def handler(event, context):
                 'statusCode': 400,
                 'headers': {
                     'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*'
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Headers': 'Content-Type,X-Api-Key,Accept',
+                    'Access-Control-Allow-Methods': 'GET,POST,OPTIONS'
                 },
                 'body': json.dumps({'error': error_msg})
             }
@@ -73,6 +92,50 @@ def handler(event, context):
         logger.info("创建初始状态")
         status_manager.create_status(presentation_id, topic, page_count)
 
+        # 如果启用异步模式且不是异步调用，立即返回
+        if enable_async and not is_async_invocation:
+            # 使用Lambda异步调用自己
+            import boto3
+            lambda_client = boto3.client('lambda')
+
+            # 准备异步调用的payload
+            async_payload = {
+                'async_mode': True,
+                'body': body,
+                'presentation_id': presentation_id
+            }
+
+            try:
+                # 异步调用自己
+                lambda_client.invoke(
+                    FunctionName=context.function_name,
+                    InvocationType='Event',  # 异步调用
+                    Payload=json.dumps(async_payload)
+                )
+                logger.info(f"异步任务已启动: {presentation_id}")
+            except Exception as e:
+                logger.error(f"启动异步任务失败: {str(e)}")
+                # 继续同步处理
+                enable_async = False
+
+            if enable_async:
+                # 立即返回，让客户端轮询状态
+                return {
+                    'statusCode': 202,  # Accepted
+                    'headers': {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Headers': 'Content-Type,X-Api-Key,Accept',
+                        'Access-Control-Allow-Methods': 'GET,POST,OPTIONS'
+                    },
+                    'body': json.dumps({
+                        'presentation_id': presentation_id,
+                        'status': 'processing',
+                        'message': 'PPT生成已开始，请通过状态接口查询进度',
+                        'status_url': f'/status/{presentation_id}'
+                    })
+                }
+
         # 4. 生成大纲
         logger.info("开始生成PPT大纲")
         status_manager.update_status(
@@ -88,7 +151,7 @@ def handler(event, context):
         except Exception as e:
             logger.error(f"大纲生成失败: {str(e)}")
             status_manager.mark_failed(presentation_id, f"大纲生成失败: {str(e)}", "OUTLINE_GENERATION_FAILED")
-            return error_response(500, f"大纲生成失败: {str(e)}")
+            return format_error_response(500, f"大纲生成失败: {str(e)}")
 
         # 5. 生成详细内容
         logger.info("开始生成详细内容")
@@ -105,7 +168,7 @@ def handler(event, context):
         except Exception as e:
             logger.error(f"内容生成失败: {str(e)}")
             status_manager.mark_failed(presentation_id, f"内容生成失败: {str(e)}", "CONTENT_GENERATION_FAILED")
-            return error_response(500, f"内容生成失败: {str(e)}")
+            return format_error_response(500, f"内容生成失败: {str(e)}")
 
         # 6. 保存内容到S3
         logger.info("保存内容到S3")
@@ -128,7 +191,7 @@ def handler(event, context):
         except Exception as e:
             logger.error(f"保存内容到S3失败: {str(e)}")
             status_manager.mark_failed(presentation_id, f"保存内容失败: {str(e)}", "CONTENT_SAVE_FAILED")
-            return error_response(500, f"保存内容失败: {str(e)}")
+            return format_error_response(500, f"保存内容失败: {str(e)}")
 
         # 7. 生成图片
         logger.info("开始生成幻灯片图片")
@@ -219,7 +282,7 @@ def handler(event, context):
         except Exception as e:
             logger.error(f"PPT编译失败: {str(e)}")
             status_manager.mark_failed(presentation_id, f"PPT编译失败: {str(e)}", "PPT_COMPILATION_FAILED")
-            return error_response(500, f"PPT编译失败: {str(e)}")
+            return format_error_response(500, f"PPT编译失败: {str(e)}")
 
         # 9. 标记完成
         logger.info("PPT生成流程完成")
@@ -244,7 +307,7 @@ def handler(event, context):
             'headers': {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
+                'Access-Control-Allow-Headers': 'Content-Type,X-Api-Key,Accept',
                 'Access-Control-Allow-Methods': 'GET,POST,OPTIONS'
             },
             'body': json.dumps(response_data, ensure_ascii=False)
@@ -254,23 +317,23 @@ def handler(event, context):
         logger.error(f"JSON解析错误: {str(e)}")
         if presentation_id and status_manager:
             status_manager.mark_failed(presentation_id, f"请求格式错误: {str(e)}", "JSON_PARSE_ERROR")
-        return error_response(400, "Invalid JSON format")
+        return format_error_response(400, "Invalid JSON format")
 
     except Exception as e:
         logger.error(f"PPT生成过程中发生未预期错误: {str(e)}")
         if presentation_id and status_manager:
             status_manager.mark_failed(presentation_id, f"系统错误: {str(e)}", "SYSTEM_ERROR")
-        return error_response(500, "Internal server error")
+        return format_error_response(500, "Internal server error")
 
 
-def error_response(status_code: int, message: str) -> dict:
+def format_error_response(status_code: int, message: str) -> dict:
     """构建错误响应"""
     return {
         'statusCode': status_code,
         'headers': {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
+            'Access-Control-Allow-Headers': 'Content-Type,X-Api-Key,Accept',
             'Access-Control-Allow-Methods': 'GET,POST,OPTIONS'
         },
         'body': json.dumps({'error': message})
@@ -294,7 +357,7 @@ def handle_request_with_timeout(request_data: Dict, timeout_seconds: int) -> Dic
             'body': json.dumps(request_data),
             'httpMethod': 'POST'
         }
-        result = handler(event, None)
+        result = lambda_handler(event, None)
         signal.alarm(0)  # 取消超时
         return result
     except TimeoutError:
@@ -314,7 +377,7 @@ def handle_generate_request_with_retry(request_data: Dict, max_retries: int = 3)
                 'body': json.dumps(request_data),
                 'httpMethod': 'POST'
             }
-            result = handler(event, None)
+            result = lambda_handler(event, None)
 
             # 检查是否成功
             if result.get('statusCode') == 200:
@@ -336,7 +399,7 @@ def handle_generate_request_with_retry(request_data: Dict, max_retries: int = 3)
     if isinstance(last_error, dict):
         return last_error
     else:
-        return error_response(503, f"Service temporarily unavailable after {max_retries} retries")
+        return format_error_response(503, f"Service temporarily unavailable after {max_retries} retries")
 
 
 # 测试用的简化函数
@@ -353,4 +416,4 @@ def generate_ppt_sync(topic: str, page_count: int = 5, style: str = 'professiona
         'httpMethod': 'POST'
     }
 
-    return handler(event, None)
+    return lambda_handler(event, None)
