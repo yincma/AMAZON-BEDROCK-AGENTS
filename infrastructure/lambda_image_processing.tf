@@ -150,6 +150,12 @@ resource "null_resource" "build_lambda_packages" {
     image_service = filemd5("../lambdas/image_processing_service.py")
     image_config  = filemd5("../lambdas/image_config.py")
     build_script  = filemd5("../scripts/package_lambdas.sh")
+
+    # 添加时间戳触发器，确保每次destroy后都会重建
+    rebuild_timestamp = timestamp()
+
+    # 强制重建版本号（可手动修改触发重建）
+    force_rebuild_version = "v2"
   }
 
   provisioner "local-exec" {
@@ -253,8 +259,8 @@ resource "aws_lambda_function" "image_generator_optimized" {
     mode = "Active"
   }
 
-  # 并发控制
-  reserved_concurrent_executions = 50
+  # 并发控制 - 暂时禁用以避免账户限制问题
+  # reserved_concurrent_executions = 20
 
   # VPC配置（可选）
   dynamic "vpc_config" {
@@ -346,11 +352,13 @@ resource "aws_lambda_alias" "image_generator_live" {
   function_name    = aws_lambda_function.image_generator.function_name
   function_version = aws_lambda_function.image_generator.version
 
-  routing_config {
-    additional_version_weights = {
-      "$LATEST" = 0.1  # 10%流量给最新版本
-    }
-  }
+  # 暂时禁用routing_config，因为$LATEST不是有效的数字版本
+  # 如果需要流量分割，请使用具体的数字版本号
+  # routing_config {
+  #   additional_version_weights = {
+  #     "1" = 0.1  # 10%流量给版本1
+  #   }
+  # }
 }
 
 resource "aws_lambda_alias" "image_generator_optimized_live" {
@@ -361,11 +369,13 @@ resource "aws_lambda_alias" "image_generator_optimized_live" {
   function_name    = aws_lambda_function.image_generator_optimized[0].function_name
   function_version = aws_lambda_function.image_generator_optimized[0].version
 
-  routing_config {
-    additional_version_weights = {
-      "$LATEST" = 0.1  # 10%流量给最新版本
-    }
-  }
+  # 暂时禁用routing_config，因为$LATEST不是有效的数字版本
+  # 如果需要流量分割，请使用具体的数字版本号
+  # routing_config {
+  #   additional_version_weights = {
+  #     "1" = 0.1  # 10%流量给版本1
+  #   }
+  # }
 }
 
 # Lambda函数URL（可选，用于直接HTTP访问）
@@ -379,7 +389,7 @@ resource "aws_lambda_function_url" "image_generator_url" {
   cors {
     allow_credentials = false
     allow_origins     = ["*"]
-    allow_methods     = ["POST", "OPTIONS"]
+    allow_methods     = ["*"]  # 使用通配符允许所有方法
     allow_headers     = ["date", "keep-alive", "content-type", "x-api-key", "authorization"]
     expose_headers    = ["date", "keep-alive"]
     max_age          = 86400
@@ -396,7 +406,7 @@ resource "aws_lambda_function_url" "image_generator_optimized_url" {
   cors {
     allow_credentials = false
     allow_origins     = ["*"]
-    allow_methods     = ["POST", "OPTIONS"]
+    allow_methods     = ["*"]  # 使用通配符允许所有方法
     allow_headers     = ["date", "keep-alive", "content-type", "x-api-key", "authorization"]
     expose_headers    = ["date", "keep-alive"]
     max_age          = 86400

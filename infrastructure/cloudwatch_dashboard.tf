@@ -13,9 +13,9 @@ resource "aws_cloudwatch_dashboard" "ai_ppt_performance" {
           region  = var.aws_region
           stacked = false
           metrics = [
-            ["AI-PPT-Assistant/ImageGeneration", "total_requests", { stat = "Sum", label = "Total Requests" }],
-            [".", "successful_generations", { stat = "Sum", label = "Successful" }],
-            [".", "generation_errors", { stat = "Sum", label = "Failed" }]
+            ["AI-PPT-Assistant/ImageGeneration", "total_requests"],
+            ["AI-PPT-Assistant/ImageGeneration", "successful_generations"],
+            ["AI-PPT-Assistant/ImageGeneration", "generation_errors"]
           ]
           period = 300
           stat   = "Sum"
@@ -40,8 +40,8 @@ resource "aws_cloudwatch_dashboard" "ai_ppt_performance" {
           region  = var.aws_region
           stacked = false
           metrics = [
-            ["AI-PPT-Assistant/ImageGeneration", "api_latency_amazon.nova-canvas-v1:0", { stat = "Average", label = "Nova Canvas" }],
-            [".", "api_latency_stability.stable-diffusion-xl-v1", { stat = "Average", label = "Stability AI" }]
+            ["AI-PPT-Assistant/ImageGeneration", "api_latency_amazon.nova-canvas-v1:0"],
+            ["AI-PPT-Assistant/ImageGeneration", "api_latency_stability.stable-diffusion-xl-v1"]
           ]
           period = 60
           stat   = "Average"
@@ -67,8 +67,8 @@ resource "aws_cloudwatch_dashboard" "ai_ppt_performance" {
           region  = var.aws_region
           stacked = false
           metrics = [
-            ["AI-PPT-Assistant/ImageGeneration", "cache_hits", { stat = "Sum", label = "Cache Hits" }],
-            [".", "cache_misses", { stat = "Sum", label = "Cache Misses" }]
+            ["AI-PPT-Assistant/ImageGeneration", "cache_hits"],
+            ["AI-PPT-Assistant/ImageGeneration", "cache_misses"]
           ]
           period = 300
           stat   = "Sum"
@@ -117,7 +117,7 @@ resource "aws_cloudwatch_dashboard" "ai_ppt_performance" {
           title  = "Average Generation Time"
           region = var.aws_region
           metrics = [
-            ["AI-PPT-Assistant/ImageGeneration", "GenerationLatency", { stat = "Average" }]
+            ["AI-PPT-Assistant/ImageGeneration", "GenerationLatency"]
           ]
           period = 300
           stat   = "Average"
@@ -162,8 +162,8 @@ resource "aws_cloudwatch_dashboard" "ai_ppt_performance" {
           region  = var.aws_region
           stacked = false
           metrics = [
-            ["AI-PPT-Assistant/ImageGeneration", "concurrent_requests", { stat = "Maximum", label = "Max Concurrent" }],
-            [".", "concurrent_requests", { stat = "Average", label = "Avg Concurrent" }]
+            ["AI-PPT-Assistant/ImageGeneration", "concurrent_requests"],
+            ["AI-PPT-Assistant/ImageGeneration", "concurrent_requests"]
           ]
           period = 60
           stat   = "Average"
@@ -188,10 +188,10 @@ resource "aws_cloudwatch_dashboard" "ai_ppt_performance" {
           region  = var.aws_region
           stacked = true
           metrics = [
-            ["AI-PPT-Assistant/ImageGeneration", "errors", { stat = "Sum", dimensions = { ErrorType = "RateLimit" } }],
-            ["...", { dimensions = { ErrorType = "ModelFailure" } }],
-            ["...", { dimensions = { ErrorType = "Timeout" } }],
-            ["...", { dimensions = { ErrorType = "InvalidRequest" } }]
+            ["AI-PPT-Assistant/ImageGeneration", "errors"],
+            ["AI-PPT-Assistant/ImageGeneration", "errors"],
+            ["AI-PPT-Assistant/ImageGeneration", "errors"],
+            ["AI-PPT-Assistant/ImageGeneration", "errors"]
           ]
           period = 300
           stat   = "Sum"
@@ -210,9 +210,9 @@ resource "aws_cloudwatch_dashboard" "ai_ppt_performance" {
           title  = "Model Usage Distribution"
           region = var.aws_region
           metrics = [
-            ["AI-PPT-Assistant/ImageGeneration", "model_usage", { stat = "Sum", dimensions = { Model = "amazon.nova-canvas-v1:0" } }],
-            ["...", { dimensions = { Model = "stability.stable-diffusion-xl-v1" } }],
-            ["...", { dimensions = { Model = "placeholder" } }]
+            ["AI-PPT-Assistant/ImageGeneration", "model_usage"],
+            ["AI-PPT-Assistant/ImageGeneration", "model_usage"],
+            ["AI-PPT-Assistant/ImageGeneration", "model_usage"]
           ]
           period = 3600
           stat   = "Sum"
@@ -232,8 +232,8 @@ resource "aws_cloudwatch_dashboard" "ai_ppt_performance" {
           region  = var.aws_region
           stacked = false
           metrics = [
-            ["AI-PPT-Assistant/ImageGeneration", "batch_size", { stat = "Average", label = "Avg Batch Size" }],
-            [".", "batch_generation_time", { stat = "Average", label = "Avg Batch Time (s)", yAxis = "right" }]
+            ["AI-PPT-Assistant/ImageGeneration", "batch_size"],
+            ["AI-PPT-Assistant/ImageGeneration", "batch_generation_time"]
           ]
           period = 300
           stat   = "Average"
@@ -263,9 +263,9 @@ resource "aws_cloudwatch_dashboard" "ai_ppt_performance" {
           region  = var.aws_region
           stacked = false
           metrics = [
-            ["AWS/Lambda", "Duration", { stat = "Average", dimensions = { FunctionName = "ai-ppt-image-generator" } }],
-            [".", "Errors", { stat = "Sum", dimensions = { FunctionName = "ai-ppt-image-generator" }, yAxis = "right" }],
-            [".", "ConcurrentExecutions", { stat = "Maximum", dimensions = { FunctionName = "ai-ppt-image-generator" } }]
+            ["AWS/Lambda", "Duration"],
+            ["AWS/Lambda", "Errors"],
+            ["AWS/Lambda", "ConcurrentExecutions"]
           ]
           period = 60
           stat   = "Average"
@@ -326,11 +326,11 @@ resource "aws_cloudwatch_dashboard" "ai_ppt_performance" {
               label      = "Health Score"
               id         = "e1"
             }],
-            ["AI-PPT-Assistant/ImageGeneration", "successful_generations", { id = "m1", visible = false }],
-            [".", "total_requests", { id = "m2", visible = false }],
-            [".", "cache_hits", { id = "m3", visible = false }],
-            [".", "cache_misses", { id = "m4", visible = false }],
-            ["AWS/Lambda", "Errors", { id = "m5", visible = false, dimensions = { FunctionName = "ai-ppt-image-generator" } }]
+            ["AI-PPT-Assistant/ImageGeneration", "successful_generations"],
+            ["AI-PPT-Assistant/ImageGeneration", "total_requests"],
+            ["AI-PPT-Assistant/ImageGeneration", "cache_hits"],
+            ["AI-PPT-Assistant/ImageGeneration", "cache_misses"],
+            ["AWS/Lambda", "Errors"]
           ]
           period = 900
           stat   = "Average"
@@ -468,11 +468,12 @@ resource "aws_sns_topic" "alerts" {
   name = "ai-ppt-performance-alerts"
 }
 
-resource "aws_sns_topic_subscription" "alert_email" {
-  topic_arn = aws_sns_topic.alerts.arn
-  protocol  = "email"
-  endpoint  = var.alert_email
-}
+# 暂时注释掉 email 订阅，因为没有配置有效的 email 地址
+# resource "aws_sns_topic_subscription" "alert_email" {
+#   topic_arn = aws_sns_topic.alerts.arn
+#   protocol  = "email"
+#   endpoint  = var.alert_email
+# }
 
 # Outputs
 output "dashboard_url" {
