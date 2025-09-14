@@ -11,7 +11,7 @@ import PyPDF2
 from io import BytesIO
 
 # 统一使用的模型
-MODEL_ID = "anthropic.claude-sonnet-4-20250514-v1:0"
+MODEL_ID = "us.anthropic.claude-sonnet-4-20250514-v1:0"  # inference profile
 
 
 class DocumentAnalyzerAgent:

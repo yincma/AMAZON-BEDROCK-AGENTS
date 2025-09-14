@@ -16,33 +16,64 @@ import logging
 from datetime import datetime
 from botocore.exceptions import ClientError
 
-from .config import (
-    BEDROCK_MODEL_ID,
-    MAX_TOKENS,
-    TEMPERATURE,
-    DEFAULT_PAGE_COUNT,
-    MIN_PAGE_COUNT,
-    MAX_PAGE_COUNT,
-    S3_BUCKET,
-    AWS_REGION
-)
-from .prompts import OUTLINE_PROMPT, CONTENT_PROMPT
-from .utils import retry_with_backoff, validate_json_response, clean_text
-from .constants import Config
-from .exceptions import (
-    ContentGenerationError,
-    OutlineGenerationError,
-    BedrockAPIError,
-    handle_aws_error
-)
-from .common.s3_service import S3Service
-from .types import (
-    OutlineData,
-    SlideContent,
-    PresentationContent,
-    BedrockRequest,
-    BedrockResponse
-)
+try:
+    from .bedrock_adapter import BedrockAdapter
+    from .config import (
+        BEDROCK_MODEL_ID,
+        MAX_TOKENS,
+        TEMPERATURE,
+        DEFAULT_PAGE_COUNT,
+        MIN_PAGE_COUNT,
+        MAX_PAGE_COUNT,
+        S3_BUCKET,
+        AWS_REGION
+    )
+    from .prompts import OUTLINE_PROMPT, CONTENT_PROMPT
+    from .utils import retry_with_backoff, validate_json_response, clean_text
+    from .constants import Config
+    from .exceptions import (
+        ContentGenerationError,
+        OutlineGenerationError,
+        BedrockAPIError,
+        handle_aws_error
+    )
+    from .common.s3_service import S3Service
+    from .types import (
+        OutlineData,
+        SlideContent,
+        PresentationContent,
+        BedrockRequest,
+        BedrockResponse
+    )
+except ImportError:
+    from config import (
+        BEDROCK_MODEL_ID,
+        MAX_TOKENS,
+        TEMPERATURE,
+        DEFAULT_PAGE_COUNT,
+        MIN_PAGE_COUNT,
+        MAX_PAGE_COUNT,
+        S3_BUCKET,
+        AWS_REGION
+    )
+    from prompts import OUTLINE_PROMPT, CONTENT_PROMPT
+    from utils import retry_with_backoff, validate_json_response, clean_text
+    from constants import Config
+    from bedrock_adapter import BedrockAdapter
+    from exceptions import (
+        ContentGenerationError,
+        OutlineGenerationError,
+        BedrockAPIError,
+        handle_aws_error
+    )
+    from common.s3_service import S3Service
+    from types import (
+        OutlineData,
+        SlideContent,
+        PresentationContent,
+        BedrockRequest,
+        BedrockResponse
+    )
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -66,7 +97,7 @@ class ContentGenerator:
         self.s3_service = s3_service
         self.model_id = BEDROCK_MODEL_ID
 
-    @retry_with_backoff(max_retries=Config.Bedrock.MAX_RETRIES)
+    @retry_with_backoff(max_retries=5, initial_delay=2, backoff_factor=3, max_delay=60)
     def _invoke_bedrock(self, prompt: str) -> str:
         """调用Bedrock API
 
@@ -77,20 +108,13 @@ class ContentGenerator:
             模型响应文本
         """
         try:
-            # 构建请求体 - 使用 Claude 3 Messages API 格式
-            request_body = {
-                "anthropic_version": "bedrock-2023-05-31",
-                "messages": [
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ],
-                "max_tokens": Config.Bedrock.DEFAULT_MAX_TOKENS,
-                "temperature": Config.Bedrock.DEFAULT_TEMPERATURE,
-                "top_p": Config.Bedrock.DEFAULT_TOP_P,
-                "top_k": Config.Bedrock.DEFAULT_TOP_K
-            }
+            # 使用适配器构建请求体
+            request_body = BedrockAdapter.prepare_request(
+                model_id=self.model_id,
+                prompt=prompt,
+                max_tokens=Config.Bedrock.DEFAULT_MAX_TOKENS,
+                temperature=Config.Bedrock.DEFAULT_TEMPERATURE
+            )
 
             # 调用Bedrock
             response = self.bedrock_client.invoke_model(
@@ -100,9 +124,9 @@ class ContentGenerator:
                 body=json.dumps(request_body)
             )
 
-            # 解析响应 - Claude 3 格式
+            # 使用适配器解析响应
             response_body = json.loads(response['body'].read())
-            completion = response_body.get('content', [{}])[0].get('text', '')
+            completion = BedrockAdapter.parse_response(self.model_id, response_body)
 
             if not completion:
                 raise BedrockAPIError(

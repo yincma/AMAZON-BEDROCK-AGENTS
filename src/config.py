@@ -8,7 +8,10 @@ S3_BUCKET = os.environ.get('S3_BUCKET', 'ai-ppt-presentations-dev')
 AWS_REGION = os.environ.get('AWS_REGION', 'us-east-1')
 
 # Bedrock配置
-BEDROCK_MODEL_ID = "anthropic.claude-sonnet-4-20250514-v1:0"
+# BEDROCK_MODEL_ID = "us.anthropic.claude-sonnet-4-20250514-v1:0"  # Claude 4 - 限流严重
+# BEDROCK_MODEL_ID = "anthropic.claude-3-5-sonnet-20241022-v2:0"  # Claude 3.5 v2 - 也需要inference profile
+# BEDROCK_MODEL_ID = "us.anthropic.claude-3-5-sonnet-20241022-v2:0"  # 使用3.5 v2的inference profile
+BEDROCK_MODEL_ID = "amazon.nova-pro-v1:0"  # Amazon Nova Pro - AWS原生模型，配额更高
 MAX_TOKENS = 20000
 TEMPERATURE = 0.7
 

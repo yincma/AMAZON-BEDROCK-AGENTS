@@ -17,6 +17,7 @@ from src.ppt_compiler import PPTCompiler
 from src.status_manager import StatusManager, PresentationStatus
 from src.validators import RequestValidator
 from src.common.s3_service import S3Service
+from src.throttle_manager import ThrottleManager
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -33,6 +34,9 @@ def handler(event, context):
 
         # 1. 解析和验证请求
         logger.info("开始处理PPT生成请求")
+
+        # 添加随机初始延迟，减少并发冲突
+        ThrottleManager.add_initial_delay(max_delay=3.0)
 
         body_str = event.get('body', '{}')
         if isinstance(body_str, dict):
@@ -136,14 +140,10 @@ def handler(event, context):
         )
 
         try:
-            # 导入图片生成器
-            current_dir = os.path.dirname(os.path.abspath(__file__))
-            if current_dir not in sys.path:
-                sys.path.insert(0, current_dir)
-
+            # 导入图片生成器 - 使用相对导入
             from image_generator import ImageGenerator
             from image_processing_service import ImageProcessingService
-            from image_s3_service import ImageS3Service
+            from image_s3_service import S3Service as ImageS3Service
 
             # 初始化图片生成器
             image_generator = ImageGenerator(

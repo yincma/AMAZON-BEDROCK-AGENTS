@@ -12,13 +12,13 @@ import boto3
 try:
     from .image_config import CONFIG
     from .image_exceptions import ImageProcessingError, NovaServiceError
-    from .image_s3_service import ImageS3Service
+    from .image_s3_service import S3Service as ImageS3Service
     from .services.bedrock_image_service import BedrockImageService
     from .services.image_cache_service import ImageCacheService
 except ImportError:
     from image_config import CONFIG
     from image_exceptions import ImageProcessingError, NovaServiceError
-    from image_s3_service import ImageS3Service
+    from image_s3_service import S3Service as ImageS3Service
     from services.bedrock_image_service import BedrockImageService
     from services.image_cache_service import ImageCacheService
 
@@ -45,7 +45,9 @@ class ImageProcessingServiceV2:
             enable_cache: 是否启用缓存
         """
         self.bedrock_service = BedrockImageService(bedrock_client)
-        self.s3_service = s3_service or ImageS3Service()
+        import os
+        bucket_name = os.environ.get('S3_BUCKET_NAME', 'default-bucket')
+        self.s3_service = s3_service or ImageS3Service(bucket_name=bucket_name)
         self.cache_service = cache_service or ImageCacheService()
         self.enable_cache = enable_cache
 

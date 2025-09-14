@@ -322,24 +322,25 @@ done
 build_image_generator
 
 # 构建优化版本（如果文件存在）
-if [[ -f "$LAMBDA_DIR/image_processing_service_optimized.py" ]]; then
-    log_info "构建优化图片生成服务..."
+build_image_generator_optimized() {
+    if [[ -f "$LAMBDA_DIR/image_processing_service_optimized.py" ]]; then
+        log_info "构建优化图片生成服务..."
 
-    local build_path="$BUILD_DIR/image_generator_optimized"
-    local output_file="$DIST_DIR/image_generator_optimized.zip"
+        local build_path="$BUILD_DIR/image_generator_optimized"
+        local output_file="$DIST_DIR/image_generator_optimized.zip"
 
-    mkdir -p "$build_path"
+        mkdir -p "$build_path"
 
-    # 安装依赖
-    install_dependencies "$build_path" ""
+        # 安装依赖
+        install_dependencies "$build_path" ""
 
-    # 复制源代码
-    cp "$LAMBDA_DIR/image_processing_service_optimized.py" "$build_path/"
-    cp "$LAMBDA_DIR/image_config.py" "$build_path/"
-    cp "$LAMBDA_DIR/image_exceptions.py" "$build_path/"
+        # 复制源代码
+        cp "$LAMBDA_DIR/image_processing_service_optimized.py" "$build_path/"
+        cp "$LAMBDA_DIR/image_config.py" "$build_path/"
+        cp "$LAMBDA_DIR/image_exceptions.py" "$build_path/"
 
-    # 创建简化的优化处理器
-    cat > "$build_path/lambda_function.py" << 'EOF'
+        # 创建简化的优化处理器
+        cat > "$build_path/lambda_function.py" << 'EOF'
 """优化图片生成服务Lambda处理器"""
 
 import json
@@ -433,11 +434,15 @@ def lambda_handler(event, context):
         }
 EOF
 
-    cd "$build_path"
-    zip -r "$output_file" . -x "__pycache__/*" "*.pyc"
+        cd "$build_path"
+        zip -r "$output_file" . -x "__pycache__/*" "*.pyc"
 
-    log_success "优化图片生成服务包构建完成: $output_file"
-fi
+        log_success "优化图片生成服务包构建完成: $output_file"
+    fi
+}
+
+# 调用优化构建函数
+build_image_generator_optimized
 
 echo "✅ 所有Lambda函数打包完成"
 echo ""

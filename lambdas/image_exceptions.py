@@ -24,3 +24,16 @@ class InvalidPromptException(ImageGenerationException):
 class ImageProcessingError(Exception): pass
 class NovaServiceError(Exception): pass
 class PlaceholderFallbackWarning(Warning): pass
+
+# 添加缺失的异常类
+class ImageGeneratorError(ImageGenerationException):
+    """图片生成器错误"""
+    pass
+
+class S3OperationError(ImageGenerationException):
+    """S3操作错误"""
+    pass
+
+class ValidationError(ImageGenerationException):
+    """验证错误"""
+    pass

@@ -17,7 +17,7 @@ try:
         ImageGeneratorError, NovaServiceError, S3OperationError,
         ImageProcessingError, ValidationError
     )
-    from .image_s3_service import ImageS3Service
+    from .image_s3_service import S3Service as ImageS3Service
     from .image_processing_service import ImageProcessingService
 except ImportError:
     # 当作为独立模块导入时使用
@@ -26,7 +26,7 @@ except ImportError:
         ImageGeneratorError, NovaServiceError, S3OperationError,
         ImageProcessingError, ValidationError
     )
-    from image_s3_service import ImageS3Service
+    from image_s3_service import S3Service as ImageS3Service
     from image_processing_service import ImageProcessingService
 
 # 配置日志
@@ -314,7 +314,9 @@ def optimize_image_prompt(slide_content: Dict[str, Any], target_audience: str = 
 
 def generate_image(prompt: str, presentation_id: str, slide_number: int, s3_client) -> Dict[str, Any]:
     """向后兼容的图片生成函数"""
-    s3_service = ImageS3Service(s3_client=s3_client)
+    import os
+    bucket_name = os.environ.get('S3_BUCKET_NAME', 'default-bucket')
+    s3_service = ImageS3Service(bucket_name=bucket_name)
     generator = ImageGenerator(s3_service=s3_service)
     return generator.generate_image(prompt, presentation_id, slide_number)
 
@@ -322,27 +324,35 @@ def generate_image(prompt: str, presentation_id: str, slide_number: int, s3_clie
 def save_image_to_s3(image_data: bytes, presentation_id: str, slide_number: int,
                      s3_client, bucket_name: str = None) -> str:
     """向后兼容的S3保存函数"""
-    s3_service = ImageS3Service(s3_client=s3_client, bucket_name=bucket_name)
+    import os
+    bucket_name = bucket_name or os.environ.get('S3_BUCKET_NAME', 'default-bucket')
+    s3_service = ImageS3Service(bucket_name=bucket_name)
     return s3_service.save_image(image_data, presentation_id, slide_number)
 
 
 def save_image_to_s3_with_retry(image_data: bytes, presentation_id: str, slide_number: int,
                                s3_client, max_retries: int = 3, bucket_name: str = None) -> Dict[str, Any]:
     """向后兼容的带重试的S3保存函数"""
-    s3_service = ImageS3Service(s3_client=s3_client, bucket_name=bucket_name)
+    import os
+    bucket_name = bucket_name or os.environ.get('S3_BUCKET_NAME', 'default-bucket')
+    s3_service = ImageS3Service(bucket_name=bucket_name)
     return s3_service.save_image_with_retry(image_data, presentation_id, slide_number, max_retries)
 
 
 def generate_consistent_images(slides: List[Dict[str, Any]], presentation_id: str, s3_client) -> List[Dict[str, Any]]:
     """向后兼容的一致性图片生成函数"""
-    s3_service = ImageS3Service(s3_client=s3_client)
+    import os
+    bucket_name = os.environ.get('S3_BUCKET_NAME', 'default-bucket')
+    s3_service = ImageS3Service(bucket_name=bucket_name)
     generator = ImageGenerator(s3_service=s3_service)
     return generator.generate_consistent_images(slides, presentation_id)
 
 
 def batch_generate_images(slides: List[Dict[str, Any]], presentation_id: str, s3_client) -> List[Dict[str, Any]]:
     """向后兼容的批量图片生成函数"""
-    s3_service = ImageS3Service(s3_client=s3_client)
+    import os
+    bucket_name = os.environ.get('S3_BUCKET_NAME', 'default-bucket')
+    s3_service = ImageS3Service(bucket_name=bucket_name)
     generator = ImageGenerator(s3_service=s3_service)
     return generator.batch_generate_images(slides, presentation_id)
 
@@ -356,7 +366,9 @@ def batch_generate_prompts(slides: List[Dict[str, Any]]) -> List[str]:
 def save_image_with_metadata(image_data: bytes, metadata: Dict[str, Any],
                            presentation_id: str, slide_number: int, s3_client) -> Dict[str, Any]:
     """向后兼容的带元数据保存函数"""
-    s3_service = ImageS3Service(s3_client=s3_client)
+    import os
+    bucket_name = os.environ.get('S3_BUCKET_NAME', 'default-bucket')
+    s3_service = ImageS3Service(bucket_name=bucket_name)
     return s3_service.save_image_with_metadata(image_data, metadata, presentation_id, slide_number)
 
 
@@ -382,7 +394,9 @@ def create_placeholder_image(width: int = 1200, height: int = 800, text: str = "
 def generate_for_presentation(presentation_data: Dict[str, Any], presentation_id: str,
                             s3_client) -> Dict[str, Any]:
     """向后兼容的演示文稿图片生成函数"""
-    s3_service = ImageS3Service(s3_client=s3_client)
+    import os
+    bucket_name = os.environ.get('S3_BUCKET_NAME', 'default-bucket')
+    s3_service = ImageS3Service(bucket_name=bucket_name)
     generator = ImageGenerator(s3_service=s3_service)
     return generator.generate_for_presentation(presentation_data, presentation_id)
 

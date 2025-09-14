@@ -9,7 +9,7 @@ from botocore.config import Config
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # 统一使用的模型
-MODEL_ID = "anthropic.claude-sonnet-4-20250514-v1:0"
+MODEL_ID = "us.anthropic.claude-sonnet-4-20250514-v1:0"  # inference profile
 
 
 class ContentGeneratorAgent:
