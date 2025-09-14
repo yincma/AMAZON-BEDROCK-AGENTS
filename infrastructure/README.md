@@ -1,185 +1,71 @@
-# AI PPT Assistant - Terraform Infrastructure
+# AI PPT Assistant Infrastructure
 
-根据项目规范要求，从 CloudFormation 迁移到 Terraform 的基础设施即代码 (IaC) 实现。
+## Phase 1: Minimal MVP Infrastructure
 
-## ✅ 架构合规性检查
+### 资源清单
+- **S3 Bucket**: 存储生成的PPT文件
+- **Lambda Functions**:
+  - generate_ppt: 处理PPT生成请求
+  - status_check: 检查生成状态
+  - download_ppt: 提供下载链接
+- **API Gateway**: RESTful API端点
+- **IAM Roles**: Lambda执行权限
 
-| 规范要求 | 实现状态 | 说明 |
-|---------|---------|------|
-| **Terraform IaC** | ✅ 已实现 | 完全使用 Terraform 替代 CloudFormation |
-| **Python 3.13 运行时** | ✅ 已配置 | Lambda 函数使用 Python 3.13 |
-| **Claude 4.0/4.1 模型** | ✅ 已配置 | Orchestrator 使用 Claude 4.1，其他使用 Claude 4.0 |
-| **arm64 架构** | ✅ 已配置 | Lambda 使用 Graviton2 (arm64) 优化成本 |
-| **简单 API Key 认证** | ✅ 已配置 | 仅使用 API Key，无 OAuth2/JWT |
-| **30天 S3 生命周期** | ✅ 已配置 | 30天后转为 IA 存储 |
-| **DynamoDB TTL** | ✅ 已配置 | 30天 TTL 自动清理 |
-| **按需计费模式** | ✅ 已配置 | DynamoDB 使用 PAY_PER_REQUEST |
+### 部署步骤
 
-## 📁 项目结构
-
-```
-infrastructure/
-├── main.tf                 # 主配置文件
-├── variables.tf            # 变量定义
-├── outputs.tf              # 输出定义
-├── terraform.tfvars.example # 配置示例
-├── config/
-│   └── environments/       # 环境配置
-│       ├── dev.tfvars
-│       ├── staging.tfvars
-│       └── prod.tfvars
-└── modules/
-    ├── s3/                 # S3 存储模块
-    │   ├── main.tf
-    │   ├── variables.tf
-    │   └── outputs.tf
-    ├── dynamodb/           # DynamoDB 会话管理模块
-    │   ├── main.tf
-    │   ├── variables.tf
-    │   └── outputs.tf
-    ├── api_gateway/        # API Gateway 模块（待实现）
-    ├── lambda/             # Lambda 函数模块（待实现）
-    ├── lambda_layers/      # Lambda Layers 模块（待实现）
-    └── bedrock/            # Bedrock Agents 模块（待实现）
-```
-
-## 🚀 部署步骤
-
-### 1. 初始化 Terraform
+1. **初始化Terraform**
 ```bash
-cd infrastructure
 terraform init
 ```
 
-### 2. 配置环境变量
+2. **配置变量**
 ```bash
 cp terraform.tfvars.example terraform.tfvars
-# 编辑 terraform.tfvars 填入实际值
+# 编辑terraform.tfvars设置你的AWS区域和环境
 ```
 
-### 3. 验证配置
+3. **验证配置**
 ```bash
 terraform validate
-terraform plan -var-file="config/environments/dev.tfvars"
+terraform plan
 ```
 
-### 4. 部署基础设施
+4. **部署基础设施**
 ```bash
-terraform apply -var-file="config/environments/dev.tfvars"
+terraform apply
 ```
 
-## 🔧 模块功能
+### API端点
 
-### S3 模块
-- ✅ AES256 服务器端加密
-- ✅ 版本控制启用
-- ✅ 30天后转为 STANDARD_IA 存储
-- ✅ 30天后删除旧版本
-- ✅ CORS 配置支持预签名 URL
-- ✅ 公共访问完全阻止
+部署后将获得以下API端点：
 
-### DynamoDB 模块
-- ✅ 按需计费模式 (PAY_PER_REQUEST)
-- ✅ 30天 TTL 自动清理
-- ✅ 服务器端加密
-- ✅ 时间点恢复启用
-- ✅ Global Secondary Index 支持用户查询
-- ✅ 可选的任务跟踪表
-
-## 📊 关键配置
-
-### Lambda 运行时
-```hcl
-runtime      = "python3.13"  # 最新 Python 版本
-architecture = "arm64"        # Graviton2 成本优化
-```
-
-### Bedrock 模型配置
-```hcl
-agents = {
-  orchestrator = {
-    model_id    = "anthropic.claude-4-1"  # Claude 4.1
-    temperature = 0.7
+- **生成PPT**: `POST /generate`
+  ```json
+  {
+    "topic": "Your presentation topic"
   }
-  content = {
-    model_id    = "anthropic.claude-4-0"  # Claude 4.0
-    temperature = 0.8
-  }
-  visual = {
-    model_id    = "anthropic.claude-4-0"  # Claude 4.0
-    temperature = 0.9
-  }
-  compiler = {
-    model_id    = "anthropic.claude-4-0"  # Claude 4.0
-    temperature = 0.3
-  }
-}
-```
+  ```
 
-### 内存配置
-```hcl
-memory_sizes = {
-  create_outline         = 1024  # 内容生成
-  generate_content       = 1024
-  generate_image         = 2048  # 图像生成需要更多内存
-  compile_pptx          = 2048  # 文件编译
-}
-```
+- **检查状态**: `GET /status/{presentation_id}`
 
-### 超时配置
-```hcl
-timeouts = {
-  api_handler    = 30   # API 网关超时
-  compile_pptx   = 300  # 5分钟用于后台处理
-}
-```
+- **下载PPT**: `GET /download/{presentation_id}`
 
-## 📝 待完成任务
+### 环境变量
 
-- [ ] Lambda 函数模块实现
-- [ ] API Gateway 模块实现
-- [ ] Lambda Layers 依赖打包
-- [ ] Bedrock Agents 配置模块
-- [ ] Step Functions 工作流（如需要）
-- [ ] CloudWatch 监控和告警
-- [ ] 集成测试脚本
-
-## 🔒 安全考虑
-
-1. **最小权限原则**: 所有 IAM 角色仅授予必要权限
-2. **加密**: S3 和 DynamoDB 均启用加密
-3. **私有访问**: S3 bucket 完全阻止公共访问
-4. **API 认证**: 使用 API Key 进行简单认证
-5. **VPC Endpoints**: 建议使用 VPC endpoints 进行服务间通信
-
-## 📈 成本优化
-
-1. **arm64 架构**: Lambda 使用 Graviton2 降低成本
-2. **按需计费**: DynamoDB 使用 PAY_PER_REQUEST
-3. **S3 生命周期**: 30天后自动转为廉价存储
-4. **Reserved Concurrency**: Lambda 函数预热避免冷启动
-
-## 🛠️ 故障排除
-
-### Terraform 状态锁定
-```bash
-terraform force-unlock <lock-id>
-```
+Lambda函数使用以下环境变量：
+- `S3_BUCKET`: PPT存储桶名称
+- `ENVIRONMENT`: 部署环境（dev/staging/prod）
+- `AWS_REGION`: AWS区域
 
 ### 清理资源
+
 ```bash
-terraform destroy -var-file="config/environments/dev.tfvars"
+terraform destroy
 ```
 
-### 查看资源变更
-```bash
-terraform show
-terraform state list
-```
+### 注意事项
 
-## 📚 参考文档
-
-- [Terraform AWS Provider](https://registry.terraform.io/providers/hashicorp/aws/latest)
-- [Amazon Bedrock Terraform Resources](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/bedrock_agent)
-- [项目设计文档](../.spec-workflow/specs/ai-ppt-assistant/design.md)
-- [项目任务文档](../.spec-workflow/specs/ai-ppt-assistant/tasks.md)
+1. 当前Lambda函数为占位代码，仅提供基本响应
+2. 实际的PPT生成逻辑将在后续阶段实现
+3. 确保AWS账户有足够权限创建这些资源
+4. S3桶名称包含账户ID以确保全局唯一性

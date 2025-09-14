@@ -1,0 +1,1345 @@
+openapi: 3.1.0
+info:
+  title: AI PPT Assistant API
+  description: |
+    RESTful API for AI-powered PowerPoint presentation generation and management.
+
+    ## Overview
+    The AI PPT Assistant API enables automated creation and management of PowerPoint presentations using Amazon Bedrock AI models. The API supports asynchronous presentation generation, real-time status tracking, slide-level editing, and comprehensive resource management.
+
+    ## Features
+    - **AI-Powered Generation**: Create presentations using advanced language models
+    - **Asynchronous Processing**: Non-blocking presentation generation with status tracking
+    - **Slide-Level Editing**: Granular control over individual slides
+    - **Image Generation**: AI-generated images and regeneration capabilities
+    - **Version Control**: ETag-based optimistic concurrency control
+    - **Secure Downloads**: Presigned URL downloads with configurable expiration
+    - **Health Monitoring**: Built-in health checks and system monitoring
+
+    ## Rate Limits
+    - **Generate Presentation**: 10 requests per minute per API key
+    - **Status Checks**: 60 requests per minute per API key
+    - **Slide Updates**: 30 requests per minute per API key
+    - **Image Generation**: 5 requests per minute per API key
+
+    ## Error Handling
+    All errors follow RFC 7807 Problem Details format with consistent error codes and detailed messages.
+
+  version: 1.0.0
+  contact:
+    name: AI PPT Assistant Support
+    email: support@ai-ppt-assistant.com
+    url: https://docs.ai-ppt-assistant.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: https://ai-ppt-assistant.com/terms
+
+servers:
+  - url: https://api.ai-ppt-assistant.com/v1
+    description: Production server
+  - url: https://staging-api.ai-ppt-assistant.com/v1
+    description: Staging server
+  - url: https://dev-api.ai-ppt-assistant.com/v1
+    description: Development server
+
+tags:
+  - name: Generation
+    description: Presentation generation operations
+  - name: Management
+    description: Presentation management operations
+  - name: Slides
+    description: Individual slide operations
+  - name: Images
+    description: Image generation and management
+  - name: Health
+    description: System health and monitoring
+
+paths:
+  /presentations/generate:
+    post:
+      tags: [Generation]
+      summary: Generate a new presentation
+      description: |
+        Creates a new AI-generated PowerPoint presentation based on the provided topic and parameters.
+
+        The generation process is asynchronous and returns immediately with a presentation ID.
+        Use the status endpoint to track generation progress.
+
+        **Rate Limit**: 10 requests per minute per API key
+      operationId: generatePresentation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateRequest'
+            examples:
+              basic:
+                summary: Basic presentation generation
+                value:
+                  topic: "Introduction to Machine Learning"
+                  page_count: 8
+                  style: "professional"
+                  language: "en"
+                  audience: "technical"
+              advanced:
+                summary: Advanced presentation with metadata
+                value:
+                  topic: "Cloud Computing Architecture"
+                  page_count: 12
+                  style: "business"
+                  language: "en"
+                  audience: "executive"
+                  metadata:
+                    industry: "technology"
+                    complexity_level: "advanced"
+                    include_diagrams: true
+      responses:
+        '202':
+          $ref: '#/components/responses/GenerateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+
+  /presentations/{presentationId}/status:
+    get:
+      tags: [Management]
+      summary: Get presentation generation status
+      description: |
+        Retrieves the current status and progress of a presentation generation task.
+
+        Returns detailed progress information including current step, completion percentage,
+        and estimated time remaining.
+
+        **Rate Limit**: 60 requests per minute per API key
+      operationId: getPresentationStatus
+      parameters:
+        - $ref: '#/components/parameters/PresentationId'
+      responses:
+        '200':
+          $ref: '#/components/responses/StatusResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+
+  /presentations/{presentationId}/download:
+    get:
+      tags: [Management]
+      summary: Get presentation download URL
+      description: |
+        Generates a secure, time-limited download URL for the completed presentation file.
+
+        The URL expires after 1 hour by default and can only be used to download the file.
+
+        **Rate Limit**: 30 requests per minute per API key
+      operationId: downloadPresentation
+      parameters:
+        - $ref: '#/components/parameters/PresentationId'
+        - name: format
+          in: query
+          description: Download format (only pptx supported currently)
+          schema:
+            type: string
+            enum: [pptx]
+            default: pptx
+      responses:
+        '200':
+          $ref: '#/components/responses/DownloadResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+
+  /presentations/{presentationId}/slides/{slideNumber}:
+    patch:
+      tags: [Slides]
+      summary: Update specific slide content
+      description: |
+        Updates the content of a specific slide in the presentation.
+
+        Supports partial updates - only provided fields will be modified.
+        Uses ETag for optimistic concurrency control to prevent conflicts.
+
+        **Rate Limit**: 30 requests per minute per API key
+      operationId: updateSlide
+      parameters:
+        - $ref: '#/components/parameters/PresentationId'
+        - $ref: '#/components/parameters/SlideNumber'
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SlideUpdateRequest'
+            examples:
+              title_update:
+                summary: Update slide title
+                value:
+                  title: "New Slide Title"
+              content_update:
+                summary: Update slide content
+                value:
+                  content: "Updated slide content with new information"
+                  speaker_notes: "Additional notes for the presenter"
+              layout_change:
+                summary: Change slide layout
+                value:
+                  layout: "two_column"
+                  style_overrides:
+                    background_color: "#F5F5F5"
+                    font_size: 14
+      responses:
+        '200':
+          $ref: '#/components/responses/SlideUpdateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+
+  /presentations/{presentationId}/slides/{slideNumber}/image:
+    post:
+      tags: [Images]
+      summary: Regenerate image for specific slide
+      description: |
+        Regenerates the image for a specific slide using AI image generation.
+
+        Supports custom prompts and styling options. The process is asynchronous -
+        use the returned task ID to track generation progress.
+
+        **Rate Limit**: 5 requests per minute per API key
+      operationId: regenerateSlideImage
+      parameters:
+        - $ref: '#/components/parameters/PresentationId'
+        - $ref: '#/components/parameters/SlideNumber'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImageRegenerateRequest'
+            examples:
+              basic:
+                summary: Basic image regeneration
+                value:
+                  prompt: "A professional diagram showing data flow"
+                  style: "diagram"
+              custom_dimensions:
+                summary: Custom image dimensions
+                value:
+                  prompt: "Modern office workspace illustration"
+                  style: "realistic"
+                  dimensions:
+                    width: 1024
+                    height: 768
+                  seed: 12345
+      responses:
+        '202':
+          $ref: '#/components/responses/ImageRegenerateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+
+  /presentations/{presentationId}/regenerate:
+    post:
+      tags: [Management]
+      summary: Regenerate presentation content
+      description: |
+        Regenerates specific parts or the entire presentation with new content.
+
+        Supports selective regeneration of slides, images, or content while
+        optionally preserving existing styling and structure.
+
+        **Rate Limit**: 5 requests per minute per API key
+      operationId: regeneratePresentation
+      parameters:
+        - $ref: '#/components/parameters/PresentationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegenerateRequest'
+            examples:
+              regenerate_all:
+                summary: Regenerate entire presentation
+                value:
+                  scope: "all"
+                  options:
+                    preserve_style: true
+                    preserve_images: false
+              regenerate_specific_slides:
+                summary: Regenerate specific slides
+                value:
+                  scope: "slides"
+                  slide_numbers: [2, 4, 6]
+                  options:
+                    preserve_style: true
+                    new_prompt: "Focus more on practical examples"
+      responses:
+        '202':
+          $ref: '#/components/responses/RegenerateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+
+  /presentations/{presentationId}:
+    delete:
+      tags: [Management]
+      summary: Delete presentation
+      description: |
+        Permanently deletes a presentation and all associated resources.
+
+        This action cannot be undone. Use the force parameter to delete
+        presentations that are currently being processed.
+
+        **Rate Limit**: 10 requests per minute per API key
+      operationId: deletePresentation
+      parameters:
+        - $ref: '#/components/parameters/PresentationId'
+        - name: force
+          in: query
+          description: Force deletion even if presentation is being processed
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '204':
+          description: Presentation deleted successfully
+          headers:
+            X-Cleanup-Task-Id:
+              description: ID of the async cleanup task
+              schema:
+                type: string
+                format: uuid
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+
+  /tasks/{taskId}/status:
+    get:
+      tags: [Management]
+      summary: Get task status
+      description: |
+        Retrieves the status of an asynchronous task (image generation, regeneration, etc.).
+
+        Use this endpoint to track the progress of long-running operations.
+
+        **Rate Limit**: 60 requests per minute per API key
+      operationId: getTaskStatus
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          description: Task identifier
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Task status retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  task_id:
+                    type: string
+                    format: uuid
+                  status:
+                    type: string
+                    enum: [pending, processing, completed, failed]
+                  progress:
+                    type: integer
+                    minimum: 0
+                    maximum: 100
+                  created_at:
+                    type: string
+                    format: date-time
+                  completed_at:
+                    type: string
+                    format: date-time
+                  result:
+                    type: object
+                    description: Task result (when completed)
+                  error:
+                    $ref: '#/components/schemas/ErrorDetail'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+
+  /health:
+    get:
+      tags: [Health]
+      summary: Health check endpoint
+      description: |
+        Returns the health status of the API and its dependencies.
+
+        Includes status of AWS services, database connections, and AI model availability.
+
+        **Rate Limit**: No limit (use responsibly)
+      operationId: healthCheck
+      responses:
+        '200':
+          description: System health status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [healthy, degraded, unhealthy]
+                  timestamp:
+                    type: string
+                    format: date-time
+                  version:
+                    type: string
+                  uptime:
+                    type: integer
+                    description: Uptime in seconds
+                  services:
+                    type: object
+                    properties:
+                      bedrock:
+                        $ref: '#/components/schemas/ServiceHealth'
+                      s3:
+                        $ref: '#/components/schemas/ServiceHealth'
+                      dynamodb:
+                        $ref: '#/components/schemas/ServiceHealth'
+                      lambda:
+                        $ref: '#/components/schemas/ServiceHealth'
+                  metrics:
+                    type: object
+                    properties:
+                      requests_per_minute:
+                        type: number
+                      average_generation_time:
+                        type: number
+                      success_rate:
+                        type: number
+                        minimum: 0
+                        maximum: 1
+        '503':
+          description: Service unavailable
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [unhealthy]
+                  timestamp:
+                    type: string
+                    format: date-time
+                  errors:
+                    type: array
+                    items:
+                      type: string
+
+components:
+  parameters:
+    PresentationId:
+      name: presentationId
+      in: path
+      required: true
+      description: Unique presentation identifier (UUID format)
+      schema:
+        type: string
+        format: uuid
+        pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+      example: "550e8400-e29b-41d4-a716-446655440000"
+
+    SlideNumber:
+      name: slideNumber
+      in: path
+      required: true
+      description: Slide number (1-based index)
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+      example: 5
+
+    IfMatch:
+      name: If-Match
+      in: header
+      description: ETag for optimistic concurrency control
+      schema:
+        type: string
+      example: '"33a64df551425fcc55e4d42a148795d9f25f89d4"'
+
+  schemas:
+    GenerateRequest:
+      type: object
+      required: [topic]
+      properties:
+        topic:
+          type: string
+          minLength: 3
+          maxLength: 200
+          description: Main topic or theme of the presentation
+          example: "Introduction to Artificial Intelligence"
+        page_count:
+          type: integer
+          minimum: 3
+          maximum: 20
+          default: 10
+          description: Number of slides to generate
+          example: 8
+        style:
+          type: string
+          enum: [professional, creative, minimal, academic, business]
+          default: professional
+          description: Visual style of the presentation
+          example: "professional"
+        language:
+          type: string
+          enum: [en, zh, ja, ko, es, fr, de, it, pt, ru]
+          default: en
+          description: Content language (ISO 639-1 codes)
+          example: "en"
+        audience:
+          type: string
+          enum: [general, technical, executive, academic, children, sales]
+          default: general
+          description: Target audience type
+          example: "technical"
+        metadata:
+          type: object
+          additionalProperties: true
+          description: Additional metadata for customization
+          example:
+            industry: "technology"
+            complexity_level: "intermediate"
+            include_diagrams: true
+
+    SlideUpdateRequest:
+      type: object
+      minProperties: 1
+      properties:
+        title:
+          type: string
+          maxLength: 100
+          description: Slide title
+          example: "Key Benefits of AI"
+        content:
+          type: string
+          maxLength: 2000
+          description: Main slide content
+          example: "• Improved efficiency\n• Better decision making\n• Cost reduction"
+        speaker_notes:
+          type: string
+          maxLength: 1000
+          description: Speaker notes for this slide
+          example: "Emphasize the ROI aspects when presenting to executives"
+        layout:
+          type: string
+          enum: [title, content, two_column, image_left, image_right, comparison, bullet_points]
+          description: Slide layout template
+          example: "two_column"
+        style_overrides:
+          type: object
+          properties:
+            background_color:
+              type: string
+              pattern: '^#[0-9A-Fa-f]{6}$'
+              description: Background color in hex format
+              example: "#F5F5F5"
+            font_family:
+              type: string
+              enum: [Arial, Calibri, Times, Helvetica, Georgia]
+              description: Font family
+              example: "Calibri"
+            font_size:
+              type: integer
+              minimum: 8
+              maximum: 72
+              description: Font size in points
+              example: 14
+            text_color:
+              type: string
+              pattern: '^#[0-9A-Fa-f]{6}$'
+              description: Text color in hex format
+              example: "#333333"
+
+    ImageRegenerateRequest:
+      type: object
+      properties:
+        prompt:
+          type: string
+          maxLength: 500
+          description: Custom image generation prompt
+          example: "A modern office workspace with computers and natural lighting"
+        style:
+          type: string
+          enum: [realistic, cartoon, abstract, diagram, infographic, photo, illustration]
+          default: realistic
+          description: Image style
+          example: "diagram"
+        dimensions:
+          type: object
+          properties:
+            width:
+              type: integer
+              minimum: 256
+              maximum: 2048
+              default: 1024
+              description: Image width in pixels
+            height:
+              type: integer
+              minimum: 256
+              maximum: 2048
+              default: 768
+              description: Image height in pixels
+          example:
+            width: 1024
+            height: 768
+        seed:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+          description: Seed for reproducible generation
+          example: 12345
+        quality:
+          type: string
+          enum: [standard, high, premium]
+          default: standard
+          description: Image generation quality
+          example: "high"
+
+    RegenerateRequest:
+      type: object
+      required: [scope]
+      properties:
+        scope:
+          type: string
+          enum: [all, slides, images, content]
+          description: What to regenerate
+          example: "slides"
+        slide_numbers:
+          type: array
+          items:
+            type: integer
+            minimum: 1
+          description: Specific slides to regenerate (required if scope is 'slides')
+          example: [2, 4, 6, 8]
+        options:
+          type: object
+          properties:
+            preserve_style:
+              type: boolean
+              default: true
+              description: Keep existing visual styling
+            preserve_images:
+              type: boolean
+              default: false
+              description: Keep existing images
+            new_prompt:
+              type: string
+              maxLength: 500
+              description: New prompt to guide regeneration
+            language:
+              type: string
+              enum: [en, zh, ja, ko, es, fr, de, it, pt, ru]
+              description: Change content language
+          example:
+            preserve_style: true
+            preserve_images: false
+            new_prompt: "Focus more on practical implementation examples"
+
+    PresentationStatus:
+      type: object
+      properties:
+        presentation_id:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        status:
+          type: string
+          enum: [pending, processing, content_generated, compiling, completed, failed]
+          example: "processing"
+        progress:
+          type: integer
+          minimum: 0
+          maximum: 100
+          example: 65
+        current_step:
+          type: string
+          enum: [initializing, outline_generation, content_generation, image_generation, ppt_compilation, finalizing]
+          example: "content_generation"
+        estimated_completion_time:
+          type: integer
+          minimum: 0
+          description: Estimated seconds until completion
+          example: 120
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:35:00Z"
+        completed_at:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:40:00Z"
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
+        metadata:
+          type: object
+          properties:
+            topic:
+              type: string
+              example: "Introduction to Machine Learning"
+            page_count:
+              type: integer
+              example: 10
+            file_size:
+              type: integer
+              description: File size in bytes
+              example: 2457600
+            version:
+              type: integer
+              example: 1
+            generation_time:
+              type: number
+              description: Total generation time in seconds
+              example: 45.2
+
+    ErrorDetail:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Error code identifier
+          example: "VALIDATION_ERROR"
+        message:
+          type: string
+          description: Human-readable error message
+          example: "Topic length must be between 3 and 200 characters"
+        details:
+          type: object
+          additionalProperties: true
+          description: Additional error context
+          example:
+            field: "topic"
+            provided_length: 2
+            min_length: 3
+            max_length: 200
+        timestamp:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00Z"
+        request_id:
+          type: string
+          format: uuid
+          description: Unique identifier for this request
+          example: "req_550e8400-e29b-41d4-a716-446655440000"
+        trace_id:
+          type: string
+          description: Distributed tracing identifier
+          example: "1-63f7b3c0-7a5e3f8d9c2b1a0e"
+
+    ValidationError:
+      type: object
+      properties:
+        field:
+          type: string
+          description: Field name that failed validation
+          example: "page_count"
+        message:
+          type: string
+          description: Validation error message
+          example: "Must be between 3 and 20"
+        value:
+          description: The invalid value provided
+          example: 25
+        constraint:
+          type: string
+          description: Validation constraint that was violated
+          example: "max:20"
+
+    ServiceHealth:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+          example: "healthy"
+        latency:
+          type: number
+          description: Response time in milliseconds
+          example: 15.7
+        last_check:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00Z"
+        error:
+          type: string
+          description: Error message if unhealthy
+          example: "Connection timeout"
+
+  responses:
+    GenerateResponse:
+      description: Presentation generation initiated successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              presentation_id:
+                type: string
+                format: uuid
+                example: "550e8400-e29b-41d4-a716-446655440000"
+              status:
+                type: string
+                enum: [pending, processing]
+                example: "pending"
+              estimated_completion_time:
+                type: integer
+                description: Estimated seconds to completion
+                example: 30
+              status_url:
+                type: string
+                format: uri
+                description: URL to check generation status
+                example: "https://api.ai-ppt-assistant.com/v1/presentations/550e8400-e29b-41d4-a716-446655440000/status"
+              message:
+                type: string
+                example: "Presentation generation started successfully"
+              request_id:
+                type: string
+                format: uuid
+                example: "req_123e4567-e89b-12d3-a456-426614174000"
+          examples:
+            success:
+              summary: Successful generation start
+              value:
+                presentation_id: "550e8400-e29b-41d4-a716-446655440000"
+                status: "pending"
+                estimated_completion_time: 30
+                status_url: "https://api.ai-ppt-assistant.com/v1/presentations/550e8400-e29b-41d4-a716-446655440000/status"
+                message: "Presentation generation started successfully"
+                request_id: "req_123e4567-e89b-12d3-a456-426614174000"
+
+    StatusResponse:
+      description: Presentation status retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PresentationStatus'
+          examples:
+            processing:
+              summary: Generation in progress
+              value:
+                presentation_id: "550e8400-e29b-41d4-a716-446655440000"
+                status: "processing"
+                progress: 65
+                current_step: "content_generation"
+                estimated_completion_time: 120
+                created_at: "2024-01-15T10:30:00Z"
+                updated_at: "2024-01-15T10:35:00Z"
+                metadata:
+                  topic: "Introduction to Machine Learning"
+                  page_count: 10
+                  version: 1
+            completed:
+              summary: Generation completed
+              value:
+                presentation_id: "550e8400-e29b-41d4-a716-446655440000"
+                status: "completed"
+                progress: 100
+                current_step: "finalizing"
+                created_at: "2024-01-15T10:30:00Z"
+                updated_at: "2024-01-15T10:40:00Z"
+                completed_at: "2024-01-15T10:40:00Z"
+                metadata:
+                  topic: "Introduction to Machine Learning"
+                  page_count: 10
+                  file_size: 2457600
+                  version: 1
+                  generation_time: 45.2
+
+    DownloadResponse:
+      description: Download URL generated successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              presentation_id:
+                type: string
+                format: uuid
+                example: "550e8400-e29b-41d4-a716-446655440000"
+              download_url:
+                type: string
+                format: uri
+                description: Presigned download URL
+                example: "https://s3.amazonaws.com/ai-ppt-bucket/presentations/550e8400-e29b-41d4-a716-446655440000.pptx?X-Amz-Algorithm=..."
+              expires_in:
+                type: integer
+                description: URL expiration time in seconds
+                example: 3600
+              expires_at:
+                type: string
+                format: date-time
+                description: Absolute expiration time
+                example: "2024-01-15T11:40:00Z"
+              file_size:
+                type: integer
+                description: File size in bytes
+                example: 2457600
+              filename:
+                type: string
+                description: Suggested filename
+                example: "introduction-to-machine-learning.pptx"
+              content_type:
+                type: string
+                example: "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+              checksum:
+                type: string
+                description: MD5 checksum of the file
+                example: "d41d8cd98f00b204e9800998ecf8427e"
+          examples:
+            success:
+              summary: Download URL generated
+              value:
+                presentation_id: "550e8400-e29b-41d4-a716-446655440000"
+                download_url: "https://s3.amazonaws.com/ai-ppt-bucket/presentations/550e8400-e29b-41d4-a716-446655440000.pptx?X-Amz-Algorithm=..."
+                expires_in: 3600
+                expires_at: "2024-01-15T11:40:00Z"
+                file_size: 2457600
+                filename: "introduction-to-machine-learning.pptx"
+                content_type: "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+                checksum: "d41d8cd98f00b204e9800998ecf8427e"
+
+    SlideUpdateResponse:
+      description: Slide updated successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              presentation_id:
+                type: string
+                format: uuid
+                example: "550e8400-e29b-41d4-a716-446655440000"
+              slide_number:
+                type: integer
+                example: 5
+              updated_at:
+                type: string
+                format: date-time
+                example: "2024-01-15T10:45:00Z"
+              etag:
+                type: string
+                description: New ETag for concurrency control
+                example: '"33a64df551425fcc55e4d42a148795d9f25f89d4"'
+              preview_url:
+                type: string
+                format: uri
+                description: URL to preview the updated slide
+                example: "https://s3.amazonaws.com/ai-ppt-bucket/presentations/550e8400-e29b-41d4-a716-446655440000/previews/slide_5.png?X-Amz-Algorithm=..."
+              version:
+                type: integer
+                description: New presentation version
+                example: 2
+
+    ImageRegenerateResponse:
+      description: Image regeneration initiated successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              task_id:
+                type: string
+                format: uuid
+                description: Unique task identifier for tracking
+                example: "task_123e4567-e89b-12d3-a456-426614174000"
+              status:
+                type: string
+                enum: [pending, processing]
+                example: "pending"
+              estimated_time:
+                type: integer
+                description: Estimated completion time in seconds
+                example: 15
+              status_url:
+                type: string
+                format: uri
+                description: URL to check task status
+                example: "https://api.ai-ppt-assistant.com/v1/tasks/task_123e4567-e89b-12d3-a456-426614174000/status"
+              message:
+                type: string
+                example: "Image regeneration started successfully"
+
+    RegenerateResponse:
+      description: Regeneration initiated successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              task_id:
+                type: string
+                format: uuid
+                description: Unique task identifier
+                example: "task_456e7890-e12b-34d5-a678-901234567890"
+              scope:
+                type: string
+                description: What is being regenerated
+                example: "slides"
+              affected_slides:
+                type: array
+                items:
+                  type: integer
+                description: Slide numbers being regenerated
+                example: [2, 4, 6, 8]
+              status:
+                type: string
+                enum: [pending, processing]
+                example: "pending"
+              estimated_time:
+                type: integer
+                description: Estimated completion time in seconds
+                example: 60
+              status_url:
+                type: string
+                format: uri
+                example: "https://api.ai-ppt-assistant.com/v1/tasks/task_456e7890-e12b-34d5-a678-901234567890/status"
+
+    BadRequest:
+      description: Invalid request parameters or body
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "VALIDATION_ERROR"
+              message:
+                type: string
+                example: "Request validation failed"
+              validation_errors:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ValidationError'
+              request_id:
+                type: string
+                format: uuid
+              timestamp:
+                type: string
+                format: date-time
+          examples:
+            validation_error:
+              summary: Validation errors
+              value:
+                error: "VALIDATION_ERROR"
+                message: "Request validation failed"
+                validation_errors:
+                  - field: "page_count"
+                    message: "Must be between 3 and 20"
+                    value: 25
+                    constraint: "max:20"
+                  - field: "topic"
+                    message: "Cannot be empty"
+                    value: ""
+                    constraint: "required"
+                request_id: "req_123e4567-e89b-12d3-a456-426614174000"
+                timestamp: "2024-01-15T10:30:00Z"
+
+    Unauthorized:
+      description: Authentication required or failed
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "UNAUTHORIZED"
+              message:
+                type: string
+                example: "Invalid or missing API key"
+              request_id:
+                type: string
+                format: uuid
+              timestamp:
+                type: string
+                format: date-time
+      headers:
+        WWW-Authenticate:
+          description: Authentication method required
+          schema:
+            type: string
+            example: 'Bearer realm="api"'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "NOT_FOUND"
+              message:
+                type: string
+                example: "Presentation not found"
+              resource:
+                type: string
+                description: Type of resource that was not found
+                example: "presentation"
+              resource_id:
+                type: string
+                description: ID of the resource that was not found
+                example: "550e8400-e29b-41d4-a716-446655440000"
+              request_id:
+                type: string
+                format: uuid
+              timestamp:
+                type: string
+                format: date-time
+
+    Conflict:
+      description: Resource conflict (e.g., resource is locked or in wrong state)
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "CONFLICT"
+              message:
+                type: string
+                example: "Presentation is currently being processed"
+              current_state:
+                type: string
+                description: Current state of the resource
+                example: "processing"
+              allowed_states:
+                type: array
+                items:
+                  type: string
+                description: States in which the operation would be allowed
+                example: ["completed", "failed"]
+              request_id:
+                type: string
+                format: uuid
+              timestamp:
+                type: string
+                format: date-time
+
+    PreconditionFailed:
+      description: ETag mismatch (optimistic concurrency control failure)
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "PRECONDITION_FAILED"
+              message:
+                type: string
+                example: "Resource has been modified by another request"
+              current_etag:
+                type: string
+                description: Current ETag value
+                example: '"33a64df551425fcc55e4d42a148795d9f25f89d4"'
+              provided_etag:
+                type: string
+                description: ETag provided in the request
+                example: '"22b53de441324fcc44d3d31b138684d8f14e78c3"'
+              request_id:
+                type: string
+                format: uuid
+              timestamp:
+                type: string
+                format: date-time
+
+    RateLimited:
+      description: Rate limit exceeded
+      headers:
+        X-RateLimit-Limit:
+          description: Request limit per time window
+          schema:
+            type: integer
+            example: 10
+        X-RateLimit-Remaining:
+          description: Remaining requests in current window
+          schema:
+            type: integer
+            example: 0
+        X-RateLimit-Reset:
+          description: Time when rate limit resets
+          schema:
+            type: string
+            format: date-time
+            example: "2024-01-15T10:35:00Z"
+        Retry-After:
+          description: Seconds to wait before retrying
+          schema:
+            type: integer
+            example: 60
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "RATE_LIMITED"
+              message:
+                type: string
+                example: "Rate limit exceeded. Please try again later."
+              retry_after:
+                type: integer
+                description: Seconds to wait before retrying
+                example: 60
+              limit:
+                type: integer
+                description: Rate limit per time window
+                example: 10
+              window:
+                type: string
+                description: Time window for rate limit
+                example: "1 minute"
+              request_id:
+                type: string
+                format: uuid
+              timestamp:
+                type: string
+                format: date-time
+
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "INTERNAL_ERROR"
+              message:
+                type: string
+                example: "An internal error occurred. Please try again later."
+              request_id:
+                type: string
+                format: uuid
+                description: Request ID for support purposes
+              timestamp:
+                type: string
+                format: date-time
+              support_contact:
+                type: string
+                description: Support contact information
+                example: "support@ai-ppt-assistant.com"
+              incident_id:
+                type: string
+                description: Internal incident tracking ID
+                example: "INC-2024-0115-001"
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: |
+        API Key authentication. Include your API key in the X-API-Key header.
+
+        Example: `X-API-Key: your-api-key-here`
+
+        You can obtain an API key by signing up at https://ai-ppt-assistant.com
+
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        JWT Bearer token authentication. Include your JWT token in the Authorization header.
+
+        Example: `Authorization: Bearer your-jwt-token-here`
+
+        JWT tokens can be obtained through the authentication endpoint.
+
+security:
+  - ApiKeyAuth: []
+  - BearerAuth: []

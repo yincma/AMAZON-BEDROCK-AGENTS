@@ -1,1016 +1,732 @@
-# AI PPT Assistant Infrastructure - Refactored Configuration
-# This configuration resolves circular dependencies using a layered approach
-
 terraform {
-  required_version = ">= 1.5.0"
-
+  required_version = ">= 1.0"
   required_providers {
     aws = {
       source  = "hashicorp/aws"
       version = "~> 5.0"
-    }
-    random = {
-      source  = "hashicorp/random"
-      version = "~> 3.5"
-    }
-    archive = {
-      source  = "hashicorp/archive"
-      version = "~> 2.4"
-    }
-    local = {
-      source  = "hashicorp/local"
-      version = "~> 2.4"
-    }
-    null = {
-      source  = "hashicorp/null"
-      version = "~> 3.2"
     }
   }
 }
 
 provider "aws" {
   region = var.aws_region
+}
 
-  default_tags {
-    tags = {
-      Project     = var.project_name
-      Environment = var.environment
-      ManagedBy   = "Terraform"
-      Owner       = var.owner
-      CostCenter  = var.cost_center
-    }
+# Variables
+variable "aws_region" {
+  description = "AWS region"
+  type        = string
+  default     = "us-east-1"
+}
+
+variable "environment" {
+  description = "Environment name"
+  type        = string
+  default     = "dev"
+}
+
+variable "project_name" {
+  description = "Project name"
+  type        = string
+  default     = "ai-ppt-assistant"
+}
+
+variable "dynamodb_table_name" {
+  description = "DynamoDB table name"
+  type        = string
+  default     = "ai-ppt-presentations"
+}
+
+variable "alert_email" {
+  description = "Email address for alerts"
+  type        = string
+  default     = ""
+}
+
+# Lambda配置变量
+variable "enable_vpc" {
+  description = "是否启用VPC配置"
+  type        = bool
+  default     = false
+}
+
+variable "enable_lambda_url" {
+  description = "是否启用Lambda函数URL"
+  type        = bool
+  default     = true
+}
+
+variable "private_subnet_ids" {
+  description = "私有子网ID列表（当enable_vpc为true时需要）"
+  type        = list(string)
+  default     = []
+}
+
+variable "lambda_timeout_seconds" {
+  description = "Lambda函数超时时间（秒）"
+  type        = number
+  default     = 300
+}
+
+variable "lambda_memory_mb" {
+  description = "Lambda函数内存大小（MB）"
+  type        = number
+  default     = 1024
+}
+
+# 图片处理配置变量
+variable "nova_model_id" {
+  description = "Amazon Nova模型ID"
+  type        = string
+  default     = "amazon.nova-canvas-v1:0"
+}
+
+variable "default_image_width" {
+  description = "默认图片宽度"
+  type        = number
+  default     = 1200
+}
+
+variable "default_image_height" {
+  description = "默认图片高度"
+  type        = number
+  default     = 800
+}
+
+variable "max_retry_attempts" {
+  description = "最大重试次数"
+  type        = number
+  default     = 3
+}
+
+# 性能配置变量
+variable "enable_caching" {
+  description = "是否启用缓存"
+  type        = bool
+  default     = true
+}
+
+variable "enable_monitoring" {
+  description = "是否启用监控"
+  type        = bool
+  default     = true
+}
+
+variable "enable_batching" {
+  description = "是否启用批处理"
+  type        = bool
+  default     = true
+}
+
+variable "cache_ttl_seconds" {
+  description = "缓存TTL时间（秒）"
+  type        = number
+  default     = 3600
+}
+
+# 安全配置变量
+variable "enable_xray_tracing" {
+  description = "是否启用X-Ray追踪"
+  type        = bool
+  default     = true
+}
+
+variable "log_level" {
+  description = "日志级别"
+  type        = string
+  default     = "INFO"
+  validation {
+    condition     = contains(["DEBUG", "INFO", "WARNING", "ERROR"], var.log_level)
+    error_message = "日志级别必须是 DEBUG, INFO, WARNING, 或 ERROR 之一。"
   }
 }
 
-# Data sources for account and region info
+# Data sources
+data "aws_vpc" "default" {
+  default = true
+}
 data "aws_caller_identity" "current" {}
-data "aws_region" "current" {}
 
-# Local values for consistent naming and tagging
-locals {
-  common_tags = merge(
-    {
-      Project     = var.project_name
-      Environment = var.environment
-      ManagedBy   = "Terraform"
-      Owner       = var.owner
-      CostCenter  = var.cost_center
-    },
-    var.additional_tags
-  )
+# DynamoDB Table for presentation metadata
+resource "aws_dynamodb_table" "presentations" {
+  name         = var.dynamodb_table_name
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "presentation_id"
 
-  # Naming convention for resources
-  name_prefix = "${var.project_name}-${var.environment}"
-}
-
-# Random ID for unique S3 bucket naming (import existing if it exists)
-resource "random_id" "bucket_suffix" {
-  byte_length = 4
-}
-
-# ============================================================================
-# Layer 1: Foundation Resources (No dependencies)
-# ============================================================================
-
-# VPC Module - Foundation network layer
-module "vpc" {
-  source = "./modules/vpc"
-
-  project_name = var.project_name
-  environment  = var.environment
-
-  vpc_cidr           = var.vpc_cidr
-  availability_zones = var.availability_zones
-
-  enable_vpc_endpoints = var.enable_vpc_endpoints
-  enable_nat_gateway   = var.enable_nat_gateway
-
-  enable_flow_logs        = var.enable_vpc_flow_logs
-  flow_log_retention_days = var.vpc_flow_log_retention_days
-
-  tags = local.common_tags
-}
-
-# ============================================================================
-# Layer 2: Storage Resources (Minimal dependencies)
-# ============================================================================
-
-# S3 Module for presentation storage
-module "s3" {
-  source = "./modules/s3"
-
-  project_name = var.project_name
-  environment  = var.environment
-
-  lifecycle_rules = length(var.s3_lifecycle_rules) > 0 ? {
-    transition_to_ia_days      = var.s3_lifecycle_rules[0].days_to_ia
-    noncurrent_expiration_days = var.s3_lifecycle_rules[0].days_to_expiration
-    } : {
-    transition_to_ia_days      = 30
-    noncurrent_expiration_days = 365
+  attribute {
+    name = "presentation_id"
+    type = "S"
   }
 
-  cors_configuration = length(var.s3_cors_configuration) > 0 ? {
-    allowed_headers = var.s3_cors_configuration[0].allowed_headers
-    allowed_methods = var.s3_cors_configuration[0].allowed_methods
-    allowed_origins = var.s3_cors_configuration[0].allowed_origins
-    expose_headers  = var.s3_cors_configuration[0].expose_headers
-    max_age_seconds = var.s3_cors_configuration[0].max_age_seconds
-    } : {
-    allowed_headers = ["*"]
-    allowed_methods = ["GET", "HEAD", "PUT", "POST"]
-    allowed_origins = ["*"]
-    expose_headers  = ["ETag"]
-    max_age_seconds = 3600
+  tags = {
+    Name        = "${var.project_name}-presentations"
+    Environment = var.environment
   }
-
-  tags = local.common_tags
 }
 
-# DynamoDB Module for session state
-module "dynamodb" {
-  source = "./modules/dynamodb"
+# S3 Bucket for PPT storage
+resource "aws_s3_bucket" "presentations" {
+  bucket = "ai-ppt-presentations-${var.environment}-${data.aws_caller_identity.current.account_id}"
 
-  project_name = var.project_name
-  environment  = var.environment
+  # 允许在桶非空时删除
+  force_destroy = true
 
-  ttl_attribute = "expiry"
-  ttl_enabled   = true
-  billing_mode  = var.dynamodb_billing_mode
-
-  tags = local.common_tags
+  tags = {
+    Environment = var.environment
+    Project     = "ai-ppt-assistant"
+  }
 }
 
-# SQS Queues for async processing
-resource "aws_sqs_queue" "task_queue" {
-  name = "${local.name_prefix}-tasks"
+resource "aws_s3_bucket_versioning" "presentations" {
+  bucket = aws_s3_bucket.presentations.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
 
-  visibility_timeout_seconds = 950  # Must be greater than task_processor Lambda timeout (900s)
-  message_retention_seconds  = 86400
+resource "aws_s3_bucket_server_side_encryption_configuration" "presentations" {
+  bucket = aws_s3_bucket.presentations.id
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
 
-  redrive_policy = jsonencode({
-    deadLetterTargetArn = aws_sqs_queue.dlq.arn
-    maxReceiveCount     = 3
+resource "aws_s3_bucket_public_access_block" "presentations" {
+  bucket = aws_s3_bucket.presentations.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+# Lambda Layer for dependencies
+resource "aws_lambda_layer_version" "dependencies" {
+  filename            = "../ai-ppt-dependencies-layer.zip"
+  layer_name          = "ai-ppt-dependencies-${var.environment}"
+  compatible_runtimes = ["python3.11"]
+  description         = "Dependencies for AI PPT Assistant"
+}
+
+# IAM Role for Lambda
+resource "aws_iam_role" "lambda_role" {
+  name = "ai-ppt-lambda-role-${var.environment}"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
+      Principal = {
+        Service = "lambda.amazonaws.com"
+      }
+    }]
   })
-
-  tags = local.common_tags
 }
 
-resource "aws_sqs_queue" "dlq" {
-  name = "${local.name_prefix}-dlq"
+# IAM Policy for Lambda
+resource "aws_iam_role_policy" "lambda_policy" {
+  name = "lambda-policy"
+  role = aws_iam_role.lambda_role.id
 
-  message_retention_seconds = 1209600 # 14 days
-
-  tags = local.common_tags
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject"
+        ]
+        Resource = "${aws_s3_bucket.presentations.arn}/*"
+      },
+      {
+        Effect = "Allow"
+        Action = ["s3:ListBucket"]
+        Resource = aws_s3_bucket.presentations.arn
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "bedrock:InvokeModel",
+          "bedrock:InvokeModelWithResponseStream"
+        ]
+        Resource = [
+          "arn:aws:bedrock:*:*:foundation-model/anthropic.claude-*",
+          "arn:aws:bedrock:*:*:foundation-model/amazon.nova-*"
+        ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ]
+        Resource = "arn:aws:logs:*:*:*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "dynamodb:PutItem",
+          "dynamodb:GetItem",
+          "dynamodb:UpdateItem",
+          "dynamodb:Query",
+          "dynamodb:Scan"
+        ]
+        Resource = [
+          aws_dynamodb_table.presentations.arn
+        ]
+      }
+    ]
+  })
 }
 
-# ============================================================================
-# Layer 3: API Gateway (Independent of Lambda initially)
-# ============================================================================
+# Lambda Function - API Handler
+resource "aws_lambda_function" "api_handler" {
+  filename         = "../lambda-packages/api_handler.zip"
+  function_name    = "ai-ppt-api-handler-${var.environment}"
+  role            = aws_iam_role.lambda_role.arn
+  handler         = "lambda_function.handler"
+  runtime         = "python3.11"
+  memory_size     = 2048
+  timeout         = 30
 
-module "api_gateway" {
-  source = "./modules/api_gateway"
+  layers = [aws_lambda_layer_version.dependencies.arn]
 
-  project_name = var.project_name
-  environment  = var.environment
-
-  api_description      = "API Gateway for AI PPT Assistant"
-  throttle_rate_limit  = var.api_throttle_rate_limit
-  throttle_burst_limit = var.api_throttle_burst_limit
-  api_key_required     = true
-
-  # 禁用内部部署，将在主配置中创建
-  create_deployment = false
-
-  # Initially create API Gateway without Lambda integrations
-  lambda_integrations = {}
-
-  tags = local.common_tags
-}
-
-# ============================================================================
-# Layer 4: Lambda Functions (Depends on Layer 1-3)
-# ============================================================================
-
-# Lambda module with resolved dependencies
-module "lambda" {
-  source = "./modules/lambda"
-
-  project_name = var.project_name
-  aws_region   = var.aws_region
-
-  # Required bucket and table names
-  s3_bucket_name      = module.s3.bucket_name
-  dynamodb_table_name = module.dynamodb.tasks_table_name
-
-  # ARNs for IAM permissions
-  s3_bucket_arn           = module.s3.bucket_arn
-  dynamodb_table_arn      = module.dynamodb.tasks_table_arn
-  checkpoints_table_name  = module.dynamodb.checkpoints_table_name
-  checkpoints_table_arn   = module.dynamodb.checkpoints_table_arn
-  sqs_queue_url         = aws_sqs_queue.task_queue.url
-  sqs_queue_arn         = aws_sqs_queue.task_queue.arn
-
-  # Bedrock model configuration
-  bedrock_model_id = var.bedrock_model_id
-  bedrock_orchestrator_model_id = var.bedrock_orchestrator_model_id
-  nova_model_id = var.nova_model_id
-
-  # Bedrock Agent IDs - Dynamically fetched from deployed agents
-  orchestrator_agent_id = local.orchestrator_agent_id
-  orchestrator_alias_id = local.orchestrator_alias_id
-  content_agent_id      = local.content_agent_id
-  content_alias_id      = local.content_alias_id
-  visual_agent_id       = local.visual_agent_id
-  visual_alias_id       = local.visual_alias_id
-  compiler_agent_id     = local.compiler_agent_id
-  compiler_alias_id     = local.compiler_alias_id
-
-  # Explicit dependencies to ensure proper creation order
-  depends_on = [
-    module.vpc,
-    module.s3,
-    module.dynamodb,
-    module.api_gateway
-  ]
-}
-
-# ============================================================================
-# Layer 5: Bedrock Agents (Depends on Lambda)
-# ============================================================================
-
-# Bedrock Agents Module - Now enabled with Terraform management
-module "bedrock" {
-  source = "./modules/bedrock"
-  
-  project_name = var.project_name
-  aws_region   = var.aws_region
-  
-  # Agent configurations - using module default values with correct inference profiles
-  # This will use the defaults defined in modules/bedrock/variables.tf
-  
-  # Lambda function ARNs for agent actions  
-  lambda_function_arns = {
-    orchestrator = {
-      create_outline = module.lambda.function_arns["create_outline"]
-    }
-    content = {
-      generate_content = module.lambda.function_arns["generate_content"]
-    }
-    visual = {
-      generate_image = module.lambda.function_arns["generate_image"]
-    }
-    compiler = {
-      compile_pptx = module.lambda.function_arns["compile_pptx"]
+  environment {
+    variables = {
+      S3_BUCKET = aws_s3_bucket.presentations.id
+      ENVIRONMENT = var.environment
     }
   }
-  
-  # Required resources for agent permissions
-  s3_bucket_arn      = module.s3.bucket_arn
-  dynamodb_table_arn = module.dynamodb.tasks_table_arn
-  
-  tags = local.common_tags
-  
-  depends_on = [module.lambda, module.dynamodb, module.s3]
+
+  tags = {
+    Environment = var.environment
+    Project     = "ai-ppt-assistant"
+  }
 }
 
-# ============================================================================
-# Layer 5.5: SQS Lambda Event Source Mapping (Task Processing)
-# ============================================================================
-# Include the SQS Lambda mapping configuration
-# This creates the task processor function and connects it to SQS
-# Critical for async task processing
+# Lambda Function - Generate PPT Complete
+resource "aws_lambda_function" "generate_ppt" {
+  filename         = "../lambda-packages/generate_ppt_complete.zip"
+  function_name    = "ai-ppt-generate-${var.environment}"
+  role            = aws_iam_role.lambda_role.arn
+  handler         = "lambda_function.handler"
+  runtime         = "python3.11"
+  memory_size     = 2048
+  timeout         = 300
 
-# Note: The configuration is in a separate file for modularity
-# See: sqs_lambda_mapping.tf
+  layers = [aws_lambda_layer_version.dependencies.arn]
 
-# ============================================================================
-# Layer 6: API Gateway Integration (Connect API to Lambda)
-# ============================================================================
+  environment {
+    variables = {
+      S3_BUCKET = aws_s3_bucket.presentations.id
+      ENVIRONMENT = var.environment
+    }
+  }
 
-# Create API Gateway integrations separately after Lambda functions are created
-resource "aws_api_gateway_integration" "create_presentation" {
-  rest_api_id = module.api_gateway.rest_api_id
-  resource_id = module.api_gateway.resource_ids["presentations"]
-  http_method = "POST"
+  tags = {
+    Environment = var.environment
+    Project     = "ai-ppt-assistant"
+  }
+}
+
+# Lambda Function - Status Check
+resource "aws_lambda_function" "status_check" {
+  filename         = "../lambda-packages/status_check.zip"
+  function_name    = "ai-ppt-status-${var.environment}"
+  role            = aws_iam_role.lambda_role.arn
+  handler         = "lambda_function.handler"
+  runtime         = "python3.11"
+  memory_size     = 1024
+  timeout         = 30
+
+  layers = [aws_lambda_layer_version.dependencies.arn]
+
+  environment {
+    variables = {
+      S3_BUCKET = aws_s3_bucket.presentations.id
+      ENVIRONMENT = var.environment
+    }
+  }
+
+  tags = {
+    Environment = var.environment
+    Project     = "ai-ppt-assistant"
+  }
+}
+
+# Lambda Function - Download PPT
+resource "aws_lambda_function" "download_ppt" {
+  filename         = "../lambda-packages/download_ppt.zip"
+  function_name    = "ai-ppt-download-${var.environment}"
+  role            = aws_iam_role.lambda_role.arn
+  handler         = "lambda_function.handler"
+  runtime         = "python3.11"
+  memory_size     = 1024
+  timeout         = 30
+
+  layers = [aws_lambda_layer_version.dependencies.arn]
+
+  environment {
+    variables = {
+      S3_BUCKET = aws_s3_bucket.presentations.id
+      ENVIRONMENT = var.environment
+    }
+  }
+
+  tags = {
+    Environment = var.environment
+    Project     = "ai-ppt-assistant"
+  }
+}
+
+# API Gateway
+resource "aws_api_gateway_rest_api" "api" {
+  name        = "ai-ppt-api-${var.environment}"
+  description = "AI PPT Generation API"
+
+  endpoint_configuration {
+    types = ["REGIONAL"]
+  }
+}
+
+# /generate endpoint
+resource "aws_api_gateway_resource" "generate" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  parent_id   = aws_api_gateway_rest_api.api.root_resource_id
+  path_part   = "generate"
+}
+
+resource "aws_api_gateway_method" "generate_post" {
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  resource_id   = aws_api_gateway_resource.generate.id
+  http_method   = "POST"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "generate_integration" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_resource.generate.id
+  http_method = aws_api_gateway_method.generate_post.http_method
 
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = module.lambda.function_invoke_arns["generate_presentation"]
-
-  timeout_milliseconds = 29000
-
-  depends_on = [module.lambda, module.api_gateway]
+  uri                     = aws_lambda_function.generate_ppt.invoke_arn
 }
 
-resource "aws_api_gateway_integration" "get_presentation" {
-  rest_api_id = module.api_gateway.rest_api_id
-  resource_id = module.api_gateway.resource_ids["presentation_id"]
-  http_method = "GET"
-
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = module.lambda.function_invoke_arns["presentation_status"]
-
-  timeout_milliseconds = 10000
-
-  depends_on = [module.lambda, module.api_gateway]
+# CORS for /generate
+resource "aws_api_gateway_method" "generate_options" {
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  resource_id   = aws_api_gateway_resource.generate.id
+  http_method   = "OPTIONS"
+  authorization = "NONE"
 }
 
-resource "aws_api_gateway_integration" "download_presentation" {
-  rest_api_id = module.api_gateway.rest_api_id
-  resource_id = module.api_gateway.resource_ids["presentation_download"]
-  http_method = "GET"
+resource "aws_api_gateway_integration" "generate_options" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_resource.generate.id
+  http_method = aws_api_gateway_method.generate_options.http_method
 
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = module.lambda.function_invoke_arns["presentation_download"]
-
-  timeout_milliseconds = 10000
-
-  depends_on = [module.lambda, module.api_gateway]
-}
-
-resource "aws_api_gateway_integration" "list_presentations" {
-  rest_api_id = module.api_gateway.rest_api_id
-  resource_id = module.api_gateway.resource_ids["presentations"]
-  http_method = "GET"
-
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = "arn:aws:apigateway:${var.aws_region}:lambda:path/2015-03-31/functions/${aws_lambda_function.list_presentations.arn}/invocations"
-
-  timeout_milliseconds = 10000
-
-  depends_on = [module.lambda, module.api_gateway]
-}
-
-resource "aws_api_gateway_integration" "create_session" {
-  rest_api_id = module.api_gateway.rest_api_id
-  resource_id = module.api_gateway.resource_ids["sessions"]
-  http_method = "POST"
-
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = module.lambda.function_invoke_arns["generate_presentation"]
-
-  timeout_milliseconds = 29000
-
-  depends_on = [module.lambda, module.api_gateway]
-}
-
-resource "aws_api_gateway_integration" "get_session" {
-  rest_api_id = module.api_gateway.rest_api_id
-  resource_id = module.api_gateway.resource_ids["session_id"]
-  http_method = "GET"
-
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = module.lambda.function_invoke_arns["presentation_status"]
-
-  timeout_milliseconds = 10000
-
-  depends_on = [module.lambda, module.api_gateway]
-}
-
-resource "aws_api_gateway_integration" "execute_agent" {
-  rest_api_id = module.api_gateway.rest_api_id
-  resource_id = module.api_gateway.resource_ids["agent_execute"]
-  http_method = "POST"
-
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = module.lambda.function_invoke_arns["generate_presentation"]
-
-  timeout_milliseconds = 29000
-
-  depends_on = [module.lambda, module.api_gateway]
-}
-
-# ============================================================================
-# Health Check Endpoints (no API key required)
-# ============================================================================
-
-# /health resource
-resource "aws_api_gateway_resource" "health" {
-  rest_api_id = module.api_gateway.rest_api_id
-  parent_id   = module.api_gateway.rest_api_root_resource_id
-  path_part   = "health"
-}
-
-# /health/ready resource
-resource "aws_api_gateway_resource" "health_ready" {
-  rest_api_id = module.api_gateway.rest_api_id
-  parent_id   = aws_api_gateway_resource.health.id
-  path_part   = "ready"
-}
-
-# GET /health method (no API key required)
-resource "aws_api_gateway_method" "health_get" {
-  rest_api_id      = module.api_gateway.rest_api_id
-  resource_id      = aws_api_gateway_resource.health.id
-  http_method      = "GET"
-  authorization    = "NONE"
-  api_key_required = false
-}
-
-# GET /health/ready method (no API key required)
-resource "aws_api_gateway_method" "health_ready_get" {
-  rest_api_id      = module.api_gateway.rest_api_id
-  resource_id      = aws_api_gateway_resource.health_ready.id
-  http_method      = "GET"
-  authorization    = "NONE"
-  api_key_required = false
-}
-
-# Mock integration for /health
-resource "aws_api_gateway_integration" "health" {
-  rest_api_id = module.api_gateway.rest_api_id
-  resource_id = aws_api_gateway_resource.health.id
-  http_method = aws_api_gateway_method.health_get.http_method
-  type        = "MOCK"
-
+  type = "MOCK"
   request_templates = {
-    "application/json" = jsonencode({
-      statusCode = 200
-    })
+    "application/json" = "{\"statusCode\": 200}"
   }
 }
 
-# Mock integration for /health/ready
-resource "aws_api_gateway_integration" "health_ready" {
-  rest_api_id = module.api_gateway.rest_api_id
-  resource_id = aws_api_gateway_resource.health_ready.id
-  http_method = aws_api_gateway_method.health_ready_get.http_method
-  type        = "MOCK"
-
-  request_templates = {
-    "application/json" = jsonencode({
-      statusCode = 200
-    })
-  }
-}
-
-# Method response for /health
-resource "aws_api_gateway_method_response" "health_200" {
-  rest_api_id = module.api_gateway.rest_api_id
-  resource_id = aws_api_gateway_resource.health.id
-  http_method = aws_api_gateway_method.health_get.http_method
-  status_code = "200"
-
-  response_models = {
-    "application/json" = "Empty"
-  }
-}
-
-# Method response for /health/ready
-resource "aws_api_gateway_method_response" "health_ready_200" {
-  rest_api_id = module.api_gateway.rest_api_id
-  resource_id = aws_api_gateway_resource.health_ready.id
-  http_method = aws_api_gateway_method.health_ready_get.http_method
-  status_code = "200"
-
-  response_models = {
-    "application/json" = "Empty"
-  }
-}
-
-# Integration response for /health
-resource "aws_api_gateway_integration_response" "health_200" {
-  rest_api_id = module.api_gateway.rest_api_id
-  resource_id = aws_api_gateway_resource.health.id
-  http_method = aws_api_gateway_method.health_get.http_method
-  status_code = aws_api_gateway_method_response.health_200.status_code
-
-  response_templates = {
-    "application/json" = jsonencode({
-      status    = "healthy"
-      timestamp = "$context.requestTime"
-    })
-  }
-
-  depends_on = [
-    aws_api_gateway_integration.health
-  ]
-}
-
-# Integration response for /health/ready
-resource "aws_api_gateway_integration_response" "health_ready_200" {
-  rest_api_id = module.api_gateway.rest_api_id
-  resource_id = aws_api_gateway_resource.health_ready.id
-  http_method = aws_api_gateway_method.health_ready_get.http_method
-  status_code = aws_api_gateway_method_response.health_ready_200.status_code
-
-  response_templates = {
-    "application/json" = jsonencode({
-      status    = "ready"
-      timestamp = "$context.requestTime"
-    })
-  }
-
-  depends_on = [
-    aws_api_gateway_integration.health_ready
-  ]
-}
-
-# ============================================================================
-# Lambda Permissions for API Gateway
-# ============================================================================
-
-# Lambda permissions must be created before API Gateway deployment
-resource "aws_lambda_permission" "generate_presentation_permission" {
-  statement_id  = "AllowAPIGatewayInvoke-generate-presentation"
-  action        = "lambda:InvokeFunction"
-  function_name = module.lambda.function_names["api_generate_presentation"]
-  principal     = "apigateway.amazonaws.com"
-  source_arn    = "arn:aws:execute-api:${var.aws_region}:${data.aws_caller_identity.current.account_id}:${module.api_gateway.rest_api_id}/*/*"
-
-  depends_on = [module.lambda, module.api_gateway]
-}
-
-resource "aws_lambda_permission" "presentation_status_permission" {
-  statement_id  = "AllowAPIGatewayInvoke-presentation-status"
-  action        = "lambda:InvokeFunction"
-  function_name = module.lambda.function_names["api_presentation_status"]
-  principal     = "apigateway.amazonaws.com"
-  source_arn    = "arn:aws:execute-api:${var.aws_region}:${data.aws_caller_identity.current.account_id}:${module.api_gateway.rest_api_id}/*/*"
-
-  depends_on = [module.lambda, module.api_gateway]
-}
-
-resource "aws_lambda_permission" "presentation_download_permission" {
-  statement_id  = "AllowAPIGatewayInvoke-presentation-download"
-  action        = "lambda:InvokeFunction"
-  function_name = module.lambda.function_names["api_presentation_download"]
-  principal     = "apigateway.amazonaws.com"
-  source_arn    = "arn:aws:execute-api:${var.aws_region}:${data.aws_caller_identity.current.account_id}:${module.api_gateway.rest_api_id}/*/*"
-
-  depends_on = [module.lambda, module.api_gateway]
-}
-
-# Note: list_presentations_permission is defined in lambda_list_presentations.tf
-# to avoid duplication
-
-# Create a new deployment to include all integrations and responses
-# Note: This is the legacy deployment for v0 (unversioned) endpoints
-# Versioned endpoints use aws_api_gateway_deployment.versioned_deployment
-resource "aws_api_gateway_deployment" "integration_deployment" {
-  rest_api_id = module.api_gateway.rest_api_id
-
-  triggers = {
-    # Redeploy when any integration or response changes
-    redeployment = sha1(jsonencode([
-      # Main integrations
-      aws_api_gateway_integration.create_presentation,
-      aws_api_gateway_integration.get_presentation,
-      aws_api_gateway_integration.list_presentations,
-      aws_api_gateway_integration.create_session,
-      aws_api_gateway_integration.get_session,
-      aws_api_gateway_integration.execute_agent,
-      aws_api_gateway_integration.health,
-      aws_api_gateway_integration.health_ready,
-      # Additional integrations
-      aws_api_gateway_integration.get_task,
-      # Integration responses
-      aws_api_gateway_integration_response.health_200,
-      aws_api_gateway_integration_response.health_ready_200,
-      # aws_api_gateway_integration_response.get_templates_200,
-      # aws_api_gateway_integration_response.templates_options_200,
-      # aws_api_gateway_integration_response.task_options_200,
-      # Gateway responses for validation errors
-      # aws_api_gateway_gateway_response.bad_request,
-      # aws_api_gateway_gateway_response.bad_request_parameters,
-      # aws_api_gateway_gateway_response.missing_authentication_token,
-      # aws_api_gateway_gateway_response.throttled,
-      # aws_api_gateway_gateway_response.default_5xx,
-      # Include versioned resources in deployment triggers
-      # aws_api_gateway_deployment.versioned_deployment,
-    ]))
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
-  depends_on = [
-    # Ensure all method responses are created first
-    aws_api_gateway_method_response.health_200,
-    aws_api_gateway_method_response.health_ready_200,
-    aws_api_gateway_method_response.get_task_200,
-    # Then integrations
-    aws_api_gateway_integration.create_presentation,
-    aws_api_gateway_integration.get_presentation,
-    aws_api_gateway_integration.download_presentation,
-    aws_api_gateway_integration.list_presentations,
-    aws_api_gateway_integration.create_session,
-    aws_api_gateway_integration.get_session,
-    aws_api_gateway_integration.execute_agent,
-    aws_api_gateway_integration.health,
-    aws_api_gateway_integration.health_ready,
-    aws_api_gateway_integration.get_task,
-    # Then integration responses
-    aws_api_gateway_integration_response.health_200,
-    aws_api_gateway_integration_response.health_ready_200,
-    # aws_api_gateway_integration_response.get_templates_200,
-    # aws_api_gateway_integration_response.templates_options_200,
-    # aws_api_gateway_integration_response.task_options_200,
-    # Lambda permissions (critical for avoiding 502 errors)
-    aws_lambda_permission.generate_presentation_permission,
-    aws_lambda_permission.presentation_status_permission,
-    aws_lambda_permission.presentation_download_permission,
-    # aws_lambda_permission.get_task_permission is defined in lambda_get_task.tf
-    # Gateway responses for validation errors
-    # Gateway responses commented out - resources not defined
-    # aws_api_gateway_gateway_response.bad_request,
-    # aws_api_gateway_gateway_response.bad_request_parameters,
-    # aws_api_gateway_gateway_response.missing_authentication_token,
-    # aws_api_gateway_gateway_response.throttled,
-    # aws_api_gateway_gateway_response.default_5xx,
-    # Wait for versioned deployment to complete
-    # aws_api_gateway_deployment.versioned_deployment,
-    # Ensure Lambda functions and API Gateway are available
-    module.lambda,
-    module.api_gateway,
-  ]
-}
-
-# Create API Gateway Stage (since module doesn't create it when deployment is disabled)
-resource "aws_api_gateway_stage" "main" {
-  deployment_id = aws_api_gateway_deployment.integration_deployment.id
-  rest_api_id   = module.api_gateway.rest_api_id
-  stage_name    = var.stage_name
-
-  # Enable X-Ray tracing for better debugging
-  xray_tracing_enabled = true
-
-  # CloudWatch settings for monitoring
-  access_log_settings {
-    destination_arn = aws_cloudwatch_log_group.api_gateway_stage.arn
-    format = jsonencode({
-      requestId        = "$context.requestId"
-      ip               = "$context.identity.sourceIp"
-      caller           = "$context.identity.caller"
-      user             = "$context.identity.user"
-      requestTime      = "$context.requestTime"
-      httpMethod       = "$context.httpMethod"
-      resourcePath     = "$context.resourcePath"
-      status           = "$context.status"
-      protocol         = "$context.protocol"
-      responseLength   = "$context.responseLength"
-      responseTime     = "$context.responseTime"
-      error            = "$context.error.message"
-      integrationError = "$context.integrationErrorMessage"
-    })
-  }
-
-  tags = merge(
-    local.common_tags,
-    {
-      Name = "${var.project_name}-${var.environment}-api-stage"
-    }
-  )
-
-  depends_on = [
-    aws_api_gateway_deployment.integration_deployment,
-    aws_cloudwatch_log_group.api_gateway_stage
-  ]
-}
-
-# CloudWatch Log Group for API Gateway Stage
-resource "aws_cloudwatch_log_group" "api_gateway_stage" {
-  name              = "/aws/apigateway/${var.project_name}-${var.environment}-stage"
-  retention_in_days = var.log_retention_days
-
-  tags = merge(
-    local.common_tags,
-    {
-      Name = "${var.project_name}-${var.environment}-stage-logs"
-    }
-  )
-}
-
-# Create Usage Plan (since module doesn't create it when deployment is disabled)
-resource "aws_api_gateway_usage_plan" "main" {
-  name        = "${var.project_name}-${var.environment}-usage-plan"
-  description = "Usage plan for ${var.project_name} ${var.environment}"
-
-  api_stages {
-    api_id = module.api_gateway.rest_api_id
-    stage  = aws_api_gateway_stage.main.stage_name
-  }
-
-  quota_settings {
-    limit  = var.api_quota_limit
-    period = var.api_quota_period
-  }
-
-  throttle_settings {
-    rate_limit  = var.api_throttle_rate_limit
-    burst_limit = var.api_throttle_burst_limit
-  }
-
-  tags = merge(
-    local.common_tags,
-    {
-      Name        = "${var.project_name}-${var.environment}-usage-plan"
-      Environment = var.environment
-    }
-  )
-
-  depends_on = [
-    aws_api_gateway_stage.main
-  ]
-}
-
-# Associate API Key with Usage Plan
-resource "aws_api_gateway_usage_plan_key" "main" {
-  key_id        = module.api_gateway.api_key_id
-  key_type      = "API_KEY"
-  usage_plan_id = aws_api_gateway_usage_plan.main.id
-}
-
-# ============================================================================
-# Layer 6.5: Additional API Gateway Resources (/tasks endpoint)
-# ============================================================================
-
-# /tasks 资源
-resource "aws_api_gateway_resource" "tasks" {
-  rest_api_id = module.api_gateway.rest_api_id
-  parent_id   = module.api_gateway.rest_api_root_resource_id
-  path_part   = "tasks"
-}
-
-# /tasks/{taskId} 资源
-resource "aws_api_gateway_resource" "task_id" {
-  rest_api_id = module.api_gateway.rest_api_id
-  parent_id   = aws_api_gateway_resource.tasks.id
-  path_part   = "{taskId}"
-}
-
-# GET /tasks/{taskId} 方法
-resource "aws_api_gateway_method" "get_task" {
-  rest_api_id      = module.api_gateway.rest_api_id
-  resource_id      = aws_api_gateway_resource.task_id.id
-  http_method      = "GET"
-  authorization    = "NONE"
-  api_key_required = true
-
-  request_parameters = {
-    "method.request.path.taskId" = true
-  }
-}
-
-# GET /tasks/{taskId} 集成
-resource "aws_api_gateway_integration" "get_task" {
-  rest_api_id = module.api_gateway.rest_api_id
-  resource_id = aws_api_gateway_resource.task_id.id
-  http_method = aws_api_gateway_method.get_task.http_method
-
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = "arn:aws:apigateway:${var.aws_region}:lambda:path/2015-03-31/functions/${aws_lambda_function.get_task.arn}/invocations"
-
-  depends_on = [
-    aws_api_gateway_method.get_task
-  ]
-}
-
-# GET /tasks/{taskId} 方法响应
-resource "aws_api_gateway_method_response" "get_task_200" {
-  rest_api_id = module.api_gateway.rest_api_id
-  resource_id = aws_api_gateway_resource.task_id.id
-  http_method = aws_api_gateway_method.get_task.http_method
+resource "aws_api_gateway_method_response" "generate_options" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_resource.generate.id
+  http_method = aws_api_gateway_method.generate_options.http_method
   status_code = "200"
 
   response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin"  = true
     "method.response.header.Access-Control-Allow-Headers" = true
     "method.response.header.Access-Control-Allow-Methods" = true
-  }
-
-  response_models = {
-    "application/json" = "Empty"
+    "method.response.header.Access-Control-Allow-Origin"  = true
   }
 }
 
-# Lambda permission for get_task is defined in lambda_get_task.tf to avoid duplication
+resource "aws_api_gateway_integration_response" "generate_options" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_resource.generate.id
+  http_method = aws_api_gateway_method.generate_options.http_method
+  status_code = aws_api_gateway_method_response.generate_options.status_code
 
-# ============================================================================
-# Layer 7: Monitoring and Alerting (Depends on all infrastructure components)
-# ============================================================================
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+    "method.response.header.Access-Control-Allow-Methods" = "'GET,POST,OPTIONS'"
+    "method.response.header.Access-Control-Allow-Origin"  = "'*'"
+  }
+}
 
-# CloudWatch Monitoring Module
-module "monitoring" {
-  count  = var.enable_monitoring ? 1 : 0
-  source = "./modules/monitoring"
+# Method Response for POST /generate
+resource "aws_api_gateway_method_response" "generate_post" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_resource.generate.id
+  http_method = aws_api_gateway_method.generate_post.http_method
+  status_code = "200"
 
-  # General configuration
-  project_name = var.project_name
-  environment  = var.environment
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
 
-  # SNS configuration
-  alert_email_addresses = var.alert_email_addresses
+# /status/{id} endpoint
+resource "aws_api_gateway_resource" "status" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  parent_id   = aws_api_gateway_rest_api.api.root_resource_id
+  path_part   = "status"
+}
 
-  # Lambda monitoring configuration
-  lambda_function_names     = module.lambda.function_names
-  lambda_error_threshold    = var.lambda_error_threshold
-  lambda_duration_threshold = var.lambda_duration_threshold
+resource "aws_api_gateway_resource" "status_id" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  parent_id   = aws_api_gateway_resource.status.id
+  path_part   = "{id}"
+}
 
-  # API Gateway monitoring configuration
-  api_gateway_name      = "${var.project_name}-${var.environment}"
-  api_gateway_stage     = aws_api_gateway_stage.main.stage_name
-  api_latency_threshold = var.api_latency_threshold
-  api_4xx_threshold     = var.api_4xx_threshold
-  api_5xx_threshold     = var.api_5xx_threshold
+resource "aws_api_gateway_method" "status_get" {
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  resource_id   = aws_api_gateway_resource.status_id.id
+  http_method   = "GET"
+  authorization = "NONE"
+}
 
-  # DynamoDB monitoring configuration
-  enable_dynamodb_monitoring = var.enable_dynamodb_monitoring
-  dynamodb_table_name        = module.dynamodb.tasks_table_name
+resource "aws_api_gateway_integration" "status_integration" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_resource.status_id.id
+  http_method = aws_api_gateway_method.status_get.http_method
 
-  # Log retention
-  log_retention_days = var.log_retention_days
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.status_check.invoke_arn
+}
 
-  # Tags
-  tags = local.common_tags
+# CORS for /status/{id}
+resource "aws_api_gateway_method" "status_options" {
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  resource_id   = aws_api_gateway_resource.status_id.id
+  http_method   = "OPTIONS"
+  authorization = "NONE"
+}
 
-  # Dependencies to ensure proper creation order
+resource "aws_api_gateway_integration" "status_options" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_resource.status_id.id
+  http_method = aws_api_gateway_method.status_options.http_method
+
+  type = "MOCK"
+  request_templates = {
+    "application/json" = "{\"statusCode\": 200}"
+  }
+}
+
+resource "aws_api_gateway_method_response" "status_options" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_resource.status_id.id
+  http_method = aws_api_gateway_method.status_options.http_method
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true
+    "method.response.header.Access-Control-Allow-Methods" = true
+    "method.response.header.Access-Control-Allow-Origin"  = true
+  }
+}
+
+resource "aws_api_gateway_integration_response" "status_options" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_resource.status_id.id
+  http_method = aws_api_gateway_method.status_options.http_method
+  status_code = aws_api_gateway_method_response.status_options.status_code
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+    "method.response.header.Access-Control-Allow-Methods" = "'GET,POST,OPTIONS'"
+    "method.response.header.Access-Control-Allow-Origin"  = "'*'"
+  }
+}
+
+# Method Response for GET /status/{id}
+resource "aws_api_gateway_method_response" "status_get" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_resource.status_id.id
+  http_method = aws_api_gateway_method.status_get.http_method
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# /download/{id} endpoint
+resource "aws_api_gateway_resource" "download" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  parent_id   = aws_api_gateway_rest_api.api.root_resource_id
+  path_part   = "download"
+}
+
+resource "aws_api_gateway_resource" "download_id" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  parent_id   = aws_api_gateway_resource.download.id
+  path_part   = "{id}"
+}
+
+resource "aws_api_gateway_method" "download_get" {
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  resource_id   = aws_api_gateway_resource.download_id.id
+  http_method   = "GET"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "download_integration" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_resource.download_id.id
+  http_method = aws_api_gateway_method.download_get.http_method
+
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.download_ppt.invoke_arn
+}
+
+# CORS for /download/{id}
+resource "aws_api_gateway_method" "download_options" {
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  resource_id   = aws_api_gateway_resource.download_id.id
+  http_method   = "OPTIONS"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "download_options" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_resource.download_id.id
+  http_method = aws_api_gateway_method.download_options.http_method
+
+  type = "MOCK"
+  request_templates = {
+    "application/json" = "{\"statusCode\": 200}"
+  }
+}
+
+resource "aws_api_gateway_method_response" "download_options" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_resource.download_id.id
+  http_method = aws_api_gateway_method.download_options.http_method
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true
+    "method.response.header.Access-Control-Allow-Methods" = true
+    "method.response.header.Access-Control-Allow-Origin"  = true
+  }
+}
+
+resource "aws_api_gateway_integration_response" "download_options" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_resource.download_id.id
+  http_method = aws_api_gateway_method.download_options.http_method
+  status_code = aws_api_gateway_method_response.download_options.status_code
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+    "method.response.header.Access-Control-Allow-Methods" = "'GET,POST,OPTIONS'"
+    "method.response.header.Access-Control-Allow-Origin"  = "'*'"
+  }
+}
+
+# Method Response for GET /download/{id}
+resource "aws_api_gateway_method_response" "download_get" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_resource.download_id.id
+  http_method = aws_api_gateway_method.download_get.http_method
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# API Gateway Deployment
+resource "aws_api_gateway_deployment" "api" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  stage_name  = var.environment
+
   depends_on = [
-    module.lambda,
-    module.api_gateway,
-    module.dynamodb,
-    aws_api_gateway_stage.main,
-    aws_api_gateway_deployment.integration_deployment
+    aws_api_gateway_integration.generate_integration,
+    aws_api_gateway_integration.generate_options,
+    aws_api_gateway_integration_response.generate_options,
+    aws_api_gateway_method_response.generate_post,
+    aws_api_gateway_integration.status_integration,
+    aws_api_gateway_integration.status_options,
+    aws_api_gateway_integration_response.status_options,
+    aws_api_gateway_method_response.status_get,
+    aws_api_gateway_integration.download_integration,
+    aws_api_gateway_integration.download_options,
+    aws_api_gateway_integration_response.download_options,
+    aws_api_gateway_method_response.download_get
   ]
 }
 
-# ============================================================================
-# Update Lambda Environment Variables with Real Bedrock Agent IDs
-# ============================================================================
-
-# Update Lambda function environment variables after Bedrock agents are created
-resource "null_resource" "update_lambda_bedrock_configs" {
-  # This resource will run after bedrock module is created
-  depends_on = [module.bedrock, module.lambda]
-
-  # Trigger when agent IDs change
-  triggers = {
-    orchestrator_agent_id = module.bedrock.agent_ids["orchestrator"]
-    orchestrator_alias_id = module.bedrock.agent_alias_ids["orchestrator"]
-    content_agent_id      = module.bedrock.agent_ids["content"]
-    content_alias_id      = module.bedrock.agent_alias_ids["content"]
-    visual_agent_id       = module.bedrock.agent_ids["visual"]
-    visual_alias_id       = module.bedrock.agent_alias_ids["visual"]
-    compiler_agent_id     = module.bedrock.agent_ids["compiler"]
-    compiler_alias_id     = module.bedrock.agent_alias_ids["compiler"]
-  }
-
-  # Update all relevant Lambda functions with real agent IDs
-  provisioner "local-exec" {
-    command = <<-EOF
-      echo "Updating Lambda functions with real Bedrock Agent IDs..."
-      
-      # Update generate_presentation function
-      aws lambda update-function-configuration \
-        --function-name ${module.lambda.function_names["api_generate_presentation"]} \
-        --environment Variables="{
-          S3_BUCKET=${module.s3.bucket_name},
-          DYNAMODB_TABLE=${module.dynamodb.tasks_table_name},
-          CHECKPOINTS_TABLE=${module.dynamodb.checkpoints_table_name},
-          SQS_QUEUE_URL=${aws_sqs_queue.task_queue.url},
-          ORCHESTRATOR_AGENT_ID=${module.bedrock.agent_ids["orchestrator"]},
-          ORCHESTRATOR_ALIAS_ID=${module.bedrock.agent_alias_ids["orchestrator"]},
-          CONTENT_AGENT_ID=${module.bedrock.agent_ids["content"]},
-          CONTENT_ALIAS_ID=${module.bedrock.agent_alias_ids["content"]},
-          VISUAL_AGENT_ID=${module.bedrock.agent_ids["visual"]},
-          VISUAL_ALIAS_ID=${module.bedrock.agent_alias_ids["visual"]},
-          COMPILER_AGENT_ID=${module.bedrock.agent_ids["compiler"]},
-          COMPILER_ALIAS_ID=${module.bedrock.agent_alias_ids["compiler"]},
-          BEDROCK_MODEL_ID=${var.bedrock_model_id},
-          BEDROCK_ORCHESTRATOR_MODEL_ID=${var.bedrock_orchestrator_model_id},
-          NOVA_MODEL_ID=${var.nova_model_id},
-          LOG_LEVEL=INFO
-        }" \
-        --region ${var.aws_region}
-
-      # Update core Lambda functions that use Bedrock Agents
-      for func_name in create_outline generate_content generate_image compile_pptx; do
-        echo "Updating Lambda function: $func_name"
-        aws lambda update-function-configuration \
-          --function-name ${var.project_name}-$func_name \
-          --environment Variables="{
-            S3_BUCKET=${module.s3.bucket_name},
-            DYNAMODB_TABLE=${module.dynamodb.tasks_table_name},
-            CHECKPOINTS_TABLE=${module.dynamodb.checkpoints_table_name},
-            ORCHESTRATOR_AGENT_ID=${module.bedrock.agent_ids["orchestrator"]},
-            ORCHESTRATOR_ALIAS_ID=${module.bedrock.agent_alias_ids["orchestrator"]},
-            CONTENT_AGENT_ID=${module.bedrock.agent_ids["content"]},
-            CONTENT_ALIAS_ID=${module.bedrock.agent_alias_ids["content"]},
-            VISUAL_AGENT_ID=${module.bedrock.agent_ids["visual"]},
-            VISUAL_ALIAS_ID=${module.bedrock.agent_alias_ids["visual"]},
-            COMPILER_AGENT_ID=${module.bedrock.agent_ids["compiler"]},
-            COMPILER_ALIAS_ID=${module.bedrock.agent_alias_ids["compiler"]},
-            BEDROCK_MODEL_ID=${var.bedrock_model_id},
-            BEDROCK_ORCHESTRATOR_MODEL_ID=${var.bedrock_orchestrator_model_id},
-            NOVA_MODEL_ID=${var.nova_model_id},
-            LOG_LEVEL=INFO
-          }" \
-          --region ${var.aws_region} || echo "Failed to update $func_name, continuing..."
-      done
-
-      echo "Lambda functions updated successfully with real Bedrock Agent IDs"
-    EOF
-  }
+# Lambda Permissions for API Gateway
+resource "aws_lambda_permission" "api_gateway_generate" {
+  statement_id  = "AllowAPIGatewayInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.generate_ppt.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*"
 }
 
-# ============================================================================
+resource "aws_lambda_permission" "api_gateway_status" {
+  statement_id  = "AllowAPIGatewayInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.status_check.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*"
+}
+
+resource "aws_lambda_permission" "api_gateway_download" {
+  statement_id  = "AllowAPIGatewayInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.download_ppt.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*"
+}
+
+# CloudWatch Log Groups
+# 注释掉以避免与monitoring.tf中的定义冲突
+# resource "aws_cloudwatch_log_group" "lambda_logs" {
+#   for_each = {
+#     api_handler  = aws_lambda_function.api_handler.function_name
+#     generate_ppt = aws_lambda_function.generate_ppt.function_name
+#     status_check = aws_lambda_function.status_check.function_name
+#     download_ppt = aws_lambda_function.download_ppt.function_name
+#   }
+#
+#   name              = "/aws/lambda/${each.value}"
+#   retention_in_days = 7
+# }
+
 # Outputs
-# ============================================================================
-
-# Core infrastructure outputs
-output "aws_account_id" {
-  description = "AWS Account ID"
-  value       = data.aws_caller_identity.current.account_id
-}
-
-output "aws_region" {
-  description = "AWS Region"
-  value       = data.aws_region.current.name
-}
-
-# VPC outputs
-output "vpc_id" {
-  description = "VPC ID"
-  value       = module.vpc.vpc_id
-}
-
-# Storage outputs
-output "s3_bucket_name" {
-  description = "S3 Bucket Name"
-  value       = module.s3.bucket_name
-}
-
-output "dynamodb_table_name" {
-  description = "DynamoDB Table Name"
-  value       = module.dynamodb.table_name
-}
-
-# API outputs
 output "api_gateway_url" {
+  value       = "https://${aws_api_gateway_rest_api.api.id}.execute-api.${var.aws_region}.amazonaws.com/${var.environment}"
   description = "API Gateway URL"
-  value       = aws_api_gateway_stage.main.invoke_url
 }
 
-output "api_gateway_api_key" {
-  description = "API Gateway API Key"
-  value       = module.api_gateway.api_key_value
-  sensitive   = true
+output "s3_bucket_name" {
+  value       = aws_s3_bucket.presentations.id
+  description = "S3 bucket name"
 }
 
-# Lambda outputs
-output "lambda_function_names" {
-  description = "Lambda Function Names"
-  value       = module.lambda.function_names
-}
-
-# SQS outputs
-output "sqs_queue_url" {
-  description = "SQS Queue URL"
-  value       = aws_sqs_queue.task_queue.url
-}
-
-# Monitoring outputs
-output "monitoring_dashboard_url" {
-  description = "CloudWatch Dashboard URL"
-  value       = var.enable_monitoring && length(module.monitoring) > 0 ? module.monitoring[0].dashboard_url : null
-}
-
-output "monitoring_sns_topic_arn" {
-  description = "SNS Topic ARN for alerts"
-  value       = var.enable_monitoring && length(module.monitoring) > 0 ? module.monitoring[0].sns_topic_arn : null
-}
-
-output "monitoring_summary" {
-  description = "Summary of monitoring components"
-  value       = var.enable_monitoring && length(module.monitoring) > 0 ? module.monitoring[0].monitoring_summary : null
-}
-
-# Bedrock Agents outputs
-output "bedrock_agent_ids" {
-  description = "Map of Bedrock Agent IDs"
-  value       = module.bedrock.agent_ids
-}
-
-output "bedrock_agent_alias_ids" {
-  description = "Map of Bedrock Agent Alias IDs"  
-  value       = module.bedrock.agent_alias_ids
-}
-
-output "bedrock_orchestrator_agent_id" {
-  description = "Orchestrator Agent ID for Lambda environment variables"
-  value       = module.bedrock.agent_ids["orchestrator"]
-}
-
-output "bedrock_orchestrator_alias_id" {
-  description = "Orchestrator Agent Alias ID for Lambda environment variables"
-  value       = module.bedrock.agent_alias_ids["orchestrator"]
+output "lambda_functions" {
+  value = {
+    api_handler  = aws_lambda_function.api_handler.function_name
+    generate_ppt = aws_lambda_function.generate_ppt.function_name
+    status_check = aws_lambda_function.status_check.function_name
+    download_ppt = aws_lambda_function.download_ppt.function_name
+  }
+  description = "Lambda function names"
 }

@@ -1,0 +1,99 @@
+{
+  "timestamp": "2025-09-14T02:40:43.377150",
+  "config": {
+    "use_real_api": false,
+    "enable_cache": true,
+    "enable_metrics": true,
+    "enable_monitoring": false,
+    "max_workers": 10,
+    "single_iterations": 5,
+    "batch_size": 5,
+    "concurrent_requests": 10,
+    "run_stress_test": false,
+    "stress_duration": 30
+  },
+  "results": {
+    "single_request": {
+      "test_name": "single_request",
+      "iterations": 5,
+      "mean_time": 0.12020377500448376,
+      "median_time": 0.12043699997593649,
+      "min_time": 0.11486349999904633,
+      "max_time": 0.12446545902639627,
+      "std_dev": 0.003584469781537873
+    },
+    "batch_processing": {
+      "test_name": "batch_processing",
+      "batch_size": 5,
+      "total_time": 0.16480699999374337,
+      "avg_time_per_image": 0.032961399998748676,
+      "successful": 0,
+      "failed": 5,
+      "success_rate": 0.0
+    },
+    "concurrent": {
+      "test_name": "concurrent_requests",
+      "concurrent_count": 10,
+      "total_time": 0.17437204197631218,
+      "mean_response_time": 0.14843389180314262,
+      "max_response_time": 0.17393200000515208,
+      "successful": 10,
+      "failed": 0,
+      "success_rate": 1.0,
+      "throughput": 57.34864308900199
+    },
+    "cache": {
+      "test_name": "cache_performance",
+      "cold_cache_time": 0.1158218750206288,
+      "hot_cache_time": 0.124637916975189,
+      "speedup": 0.9292667739600048,
+      "cache_hit_rate": 0.0,
+      "cache_stats": {
+        "items": 0,
+        "total_size_mb": 0.0,
+        "hit_count": 0,
+        "miss_count": 32,
+        "hit_rate": 0.0,
+        "max_items": 200
+      }
+    },
+    "service_stats": {
+      "total_requests": 32,
+      "successful_generations": 0,
+      "success_rate": 0.0,
+      "average_generation_time": 0,
+      "cache_stats": {
+        "items": 0,
+        "total_size_mb": 0.0,
+        "hit_count": 0,
+        "miss_count": 32,
+        "hit_rate": 0.0,
+        "max_items": 200
+      },
+      "model_usage": {},
+      "model_pool_status": {
+        "amazon.nova-canvas-v1:0": {
+          "available": false,
+          "failures": 3,
+          "last_success": 1757785240.974369
+        },
+        "stability.stable-diffusion-xl-v1": {
+          "available": true,
+          "failures": 0,
+          "last_success": 1757785240.974369
+        }
+      }
+    }
+  },
+  "summary": {
+    "overall_performance": "PASS",
+    "key_metrics": {
+      "avg_response_time": "0.120s",
+      "cache_hit_rate": "0.0%",
+      "throughput": "57.35 req/s"
+    },
+    "recommendations": [
+      "缓存命中率低于60%，建议增加缓存容量或优化缓存键"
+    ]
+  }
+}

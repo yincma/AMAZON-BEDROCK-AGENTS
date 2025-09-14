@@ -1,0 +1,84 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>性能测试报告 - 2025-09-14T02:40:43.377150</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .header { background: #2c3e50; color: white; padding: 20px; border-radius: 5px; }
+        .summary { background: white; padding: 20px; margin: 20px 0; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .metric { display: inline-block; margin: 10px 20px; }
+        .metric-value { font-size: 24px; font-weight: bold; color: #3498db; }
+        .metric-label { color: #7f8c8d; margin-top: 5px; }
+        .test-result { background: white; padding: 15px; margin: 10px 0; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .pass { color: #27ae60; }
+        .fail { color: #e74c3c; }
+        .recommendation { background: #fff3cd; padding: 10px; margin: 5px 0; border-left: 4px solid #ffc107; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #ecf0f1; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>AI-PPT-Assistant 性能测试报告</h1>
+        <p>生成时间: 2025-09-14T02:40:43.377150</p>
+    </div>
+
+    <div class="summary">
+        <h2>测试摘要</h2>
+        <div>
+            <div class="metric">
+                <div class="metric-value">0.120s</div>
+                <div class="metric-label">平均响应时间</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value">0.0%</div>
+                <div class="metric-label">缓存命中率</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value">57.35 req/s</div>
+                <div class="metric-label">吞吐量</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="summary">
+        <h2>测试结果</h2>
+        
+                <div class="test-result">
+                    <h3>single_request</h3>
+                    <table>
+                <tr><td>iterations</td><td>5</td></tr><tr><td>mean_time</td><td>0.120</td></tr><tr><td>median_time</td><td>0.120</td></tr><tr><td>min_time</td><td>0.115</td></tr><tr><td>max_time</td><td>0.124</td></tr><tr><td>std_dev</td><td>0.004</td></tr>
+                    </table>
+                </div>
+                
+                <div class="test-result">
+                    <h3>batch_processing</h3>
+                    <table>
+                <tr><td>batch_size</td><td>5</td></tr><tr><td>total_time</td><td>0.165</td></tr><tr><td>avg_time_per_image</td><td>0.033</td></tr><tr><td>successful</td><td>0</td></tr><tr><td>failed</td><td>5</td></tr><tr><td>success_rate</td><td>0.000</td></tr>
+                    </table>
+                </div>
+                
+                <div class="test-result">
+                    <h3>concurrent_requests</h3>
+                    <table>
+                <tr><td>concurrent_count</td><td>10</td></tr><tr><td>total_time</td><td>0.174</td></tr><tr><td>mean_response_time</td><td>0.148</td></tr><tr><td>max_response_time</td><td>0.174</td></tr><tr><td>successful</td><td>10</td></tr><tr><td>failed</td><td>0</td></tr><tr><td>success_rate</td><td>1.000</td></tr><tr><td>throughput</td><td>57.349</td></tr>
+                    </table>
+                </div>
+                
+                <div class="test-result">
+                    <h3>cache_performance</h3>
+                    <table>
+                <tr><td>cold_cache_time</td><td>0.116</td></tr><tr><td>hot_cache_time</td><td>0.125</td></tr><tr><td>speedup</td><td>0.929</td></tr><tr><td>cache_hit_rate</td><td>0.000</td></tr><tr><td>cache_stats</td><td>{'items': 0, 'total_size_mb': 0.0, 'hit_count': 0, 'miss_count': 32, 'hit_rate': 0.0, 'max_items': 200}</td></tr>
+                    </table>
+                </div>
+                
+    </div>
+
+    <div class="summary">
+        <h2>优化建议</h2>
+        <div class="recommendation">缓存命中率低于60%，建议增加缓存容量或优化缓存键</div>
+    </div>
+</body>
+</html>

@@ -1,503 +1,508 @@
 #!/usr/bin/env python3
 """
-AI PPT Assistant Deployment Validation Script
-Validates that all infrastructure components are correctly deployed and functional
+AI PPT Assistant 部署验证脚本
+验证图片生成服务的完整功能和性能
 """
 
 import json
+import time
+import base64
+import argparse
 import os
 import sys
-import time
-import uuid
+from typing import Dict, Any, Optional
+import logging
 from datetime import datetime
-from typing import Dict, List, Any, Tuple
 
 import boto3
 import requests
-from botocore.exceptions import ClientError
+from botocore.exceptions import ClientError, NoCredentialsError
 
-# Color codes for terminal output
-class Colors:
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    RED = '\033[91m'
-    BLUE = '\033[94m'
-    BOLD = '\033[1m'
-    END = '\033[0m'
-
-# Configuration
-PROJECT_NAME = os.environ.get("PROJECT_NAME", "ai-ppt-assistant")
-ENVIRONMENT = os.environ.get("ENVIRONMENT", "dev")
-AWS_REGION = os.environ.get("AWS_REGION", "us-east-1")
-API_BASE_URL = os.environ.get("API_BASE_URL", "")
-
-# AWS Clients
-session = boto3.Session(region_name=AWS_REGION)
-lambda_client = session.client('lambda')
-dynamodb_client = session.client('dynamodb')
-sqs_client = session.client('sqs')
-s3_client = session.client('s3')
-logs_client = session.client('logs')
-bedrock_agent_client = session.client('bedrock-agent')
-api_gateway_client = session.client('apigateway')
-cloudwatch_client = session.client('cloudwatch')
-
+# 配置日志
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 class DeploymentValidator:
-    def __init__(self):
-        self.results = []
-        self.critical_failures = []
-        self.warnings = []
-        self.passed_tests = 0
-        self.failed_tests = 0
-        
-    def print_header(self, title: str):
-        """Print section header"""
-        print(f"\n{Colors.BOLD}{Colors.BLUE}{'='*60}{Colors.END}")
-        print(f"{Colors.BOLD}{Colors.BLUE}{title:^60}{Colors.END}")
-        print(f"{Colors.BOLD}{Colors.BLUE}{'='*60}{Colors.END}\n")
-    
-    def print_result(self, test_name: str, passed: bool, message: str = ""):
-        """Print test result"""
-        if passed:
-            status = f"{Colors.GREEN}✓ PASS{Colors.END}"
-            self.passed_tests += 1
+    """部署验证器类"""
+
+    def __init__(self, environment: str = "dev"):
+        """初始化验证器"""
+        self.environment = environment
+        self.aws_session = boto3.Session()
+        self.lambda_client = self.aws_session.client('lambda')
+        self.s3_client = self.aws_session.client('s3')
+        self.dynamodb_client = self.aws_session.client('dynamodb')
+        self.cloudwatch_client = self.aws_session.client('cloudwatch')
+
+        # 存储验证结果
+        self.validation_results = {
+            'timestamp': datetime.now().isoformat(),
+            'environment': environment,
+            'tests': []
+        }
+
+    def add_test_result(self, test_name: str, status: str, details: str = "", duration: float = 0):
+        """添加测试结果"""
+        result = {
+            'name': test_name,
+            'status': status,  # PASS, FAIL, SKIP, WARNING
+            'details': details,
+            'duration_seconds': round(duration, 2),
+            'timestamp': datetime.now().isoformat()
+        }
+        self.validation_results['tests'].append(result)
+
+        # 记录日志
+        if status == 'PASS':
+            logger.info(f"✅ {test_name}: {details}")
+        elif status == 'FAIL':
+            logger.error(f"❌ {test_name}: {details}")
+        elif status == 'WARNING':
+            logger.warning(f"⚠️  {test_name}: {details}")
         else:
-            status = f"{Colors.RED}✗ FAIL{Colors.END}"
-            self.failed_tests += 1
-            
-        print(f"{status} {test_name}")
-        if message:
-            print(f"  └─ {message}")
-    
-    def validate_lambda_functions(self) -> bool:
-        """Validate Lambda functions are deployed and configured correctly"""
-        self.print_header("Lambda Functions Validation")
-        
-        all_passed = True
-        required_functions = [
-            f"{PROJECT_NAME}-api-generate-presentation",
-            f"{PROJECT_NAME}-api-presentation-status",
-            f"{PROJECT_NAME}-api-presentation-download",
-            f"{PROJECT_NAME}-api-modify-slide",
-            f"{PROJECT_NAME}-create-outline",
-            f"{PROJECT_NAME}-generate-content",
-            f"{PROJECT_NAME}-generate-image",
-            f"{PROJECT_NAME}-find-image",
-            f"{PROJECT_NAME}-generate-speaker-notes",
-            f"{PROJECT_NAME}-compile-pptx",
-            f"{PROJECT_NAME}-task-processor",  # New task processor
-        ]
-        
-        for function_name in required_functions:
-            try:
-                response = lambda_client.get_function(FunctionName=function_name)
-                config = response['Configuration']
-                
-                # Check function state
-                if config['State'] == 'Active':
-                    self.print_result(f"Lambda: {function_name}", True, 
-                                    f"Runtime: {config['Runtime']}, Memory: {config['MemorySize']}MB")
-                else:
-                    self.print_result(f"Lambda: {function_name}", False, 
-                                    f"Function state: {config['State']}")
-                    all_passed = False
-                
-                # Validate environment variables
-                env_vars = config.get('Environment', {}).get('Variables', {})
-                
-                # Check critical environment variables
-                if 'generate-presentation' in function_name:
-                    required_env = ['DYNAMODB_TASKS_TABLE', 'SQS_QUEUE_URL', 
-                                  'ORCHESTRATOR_AGENT_ID', 'ORCHESTRATOR_ALIAS_ID']
-                    for env in required_env:
-                        if env not in env_vars:
-                            self.warnings.append(f"{function_name} missing env var: {env}")
-                
-            except ClientError as e:
-                if e.response['Error']['Code'] == 'ResourceNotFoundException':
-                    self.print_result(f"Lambda: {function_name}", False, "Function not found")
-                    self.critical_failures.append(f"Lambda function {function_name} not deployed")
-                    all_passed = False
-                else:
-                    self.print_result(f"Lambda: {function_name}", False, str(e))
-                    all_passed = False
-        
-        return all_passed
-    
-    def validate_sqs_configuration(self) -> bool:
-        """Validate SQS queues and event source mappings"""
-        self.print_header("SQS Queue Validation")
-        
-        all_passed = True
-        
-        # Check main task queue
-        queue_name = f"{PROJECT_NAME}-{ENVIRONMENT}-tasks"
+            logger.info(f"⏭️  {test_name}: {details}")
+
+    def validate_aws_credentials(self) -> bool:
+        """验证AWS凭证"""
+        start_time = time.time()
         try:
-            queue_url = sqs_client.get_queue_url(QueueName=queue_name)['QueueUrl']
-            
-            # Get queue attributes
-            attrs = sqs_client.get_queue_attributes(
-                QueueUrl=queue_url,
-                AttributeNames=['All']
-            )['Attributes']
-            
-            self.print_result(f"SQS Queue: {queue_name}", True,
-                            f"Messages: {attrs.get('ApproximateNumberOfMessages', 0)}, "
-                            f"In-flight: {attrs.get('ApproximateNumberOfMessagesNotVisible', 0)}")
-            
-            # Check for dead letter queue
-            if 'RedrivePolicy' in attrs:
-                self.print_result("Dead Letter Queue configured", True)
+            identity = self.aws_session.client('sts').get_caller_identity()
+            account_id = identity['Account']
+            user_arn = identity['Arn']
+
+            self.add_test_result(
+                'AWS凭证验证',
+                'PASS',
+                f'账户: {account_id}, 身份: {user_arn}',
+                time.time() - start_time
+            )
+            return True
+
+        except (ClientError, NoCredentialsError) as e:
+            self.add_test_result(
+                'AWS凭证验证',
+                'FAIL',
+                f'凭证验证失败: {str(e)}',
+                time.time() - start_time
+            )
+            return False
+
+    def get_terraform_outputs(self) -> Dict[str, Any]:
+        """获取Terraform输出"""
+        try:
+            # 尝试从当前目录读取terraform输出
+            import subprocess
+            result = subprocess.run(
+                ['terraform', 'output', '-json'],
+                cwd=os.path.join(os.path.dirname(__file__), '..', 'infrastructure'),
+                capture_output=True,
+                text=True
+            )
+
+            if result.returncode == 0:
+                return json.loads(result.stdout)
             else:
-                self.print_result("Dead Letter Queue configured", False, "No DLQ configured")
-                self.warnings.append("SQS queue has no dead letter queue")
-            
-            # Check Lambda event source mapping
-            try:
-                mappings = lambda_client.list_event_source_mappings(
-                    EventSourceArn=f"arn:aws:sqs:{AWS_REGION}:*:{queue_name}"
+                logger.warning("无法获取Terraform输出，将尝试其他方式")
+                return {}
+
+        except Exception as e:
+            logger.warning(f"获取Terraform输出失败: {str(e)}")
+            return {}
+
+    def validate_lambda_functions(self, outputs: Dict[str, Any]) -> bool:
+        """验证Lambda函数"""
+        success = True
+
+        # 基础图片生成函数
+        function_name = outputs.get('image_generator_function_name', {}).get('value')
+        if function_name:
+            success &= self._validate_single_lambda(function_name, "基础图片生成Lambda")
+        else:
+            self.add_test_result('基础图片生成Lambda', 'SKIP', '未找到函数名')
+            success = False
+
+        # 优化图片生成函数
+        optimized_function_name = outputs.get('image_generator_optimized_function_name', {}).get('value')
+        if optimized_function_name:
+            success &= self._validate_single_lambda(optimized_function_name, "优化图片生成Lambda")
+
+        return success
+
+    def _validate_single_lambda(self, function_name: str, test_name: str) -> bool:
+        """验证单个Lambda函数"""
+        start_time = time.time()
+        try:
+            # 获取函数配置
+            response = self.lambda_client.get_function(FunctionName=function_name)
+            config = response['Configuration']
+
+            # 检查函数状态
+            state = config.get('State', 'Unknown')
+            if state != 'Active':
+                self.add_test_result(
+                    test_name,
+                    'WARNING',
+                    f'函数状态: {state}',
+                    time.time() - start_time
                 )
-                
-                if mappings['EventSourceMappings']:
-                    mapping = mappings['EventSourceMappings'][0]
-                    if mapping['State'] == 'Enabled':
-                        self.print_result("SQS-Lambda Trigger", True,
-                                        f"Function: {mapping['FunctionArn'].split(':')[-1]}")
-                    else:
-                        self.print_result("SQS-Lambda Trigger", False,
-                                        f"Trigger state: {mapping['State']}")
-                        self.critical_failures.append("SQS-Lambda trigger is not enabled")
-                        all_passed = False
-                else:
-                    self.print_result("SQS-Lambda Trigger", False, "No Lambda trigger configured")
-                    self.critical_failures.append("No Lambda function processing SQS messages")
-                    all_passed = False
-                    
-            except Exception as e:
-                self.print_result("SQS-Lambda Trigger", False, str(e))
-                all_passed = False
-                
+                return False
+
+            # 检查配置
+            runtime = config.get('Runtime')
+            timeout = config.get('Timeout')
+            memory = config.get('MemorySize')
+
+            self.add_test_result(
+                test_name,
+                'PASS',
+                f'状态: {state}, 运行时: {runtime}, 超时: {timeout}s, 内存: {memory}MB',
+                time.time() - start_time
+            )
+            return True
+
         except ClientError as e:
-            self.print_result(f"SQS Queue: {queue_name}", False, str(e))
-            self.critical_failures.append(f"SQS queue {queue_name} not found")
-            all_passed = False
-        
-        return all_passed
-    
-    def validate_dynamodb_tables(self) -> bool:
-        """Validate DynamoDB tables"""
-        self.print_header("DynamoDB Tables Validation")
-        
-        all_passed = True
-        required_tables = [
-            f"{PROJECT_NAME}-{ENVIRONMENT}-sessions",
-            f"{PROJECT_NAME}-{ENVIRONMENT}-tasks",
-            f"{PROJECT_NAME}-{ENVIRONMENT}-checkpoints",
-        ]
-        
-        for table_name in required_tables:
-            try:
-                response = dynamodb_client.describe_table(TableName=table_name)
-                table = response['Table']
-                
-                if table['TableStatus'] == 'ACTIVE':
-                    self.print_result(f"DynamoDB: {table_name}", True,
-                                    f"Items: {table['ItemCount']}, "
-                                    f"Size: {table['TableSizeBytes']} bytes")
-                else:
-                    self.print_result(f"DynamoDB: {table_name}", False,
-                                    f"Table status: {table['TableStatus']}")
-                    all_passed = False
-                    
-            except ClientError as e:
-                if e.response['Error']['Code'] == 'ResourceNotFoundException':
-                    self.print_result(f"DynamoDB: {table_name}", False, "Table not found")
-                    self.critical_failures.append(f"DynamoDB table {table_name} not found")
-                    all_passed = False
-                else:
-                    self.print_result(f"DynamoDB: {table_name}", False, str(e))
-                    all_passed = False
-        
-        return all_passed
-    
-    def validate_bedrock_agents(self) -> bool:
-        """Validate Bedrock Agent configuration"""
-        self.print_header("Bedrock Agent Validation")
-        
-        all_passed = True
-        
-        # Get agent IDs from environment or configuration
-        agent_configs = [
-            ("Orchestrator Agent", os.environ.get("ORCHESTRATOR_AGENT_ID", "LA1D127LSK")),
-        ]
-        
-        for agent_name, agent_id in agent_configs:
-            if agent_id and not agent_id.startswith("placeholder"):
-                try:
-                    response = bedrock_agent_client.get_agent(agentId=agent_id)
-                    agent = response['agent']
-                    
-                    if agent['agentStatus'] == 'PREPARED':
-                        self.print_result(f"Bedrock: {agent_name}", True,
-                                        f"ID: {agent_id}, Model: {agent.get('foundationModel', 'N/A')}")
-                    else:
-                        self.print_result(f"Bedrock: {agent_name}", False,
-                                        f"Agent status: {agent['agentStatus']}")
-                        all_passed = False
-                        
-                except ClientError as e:
-                    self.print_result(f"Bedrock: {agent_name}", False, str(e))
-                    self.warnings.append(f"Bedrock agent {agent_id} not accessible")
-            else:
-                self.print_result(f"Bedrock: {agent_name}", False, "Not configured")
-                self.warnings.append(f"{agent_name} not configured")
-        
-        return all_passed
-    
-    def validate_api_gateway(self) -> bool:
-        """Validate API Gateway configuration"""
-        self.print_header("API Gateway Validation")
-        
-        all_passed = True
-        
+            self.add_test_result(
+                test_name,
+                'FAIL',
+                f'函数验证失败: {str(e)}',
+                time.time() - start_time
+            )
+            return False
+
+    def validate_s3_bucket(self, outputs: Dict[str, Any]) -> bool:
+        """验证S3存储桶"""
+        start_time = time.time()
+
+        # 从输出或推断获取桶名
+        bucket_name = outputs.get('presentations_bucket_name', {}).get('value')
+        if not bucket_name:
+            bucket_name = outputs.get('s3_bucket_name', {}).get('value')
+
+        if not bucket_name:
+            self.add_test_result('S3存储桶验证', 'SKIP', '未找到存储桶名')
+            return False
+
         try:
-            # Get API by name
-            apis = api_gateway_client.get_rest_apis()['items']
-            target_api = None
-            
-            for api in apis:
-                if PROJECT_NAME in api['name']:
-                    target_api = api
-                    break
-            
-            if target_api:
-                self.print_result(f"API Gateway: {target_api['name']}", True,
-                                f"ID: {target_api['id']}")
-                
-                # Check resources
-                resources = api_gateway_client.get_resources(restApiId=target_api['id'])
-                resource_count = len(resources['items'])
-                
-                self.print_result("API Resources", True,
-                                f"Total resources: {resource_count}")
-                
-                # Check for deployments
-                deployments = api_gateway_client.get_deployments(restApiId=target_api['id'])
-                if deployments['items']:
-                    self.print_result("API Deployment", True,
-                                    f"Deployments: {len(deployments['items'])}")
-                else:
-                    self.print_result("API Deployment", False, "No deployments found")
-                    self.warnings.append("API Gateway has no deployments")
-                    
-            else:
-                self.print_result("API Gateway", False, "API not found")
-                self.critical_failures.append("API Gateway not found")
-                all_passed = False
-                
-        except Exception as e:
-            self.print_result("API Gateway", False, str(e))
-            all_passed = False
-        
-        return all_passed
-    
-    def validate_monitoring(self) -> bool:
-        """Validate CloudWatch alarms and monitoring"""
-        self.print_header("Monitoring & Alarms Validation")
-        
-        all_passed = True
-        
+            # 检查桶是否存在
+            self.s3_client.head_bucket(Bucket=bucket_name)
+
+            # 检查桶配置
+            versioning = self.s3_client.get_bucket_versioning(Bucket=bucket_name)
+            encryption = self.s3_client.get_bucket_encryption(Bucket=bucket_name)
+
+            version_status = versioning.get('Status', 'Disabled')
+            encryption_rules = len(encryption.get('ServerSideEncryptionConfiguration', {}).get('Rules', []))
+
+            self.add_test_result(
+                'S3存储桶验证',
+                'PASS',
+                f'桶: {bucket_name}, 版本控制: {version_status}, 加密规则: {encryption_rules}个',
+                time.time() - start_time
+            )
+            return True
+
+        except ClientError as e:
+            error_code = e.response['Error']['Code']
+            self.add_test_result(
+                'S3存储桶验证',
+                'FAIL',
+                f'桶验证失败: {error_code}',
+                time.time() - start_time
+            )
+            return False
+
+    def validate_dynamodb_table(self, outputs: Dict[str, Any]) -> bool:
+        """验证DynamoDB表"""
+        start_time = time.time()
+
+        # 从输出获取表名
+        table_name = outputs.get('presentations_table_name', {}).get('value')
+        if not table_name:
+            table_name = outputs.get('dynamodb_table_name', {}).get('value')
+
+        if not table_name:
+            self.add_test_result('DynamoDB表验证', 'SKIP', '未找到表名')
+            return False
+
         try:
-            # List all alarms for the project
-            alarms = cloudwatch_client.describe_alarms(
-                AlarmNamePrefix=PROJECT_NAME
-            )['MetricAlarms']
-            
-            if alarms:
-                ok_count = sum(1 for a in alarms if a['StateValue'] == 'OK')
-                alarm_count = sum(1 for a in alarms if a['StateValue'] == 'ALARM')
-                insufficient_count = sum(1 for a in alarms if a['StateValue'] == 'INSUFFICIENT_DATA')
-                
-                self.print_result("CloudWatch Alarms", True,
-                                f"Total: {len(alarms)}, OK: {ok_count}, "
-                                f"ALARM: {alarm_count}, INSUFFICIENT: {insufficient_count}")
-                
-                if alarm_count > 0:
-                    self.warnings.append(f"{alarm_count} alarms in ALARM state")
-                    
-            else:
-                self.print_result("CloudWatch Alarms", False, "No alarms configured")
-                self.warnings.append("No CloudWatch alarms configured")
-                
-        except Exception as e:
-            self.print_result("CloudWatch Alarms", False, str(e))
-            all_passed = False
-        
-        return all_passed
-    
-    def run_integration_test(self) -> bool:
-        """Run a simple integration test"""
-        self.print_header("Integration Test")
-        
-        test_passed = True
-        test_id = str(uuid.uuid4())[:8]
-        
+            # 检查表状态
+            response = self.dynamodb_client.describe_table(TableName=table_name)
+            table_status = response['Table']['TableStatus']
+
+            if table_status != 'ACTIVE':
+                self.add_test_result(
+                    'DynamoDB表验证',
+                    'WARNING',
+                    f'表状态: {table_status}',
+                    time.time() - start_time
+                )
+                return False
+
+            # 获取表信息
+            billing_mode = response['Table']['BillingModeSummary']['BillingMode']
+            item_count = response['Table']['ItemCount']
+
+            self.add_test_result(
+                'DynamoDB表验证',
+                'PASS',
+                f'表: {table_name}, 状态: {table_status}, 计费: {billing_mode}, 项目数: {item_count}',
+                time.time() - start_time
+            )
+            return True
+
+        except ClientError as e:
+            error_code = e.response['Error']['Code']
+            self.add_test_result(
+                'DynamoDB表验证',
+                'FAIL',
+                f'表验证失败: {error_code}',
+                time.time() - start_time
+            )
+            return False
+
+    def test_lambda_function_direct(self, function_name: str) -> bool:
+        """直接测试Lambda函数"""
+        start_time = time.time()
+
+        test_payload = {
+            'slide_content': {
+                'title': '验证测试',
+                'content': ['这是一个部署验证测试']
+            },
+            'target_audience': 'business'
+        }
+
         try:
-            # Create a test task by invoking Lambda directly
-            test_payload = {
-                "httpMethod": "POST",
-                "path": "/presentations",
-                "body": json.dumps({
-                    "title": f"Validation Test {test_id}",
-                    "topic": "System validation test",
-                    "slide_count": 3,
-                    "language": "en",
-                    "style": "professional"
-                }),
-                "pathParameters": {},
-                "queryStringParameters": {}
-            }
-            
-            # Invoke generate_presentation Lambda
-            response = lambda_client.invoke(
-                FunctionName=f"{PROJECT_NAME}-api-generate-presentation",
+            response = self.lambda_client.invoke(
+                FunctionName=function_name,
                 InvocationType='RequestResponse',
                 Payload=json.dumps(test_payload)
             )
-            
-            result = json.loads(response['Payload'].read())
-            
-            if result.get('statusCode') == 202:
-                body = json.loads(result.get('body', '{}'))
-                task_id = body.get('task_id')
-                
-                if task_id:
-                    self.print_result("Task Creation", True, f"Task ID: {task_id}")
-                    
-                    # Wait a moment for processing
-                    time.sleep(2)
-                    
-                    # Check if task was stored in DynamoDB
-                    try:
-                        table_name = f"{PROJECT_NAME}-{ENVIRONMENT}-tasks"
-                        db_response = dynamodb_client.get_item(
-                            TableName=table_name,
-                            Key={'task_id': {'S': task_id}}
-                        )
-                        
-                        if 'Item' in db_response:
-                            self.print_result("Task Storage", True, "Task found in DynamoDB")
-                        else:
-                            self.print_result("Task Storage", False, "Task not found in DynamoDB")
-                            self.critical_failures.append("Tasks not being stored in DynamoDB")
-                            test_passed = False
-                            
-                    except Exception as e:
-                        self.print_result("Task Storage", False, str(e))
-                        test_passed = False
-                    
-                    # Check SQS for message
-                    try:
-                        queue_url = sqs_client.get_queue_url(
-                            QueueName=f"{PROJECT_NAME}-{ENVIRONMENT}-tasks"
-                        )['QueueUrl']
-                        
-                        attrs = sqs_client.get_queue_attributes(
-                            QueueUrl=queue_url,
-                            AttributeNames=['ApproximateNumberOfMessages']
-                        )['Attributes']
-                        
-                        msg_count = int(attrs.get('ApproximateNumberOfMessages', 0))
-                        if msg_count > 0:
-                            self.print_result("Task Queuing", True, 
-                                            f"Messages in queue: {msg_count}")
-                        else:
-                            self.print_result("Task Queuing", False, 
-                                            "No messages in queue (might be processed already)")
-                            
-                    except Exception as e:
-                        self.print_result("Task Queuing", False, str(e))
-                        
-                else:
-                    self.print_result("Task Creation", False, "No task_id returned")
-                    test_passed = False
-                    
-            else:
-                self.print_result("Task Creation", False, 
-                                f"Status code: {result.get('statusCode')}")
-                test_passed = False
-                
-        except Exception as e:
-            self.print_result("Integration Test", False, str(e))
-            test_passed = False
-        
-        return test_passed
-    
-    def generate_report(self):
-        """Generate final validation report"""
-        self.print_header("Validation Summary")
-        
-        total_tests = self.passed_tests + self.failed_tests
-        pass_rate = (self.passed_tests / total_tests * 100) if total_tests > 0 else 0
-        
-        print(f"{Colors.BOLD}Test Results:{Colors.END}")
-        print(f"  Total Tests: {total_tests}")
-        print(f"  Passed: {Colors.GREEN}{self.passed_tests}{Colors.END}")
-        print(f"  Failed: {Colors.RED}{self.failed_tests}{Colors.END}")
-        print(f"  Pass Rate: {pass_rate:.1f}%")
-        
-        if self.critical_failures:
-            print(f"\n{Colors.BOLD}{Colors.RED}Critical Failures:{Colors.END}")
-            for failure in self.critical_failures:
-                print(f"  • {failure}")
-        
-        if self.warnings:
-            print(f"\n{Colors.BOLD}{Colors.YELLOW}Warnings:{Colors.END}")
-            for warning in self.warnings:
-                print(f"  • {warning}")
-        
-        # Overall status
-        print(f"\n{Colors.BOLD}Overall Status:{Colors.END}")
-        if self.critical_failures:
-            print(f"  {Colors.RED}✗ DEPLOYMENT FAILED - Critical issues found{Colors.END}")
-            return False
-        elif self.warnings:
-            print(f"  {Colors.YELLOW}⚠ DEPLOYMENT SUCCESSFUL WITH WARNINGS{Colors.END}")
-            return True
-        else:
-            print(f"  {Colors.GREEN}✓ DEPLOYMENT SUCCESSFUL - All tests passed{Colors.END}")
-            return True
-    
-    def run_all_validations(self) -> bool:
-        """Run all validation tests"""
-        print(f"\n{Colors.BOLD}AI PPT Assistant Deployment Validation{Colors.END}")
-        print(f"Project: {PROJECT_NAME}")
-        print(f"Environment: {ENVIRONMENT}")
-        print(f"Region: {AWS_REGION}")
-        print(f"Timestamp: {datetime.now().isoformat()}")
-        
-        # Run all validations
-        self.validate_lambda_functions()
-        self.validate_sqs_configuration()
-        self.validate_dynamodb_tables()
-        self.validate_bedrock_agents()
-        self.validate_api_gateway()
-        self.validate_monitoring()
-        self.run_integration_test()
-        
-        # Generate report
-        return self.generate_report()
 
+            # 解析响应
+            payload = json.loads(response['Payload'].read())
+            status_code = payload.get('statusCode', 500)
+
+            if status_code == 200:
+                body = json.loads(payload.get('body', '{}'))
+                if body.get('success'):
+                    # 验证返回的图片数据
+                    image_data = body.get('image_data')
+                    if image_data:
+                        # 验证base64图片数据
+                        try:
+                            decoded_data = base64.b64decode(image_data)
+                            if len(decoded_data) > 100:  # 简单验证
+                                self.add_test_result(
+                                    'Lambda函数直接调用测试',
+                                    'PASS',
+                                    f'成功生成图片，大小: {len(decoded_data)} 字节',
+                                    time.time() - start_time
+                                )
+                                return True
+                        except Exception:
+                            pass
+
+                self.add_test_result(
+                    'Lambda函数直接调用测试',
+                    'WARNING',
+                    f'函数返回成功但图片数据验证失败',
+                    time.time() - start_time
+                )
+                return False
+            else:
+                error_msg = json.loads(payload.get('body', '{}')).get('message', '未知错误')
+                self.add_test_result(
+                    'Lambda函数直接调用测试',
+                    'FAIL',
+                    f'函数返回错误 ({status_code}): {error_msg}',
+                    time.time() - start_time
+                )
+                return False
+
+        except Exception as e:
+            self.add_test_result(
+                'Lambda函数直接调用测试',
+                'FAIL',
+                f'调用失败: {str(e)}',
+                time.time() - start_time
+            )
+            return False
+
+    def test_lambda_function_url(self, function_url: str) -> bool:
+        """通过函数URL测试Lambda"""
+        start_time = time.time()
+
+        test_payload = {
+            'slide_content': {
+                'title': 'URL验证测试',
+                'content': ['这是一个函数URL验证测试']
+            }
+        }
+
+        try:
+            response = requests.post(
+                function_url,
+                json=test_payload,
+                timeout=60,
+                headers={'Content-Type': 'application/json'}
+            )
+
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and data.get('image_data'):
+                    self.add_test_result(
+                        'Lambda函数URL测试',
+                        'PASS',
+                        f'URL响应正常，生成时间: {data.get("generation_time", 0):.2f}s',
+                        time.time() - start_time
+                    )
+                    return True
+                else:
+                    self.add_test_result(
+                        'Lambda函数URL测试',
+                        'WARNING',
+                        'URL响应但数据格式异常',
+                        time.time() - start_time
+                    )
+                    return False
+            else:
+                self.add_test_result(
+                    'Lambda函数URL测试',
+                    'FAIL',
+                    f'URL返回错误: {response.status_code}',
+                    time.time() - start_time
+                )
+                return False
+
+        except Exception as e:
+            self.add_test_result(
+                'Lambda函数URL测试',
+                'FAIL',
+                f'URL调用失败: {str(e)}',
+                time.time() - start_time
+            )
+            return False
+
+    def validate_monitoring(self, outputs: Dict[str, Any]) -> bool:
+        """验证监控配置"""
+        start_time = time.time()
+
+        try:
+            # 检查CloudWatch告警
+            alarms = self.cloudwatch_client.describe_alarms(
+                AlarmNamePrefix=f'ai-ppt-assistant-image-generator-{self.environment}'
+            )
+
+            alarm_count = len(alarms['MetricAlarms'])
+
+            # 检查仪表板
+            dashboard_name = f'ai-ppt-assistant-image-processing-{self.environment}'
+            try:
+                self.cloudwatch_client.get_dashboard(DashboardName=dashboard_name)
+                dashboard_exists = True
+            except ClientError:
+                dashboard_exists = False
+
+            status = 'PASS' if alarm_count > 0 and dashboard_exists else 'WARNING'
+            self.add_test_result(
+                '监控配置验证',
+                status,
+                f'告警数: {alarm_count}, 仪表板: {"存在" if dashboard_exists else "不存在"}',
+                time.time() - start_time
+            )
+
+            return status == 'PASS'
+
+        except Exception as e:
+            self.add_test_result(
+                '监控配置验证',
+                'FAIL',
+                f'监控验证失败: {str(e)}',
+                time.time() - start_time
+            )
+            return False
+
+    def run_full_validation(self) -> Dict[str, Any]:
+        """运行完整验证"""
+        logger.info("开始部署验证...")
+
+        # 验证AWS凭证
+        if not self.validate_aws_credentials():
+            logger.error("AWS凭证验证失败，终止验证")
+            return self.validation_results
+
+        # 获取Terraform输出
+        outputs = self.get_terraform_outputs()
+
+        # 验证核心组件
+        self.validate_lambda_functions(outputs)
+        self.validate_s3_bucket(outputs)
+        self.validate_dynamodb_table(outputs)
+        self.validate_monitoring(outputs)
+
+        # 功能测试
+        function_name = outputs.get('image_generator_function_name', {}).get('value')
+        if function_name:
+            self.test_lambda_function_direct(function_name)
+
+        function_url = outputs.get('image_generator_function_url', {}).get('value')
+        if function_url:
+            self.test_lambda_function_url(function_url)
+
+        # 统计结果
+        total_tests = len(self.validation_results['tests'])
+        passed_tests = sum(1 for test in self.validation_results['tests'] if test['status'] == 'PASS')
+        failed_tests = sum(1 for test in self.validation_results['tests'] if test['status'] == 'FAIL')
+
+        self.validation_results['summary'] = {
+            'total_tests': total_tests,
+            'passed_tests': passed_tests,
+            'failed_tests': failed_tests,
+            'success_rate': round((passed_tests / total_tests * 100) if total_tests > 0 else 0, 1)
+        }
+
+        return self.validation_results
+
+    def save_results(self, output_file: str):
+        """保存验证结果"""
+        with open(output_file, 'w', encoding='utf-8') as f:
+            json.dump(self.validation_results, f, indent=2, ensure_ascii=False)
+
+        logger.info(f"验证结果已保存到: {output_file}")
 
 def main():
-    """Main execution function"""
-    validator = DeploymentValidator()
-    success = validator.run_all_validations()
-    
-    # Exit with appropriate code
-    sys.exit(0 if success else 1)
+    """主函数"""
+    parser = argparse.ArgumentParser(description='AI PPT Assistant 部署验证')
+    parser.add_argument('-e', '--environment', default='dev', help='环境名称')
+    parser.add_argument('-o', '--output', default='validation_report.json', help='输出文件')
+    parser.add_argument('-v', '--verbose', action='store_true', help='详细输出')
 
+    args = parser.parse_args()
 
-if __name__ == "__main__":
+    if args.verbose:
+        logging.getLogger().setLevel(logging.DEBUG)
+
+    # 运行验证
+    validator = DeploymentValidator(args.environment)
+    results = validator.run_full_validation()
+
+    # 保存结果
+    validator.save_results(args.output)
+
+    # 显示摘要
+    summary = results.get('summary', {})
+    logger.info(f"验证完成: {summary.get('passed_tests', 0)}/{summary.get('total_tests', 0)} 通过 "
+                f"(成功率: {summary.get('success_rate', 0)}%)")
+
+    # 根据结果设置退出码
+    if summary.get('failed_tests', 0) > 0:
+        sys.exit(1)
+    else:
+        sys.exit(0)
+
+if __name__ == '__main__':
     main()

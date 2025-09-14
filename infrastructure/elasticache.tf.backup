@@ -1,0 +1,468 @@
+# ElastiCache Redis配置 - 用于PPT生成缓存
+# 提供高性能的分布式缓存服务
+
+# ==================== 变量定义 ====================
+
+variable "redis_node_type" {
+  description = "Redis节点类型"
+  type        = string
+  default     = "cache.t3.micro"  # 开发环境使用小实例
+}
+
+variable "redis_num_cache_nodes" {
+  description = "Redis缓存节点数量"
+  type        = number
+  default     = 1  # 单节点用于开发，生产环境建议至少2个
+}
+
+variable "redis_parameter_family" {
+  description = "Redis参数组族"
+  type        = string
+  default     = "redis7"
+}
+
+variable "redis_engine_version" {
+  description = "Redis引擎版本"
+  type        = string
+  default     = "7.0"
+}
+
+variable "enable_redis_backup" {
+  description = "是否启用Redis备份"
+  type        = bool
+  default     = true
+}
+
+variable "redis_backup_retention_days" {
+  description = "Redis备份保留天数"
+  type        = number
+  default     = 7
+}
+
+# ==================== 网络配置 ====================
+
+# 创建ElastiCache子网组
+resource "aws_elasticache_subnet_group" "redis_subnet_group" {
+  name       = "${var.project_name}-redis-subnet-group"
+  subnet_ids = data.aws_subnets.default.ids
+
+  tags = {
+    Name        = "${var.project_name}-redis-subnet-group"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+# 获取默认VPC的子网
+data "aws_subnets" "default" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.default.id]
+  }
+}
+
+data "aws_vpc" "default" {
+  default = true
+}
+
+# ==================== 安全组配置 ====================
+
+resource "aws_security_group" "redis_sg" {
+  name        = "${var.project_name}-redis-sg"
+  description = "Security group for ElastiCache Redis cluster"
+  vpc_id      = data.aws_vpc.default.id
+
+  # 允许从Lambda和VPC内部访问Redis
+  ingress {
+    from_port   = 6379
+    to_port     = 6379
+    protocol    = "tcp"
+    cidr_blocks = [data.aws_vpc.default.cidr_block]
+    description = "Allow Redis access from VPC"
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow all outbound traffic"
+  }
+
+  tags = {
+    Name        = "${var.project_name}-redis-sg"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+# ==================== 参数组配置 ====================
+
+resource "aws_elasticache_parameter_group" "redis_params" {
+  family = var.redis_parameter_family
+  name   = "${var.project_name}-redis-params"
+
+  # 性能优化参数
+  parameter {
+    name  = "maxmemory-policy"
+    value = "allkeys-lru"  # LRU逐出策略
+  }
+
+  parameter {
+    name  = "timeout"
+    value = "300"  # 客户端空闲超时（秒）
+  }
+
+  parameter {
+    name  = "tcp-keepalive"
+    value = "300"  # TCP保活时间（秒）
+  }
+
+  parameter {
+    name  = "tcp-backlog"
+    value = "511"  # TCP连接队列大小
+  }
+
+  parameter {
+    name  = "databases"
+    value = "16"  # 数据库数量
+  }
+
+  # 内存优化
+  parameter {
+    name  = "maxmemory-samples"
+    value = "5"  # LRU采样数
+  }
+
+  # 持久化配置（开发环境可以关闭以提高性能）
+  parameter {
+    name  = "save"
+    value = var.environment == "production" ? "900 1 300 10 60 10000" : ""
+  }
+
+  parameter {
+    name  = "rdbcompression"
+    value = "yes"  # 启用RDB压缩
+  }
+
+  tags = {
+    Name        = "${var.project_name}-redis-params"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+# ==================== ElastiCache集群配置 ====================
+
+resource "aws_elasticache_cluster" "redis_cache" {
+  cluster_id           = "${var.project_name}-redis-cache"
+  engine              = "redis"
+  engine_version      = var.redis_engine_version
+  node_type           = var.redis_node_type
+  num_cache_nodes     = var.redis_num_cache_nodes
+  parameter_group_name = aws_elasticache_parameter_group.redis_params.name
+  subnet_group_name   = aws_elasticache_subnet_group.redis_subnet_group.name
+  security_group_ids  = [aws_security_group.redis_sg.id]
+  port                = 6379
+
+  # 维护窗口
+  maintenance_window = "sun:03:00-sun:04:00"
+
+  # 备份配置
+  snapshot_retention_limit = var.enable_redis_backup ? var.redis_backup_retention_days : 0
+  snapshot_window         = var.enable_redis_backup ? "01:00-02:00" : null
+
+  # 日志配置
+  log_delivery_configuration {
+    destination      = aws_cloudwatch_log_group.redis_slow_log.name
+    destination_type = "cloudwatch-logs"
+    log_format      = "json"
+    log_type        = "slow-log"
+  }
+
+  # 通知配置
+  notification_topic_arn = aws_sns_topic.cache_notifications.arn
+
+  # 自动故障转移（多节点时启用）
+  # automatic_failover_enabled = var.redis_num_cache_nodes > 1
+
+  tags = {
+    Name        = "${var.project_name}-redis-cache"
+    Environment = var.environment
+    Project     = var.project_name
+    Purpose     = "PPT Generation Cache"
+  }
+}
+
+# ==================== 复制组配置（用于生产环境） ====================
+
+resource "aws_elasticache_replication_group" "redis_replication" {
+  count = var.environment == "production" ? 1 : 0
+
+  replication_group_id       = "${var.project_name}-redis-replication"
+  replication_group_description = "Redis replication group for ${var.project_name}"
+
+  engine               = "redis"
+  engine_version      = var.redis_engine_version
+  node_type           = var.redis_node_type
+  number_cache_clusters = 2  # 主从复制
+  parameter_group_name = aws_elasticache_parameter_group.redis_params.name
+  subnet_group_name   = aws_elasticache_subnet_group.redis_subnet_group.name
+  security_group_ids  = [aws_security_group.redis_sg.id]
+  port                = 6379
+
+  # 自动故障转移
+  automatic_failover_enabled = true
+  multi_az_enabled          = true
+
+  # 备份配置
+  snapshot_retention_limit = var.redis_backup_retention_days
+  snapshot_window         = "01:00-02:00"
+  maintenance_window      = "sun:03:00-sun:04:00"
+
+  # 加密配置
+  at_rest_encryption_enabled = true
+  transit_encryption_enabled = true
+  auth_token_enabled        = true
+  auth_token               = random_password.redis_auth_token[0].result
+
+  # 日志配置
+  log_delivery_configuration {
+    destination      = aws_cloudwatch_log_group.redis_slow_log.name
+    destination_type = "cloudwatch-logs"
+    log_format      = "json"
+    log_type        = "slow-log"
+  }
+
+  log_delivery_configuration {
+    destination      = aws_cloudwatch_log_group.redis_engine_log.name
+    destination_type = "cloudwatch-logs"
+    log_format      = "json"
+    log_type        = "engine-log"
+  }
+
+  notification_topic_arn = aws_sns_topic.cache_notifications.arn
+
+  tags = {
+    Name        = "${var.project_name}-redis-replication"
+    Environment = var.environment
+    Project     = var.project_name
+    Purpose     = "Production PPT Cache with HA"
+  }
+}
+
+# 生成Redis认证令牌（生产环境）
+resource "random_password" "redis_auth_token" {
+  count   = var.environment == "production" ? 1 : 0
+  length  = 32
+  special = true
+}
+
+# 存储Redis认证令牌到Secrets Manager
+resource "aws_secretsmanager_secret" "redis_auth_token" {
+  count = var.environment == "production" ? 1 : 0
+  name  = "${var.project_name}-redis-auth-token"
+
+  tags = {
+    Name        = "${var.project_name}-redis-auth-token"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+resource "aws_secretsmanager_secret_version" "redis_auth_token" {
+  count     = var.environment == "production" ? 1 : 0
+  secret_id = aws_secretsmanager_secret.redis_auth_token[0].id
+  secret_string = jsonencode({
+    auth_token = random_password.redis_auth_token[0].result
+  })
+}
+
+# ==================== 监控和告警 ====================
+
+# CloudWatch日志组
+resource "aws_cloudwatch_log_group" "redis_slow_log" {
+  name              = "/aws/elasticache/${var.project_name}/redis/slow-log"
+  retention_in_days = 7
+
+  tags = {
+    Name        = "${var.project_name}-redis-slow-log"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+resource "aws_cloudwatch_log_group" "redis_engine_log" {
+  name              = "/aws/elasticache/${var.project_name}/redis/engine-log"
+  retention_in_days = 7
+
+  tags = {
+    Name        = "${var.project_name}-redis-engine-log"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+# SNS主题用于告警通知
+resource "aws_sns_topic" "cache_notifications" {
+  name = "${var.project_name}-cache-notifications"
+
+  tags = {
+    Name        = "${var.project_name}-cache-notifications"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+# CloudWatch告警 - CPU使用率
+resource "aws_cloudwatch_metric_alarm" "redis_cpu_utilization" {
+  alarm_name          = "${var.project_name}-redis-cpu-high"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "2"
+  metric_name        = "CPUUtilization"
+  namespace          = "AWS/ElastiCache"
+  period             = "300"
+  statistic          = "Average"
+  threshold          = "75"
+  alarm_description  = "This metric monitors Redis CPU utilization"
+  alarm_actions      = [aws_sns_topic.cache_notifications.arn]
+
+  dimensions = {
+    CacheClusterId = aws_elasticache_cluster.redis_cache.id
+  }
+
+  tags = {
+    Name        = "${var.project_name}-redis-cpu-alarm"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+# CloudWatch告警 - 内存使用率
+resource "aws_cloudwatch_metric_alarm" "redis_memory_utilization" {
+  alarm_name          = "${var.project_name}-redis-memory-high"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "2"
+  metric_name        = "DatabaseMemoryUsagePercentage"
+  namespace          = "AWS/ElastiCache"
+  period             = "300"
+  statistic          = "Average"
+  threshold          = "80"
+  alarm_description  = "This metric monitors Redis memory utilization"
+  alarm_actions      = [aws_sns_topic.cache_notifications.arn]
+
+  dimensions = {
+    CacheClusterId = aws_elasticache_cluster.redis_cache.id
+  }
+
+  tags = {
+    Name        = "${var.project_name}-redis-memory-alarm"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+# CloudWatch告警 - 逐出率
+resource "aws_cloudwatch_metric_alarm" "redis_evictions" {
+  alarm_name          = "${var.project_name}-redis-evictions-high"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "2"
+  metric_name        = "Evictions"
+  namespace          = "AWS/ElastiCache"
+  period             = "300"
+  statistic          = "Sum"
+  threshold          = "1000"
+  alarm_description  = "This metric monitors Redis evictions"
+  alarm_actions      = [aws_sns_topic.cache_notifications.arn]
+
+  dimensions = {
+    CacheClusterId = aws_elasticache_cluster.redis_cache.id
+  }
+
+  tags = {
+    Name        = "${var.project_name}-redis-evictions-alarm"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+# CloudWatch告警 - 缓存命中率
+resource "aws_cloudwatch_metric_alarm" "redis_cache_hit_rate" {
+  alarm_name          = "${var.project_name}-redis-hit-rate-low"
+  comparison_operator = "LessThanThreshold"
+  evaluation_periods  = "3"
+  threshold          = "0.6"  # 60%命中率阈值
+  alarm_description  = "This metric monitors Redis cache hit rate"
+  alarm_actions      = [aws_sns_topic.cache_notifications.arn]
+
+  metric_query {
+    id          = "hit_rate"
+    expression  = "hits / (hits + misses)"
+    label       = "Cache Hit Rate"
+    return_data = true
+  }
+
+  metric_query {
+    id = "hits"
+    metric {
+      metric_name = "CacheHits"
+      namespace   = "AWS/ElastiCache"
+      period      = "300"
+      stat        = "Sum"
+      dimensions = {
+        CacheClusterId = aws_elasticache_cluster.redis_cache.id
+      }
+    }
+  }
+
+  metric_query {
+    id = "misses"
+    metric {
+      metric_name = "CacheMisses"
+      namespace   = "AWS/ElastiCache"
+      period      = "300"
+      stat        = "Sum"
+      dimensions = {
+        CacheClusterId = aws_elasticache_cluster.redis_cache.id
+      }
+    }
+  }
+
+  tags = {
+    Name        = "${var.project_name}-redis-hit-rate-alarm"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+# ==================== 输出 ====================
+
+output "redis_endpoint" {
+  description = "Redis集群端点"
+  value       = aws_elasticache_cluster.redis_cache.cache_nodes[0].address
+}
+
+output "redis_port" {
+  description = "Redis端口"
+  value       = aws_elasticache_cluster.redis_cache.port
+}
+
+output "redis_cluster_id" {
+  description = "Redis集群ID"
+  value       = aws_elasticache_cluster.redis_cache.id
+}
+
+output "redis_security_group_id" {
+  description = "Redis安全组ID"
+  value       = aws_security_group.redis_sg.id
+}
+
+output "redis_auth_token_secret_arn" {
+  description = "Redis认证令牌Secret ARN（生产环境）"
+  value       = var.environment == "production" ? aws_secretsmanager_secret.redis_auth_token[0].arn : null
+}
+
+output "cache_notifications_topic_arn" {
+  description = "缓存通知SNS主题ARN"
+  value       = aws_sns_topic.cache_notifications.arn
+}

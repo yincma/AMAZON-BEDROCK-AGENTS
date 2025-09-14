@@ -1,0 +1,546 @@
+# ==========================================
+# AI PPT Assistant Phase 3 - Monitoring Infrastructure
+# ==========================================
+# CloudWatch 监控配置
+# - 日志组和日志流
+# - 自定义指标
+# - 仪表板
+# - 告警规则
+# ==========================================
+
+# ========== CloudWatch Log Groups ==========
+
+# 主日志组
+resource "aws_cloudwatch_log_group" "ai_ppt_assistant_main" {
+  name              = "/aws/ai-ppt-assistant/main"
+  retention_in_days = 30
+
+  tags = {
+    Service     = "ai-ppt-assistant"
+    Environment = var.environment
+    Purpose     = "main-logs"
+  }
+}
+
+# Lambda 函数日志组
+resource "aws_cloudwatch_log_group" "lambda_logs" {
+  for_each = toset([
+    "generate-ppt",
+    "compile-ppt",
+    "download-ppt",
+    "status-check",
+    "api-handler",
+    "notes-generator",
+    "image-generator"
+  ])
+
+  name              = "/aws/lambda/ai-ppt-assistant-${each.key}"
+  retention_in_days = 14
+
+  tags = {
+    Service     = "ai-ppt-assistant"
+    Environment = var.environment
+    Function    = each.key
+  }
+}
+
+# 错误日志组
+resource "aws_cloudwatch_log_group" "error_logs" {
+  name              = "/aws/ai-ppt-assistant/errors"
+  retention_in_days = 90
+
+  tags = {
+    Service     = "ai-ppt-assistant"
+    Environment = var.environment
+    Purpose     = "error-tracking"
+  }
+}
+
+# 性能日志组
+resource "aws_cloudwatch_log_group" "performance_logs" {
+  name              = "/aws/ai-ppt-assistant/performance"
+  retention_in_days = 14
+
+  tags = {
+    Service     = "ai-ppt-assistant"
+    Environment = var.environment
+    Purpose     = "performance-monitoring"
+  }
+}
+
+# ========== CloudWatch Log Streams ==========
+
+# 为每个日志组创建日志流
+resource "aws_cloudwatch_log_stream" "main_streams" {
+  for_each = toset([
+    "api-gateway",
+    "content-generator",
+    "image-generator",
+    "ppt-compiler"
+  ])
+
+  name           = each.key
+  log_group_name = aws_cloudwatch_log_group.ai_ppt_assistant_main.name
+}
+
+# ========== CloudWatch Custom Metrics ==========
+
+# 自定义指标命名空间
+locals {
+  metrics_namespace = "AI-PPT-Assistant/${var.environment}"
+}
+
+# ========== CloudWatch Dashboard ==========
+
+resource "aws_cloudwatch_dashboard" "ai_ppt_assistant" {
+  dashboard_name = "ai-ppt-assistant-${var.environment}"
+
+  dashboard_body = jsonencode({
+    widgets = [
+      # 请求概览
+      {
+        type = "metric"
+        x    = 0
+        y    = 0
+        width = 12
+        height = 6
+        properties = {
+          metrics = [
+            ["${local.metrics_namespace}", "RequestCount", { stat = "Sum", label = "Total Requests" }],
+            [".", "SuccessfulRequests", { stat = "Sum", label = "Successful" }],
+            [".", "FailedRequests", { stat = "Sum", label = "Failed" }]
+          ]
+          view    = "timeSeries"
+          stacked = false
+          region  = var.aws_region
+          title   = "Request Overview"
+          period  = 300
+        }
+      },
+
+      # 响应时间
+      {
+        type = "metric"
+        x    = 12
+        y    = 0
+        width = 12
+        height = 6
+        properties = {
+          metrics = [
+            ["${local.metrics_namespace}", "ResponseTime", { stat = "Average", label = "Avg Response Time" }],
+            [".", ".", { stat = "p99", label = "P99 Response Time" }],
+            [".", ".", { stat = "p95", label = "P95 Response Time" }]
+          ]
+          view    = "timeSeries"
+          stacked = false
+          region  = var.aws_region
+          title   = "Response Time (ms)"
+          period  = 300
+          yAxis = {
+            left = {
+              min = 0
+            }
+          }
+        }
+      },
+
+      # 错误率
+      {
+        type = "metric"
+        x    = 0
+        y    = 6
+        width = 12
+        height = 6
+        properties = {
+          metrics = [
+            ["${local.metrics_namespace}", "ErrorRate", { stat = "Average", label = "Error Rate %" }]
+          ]
+          view    = "timeSeries"
+          stacked = false
+          region  = var.aws_region
+          title   = "Error Rate"
+          period  = 300
+          yAxis = {
+            left = {
+              min = 0
+              max = 100
+            }
+          }
+        }
+      },
+
+      # Lambda 性能
+      {
+        type = "metric"
+        x    = 12
+        y    = 6
+        width = 12
+        height = 6
+        properties = {
+          metrics = [
+            ["AWS/Lambda", "Duration", { stat = "Average", dimensions = { FunctionName = "ai-ppt-assistant-generate-ppt" } }],
+            ["...", { dimensions = { FunctionName = "ai-ppt-assistant-compile-ppt" } }],
+            ["...", { dimensions = { FunctionName = "ai-ppt-assistant-image-generator" } }]
+          ]
+          view    = "timeSeries"
+          stacked = false
+          region  = var.aws_region
+          title   = "Lambda Duration (ms)"
+          period  = 300
+        }
+      },
+
+      # 业务指标
+      {
+        type = "metric"
+        x    = 0
+        y    = 12
+        width = 8
+        height = 6
+        properties = {
+          metrics = [
+            ["${local.metrics_namespace}", "PresentationsGenerated", { stat = "Sum", label = "PPTs Generated" }],
+            [".", "PagesCreated", { stat = "Sum", label = "Pages Created" }],
+            [".", "ImagesGenerated", { stat = "Sum", label = "Images Generated" }]
+          ]
+          view    = "timeSeries"
+          stacked = false
+          region  = var.aws_region
+          title   = "Business Metrics"
+          period  = 3600
+        }
+      },
+
+      # 资源使用率
+      {
+        type = "metric"
+        x    = 8
+        y    = 12
+        width = 8
+        height = 6
+        properties = {
+          metrics = [
+            ["AWS/Lambda", "ConcurrentExecutions", { stat = "Maximum", label = "Lambda Concurrency" }],
+            ["AWS/DynamoDB", "ConsumedReadCapacityUnits", { stat = "Sum", dimensions = { TableName = var.dynamodb_table_name } }],
+            ["AWS/DynamoDB", "ConsumedWriteCapacityUnits", { stat = "Sum", dimensions = { TableName = var.dynamodb_table_name } }]
+          ]
+          view    = "timeSeries"
+          stacked = false
+          region  = var.aws_region
+          title   = "Resource Utilization"
+          period  = 300
+        }
+      },
+
+      # 最近的错误日志
+      {
+        type = "log"
+        x    = 16
+        y    = 12
+        width = 8
+        height = 6
+        properties = {
+          query   = "SOURCE '${aws_cloudwatch_log_group.error_logs.name}' | fields @timestamp, @message | sort @timestamp desc | limit 20"
+          region  = var.aws_region
+          title   = "Recent Errors"
+        }
+      }
+    ]
+  })
+}
+
+# ========== CloudWatch Alarms ==========
+
+# SNS Topic for Alerts
+resource "aws_sns_topic" "monitoring_alerts" {
+  name         = "ai-ppt-assistant-alerts-${var.environment}"
+  display_name = "AI PPT Assistant Monitoring Alerts"
+
+  tags = {
+    Service     = "ai-ppt-assistant"
+    Environment = var.environment
+  }
+}
+
+# 注释掉email订阅，因为没有设置email地址
+# resource "aws_sns_topic_subscription" "email_alerts" {
+#   topic_arn = aws_sns_topic.monitoring_alerts.arn
+#   protocol  = "email"
+#   endpoint  = var.alert_email
+# }
+
+# 响应时间告警
+resource "aws_cloudwatch_metric_alarm" "high_response_time" {
+  alarm_name          = "ai-ppt-assistant-high-response-time-${var.environment}"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "ResponseTime"
+  namespace           = local.metrics_namespace
+  period              = "300"
+  statistic           = "Average"
+  threshold           = "30000" # 30 seconds
+  alarm_description   = "This metric monitors response time"
+  alarm_actions       = [aws_sns_topic.monitoring_alerts.arn]
+
+  tags = {
+    Service     = "ai-ppt-assistant"
+    Environment = var.environment
+    Severity    = "warning"
+  }
+}
+
+# P99 响应时间告警
+resource "aws_cloudwatch_metric_alarm" "p99_response_time" {
+  alarm_name          = "ai-ppt-assistant-p99-response-time-${var.environment}"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "ResponseTime"
+  namespace           = local.metrics_namespace
+  period              = "300"
+  extended_statistic  = "p99"
+  threshold           = "60000" # 60 seconds
+  alarm_description   = "P99 response time exceeds threshold"
+  alarm_actions       = [aws_sns_topic.monitoring_alerts.arn]
+
+  tags = {
+    Service     = "ai-ppt-assistant"
+    Environment = var.environment
+    Severity    = "critical"
+  }
+}
+
+# 错误率告警
+resource "aws_cloudwatch_metric_alarm" "high_error_rate" {
+  alarm_name          = "ai-ppt-assistant-high-error-rate-${var.environment}"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "ErrorRate"
+  namespace           = local.metrics_namespace
+  period              = "300"
+  statistic           = "Average"
+  threshold           = "5" # 5% error rate
+  alarm_description   = "Error rate exceeds 5%"
+  alarm_actions       = [aws_sns_topic.monitoring_alerts.arn]
+
+  tags = {
+    Service     = "ai-ppt-assistant"
+    Environment = var.environment
+    Severity    = "warning"
+  }
+}
+
+# 错误率突增告警
+resource "aws_cloudwatch_metric_alarm" "error_rate_spike" {
+  alarm_name          = "ai-ppt-assistant-error-spike-${var.environment}"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "1"
+  metric_name         = "ErrorRate"
+  namespace           = local.metrics_namespace
+  period              = "60"
+  statistic           = "Average"
+  threshold           = "15" # 15% error rate spike
+  alarm_description   = "Sudden spike in error rate detected"
+  alarm_actions       = [aws_sns_topic.monitoring_alerts.arn]
+  treat_missing_data  = "notBreaching"
+
+  tags = {
+    Service     = "ai-ppt-assistant"
+    Environment = var.environment
+    Severity    = "critical"
+  }
+}
+
+# Lambda 并发执行告警
+resource "aws_cloudwatch_metric_alarm" "lambda_concurrency" {
+  alarm_name          = "ai-ppt-assistant-lambda-concurrency-${var.environment}"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "ConcurrentExecutions"
+  namespace           = "AWS/Lambda"
+  period              = "60"
+  statistic           = "Maximum"
+  threshold           = "950" # Near 1000 limit
+  alarm_description   = "Lambda concurrent executions approaching limit"
+  alarm_actions       = [aws_sns_topic.monitoring_alerts.arn]
+
+  tags = {
+    Service     = "ai-ppt-assistant"
+    Environment = var.environment
+    Severity    = "critical"
+  }
+}
+
+# Lambda 错误告警
+resource "aws_cloudwatch_metric_alarm" "lambda_errors" {
+  for_each = toset([
+    "generate-ppt",
+    "compile-ppt",
+    "image-generator"
+  ])
+
+  alarm_name          = "ai-ppt-assistant-${each.key}-errors-${var.environment}"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "Errors"
+  namespace           = "AWS/Lambda"
+  period              = "300"
+  statistic           = "Sum"
+  threshold           = "10"
+  alarm_description   = "Lambda function ${each.key} errors"
+  alarm_actions       = [aws_sns_topic.monitoring_alerts.arn]
+
+  dimensions = {
+    FunctionName = "ai-ppt-assistant-${each.key}"
+  }
+
+  tags = {
+    Service     = "ai-ppt-assistant"
+    Environment = var.environment
+    Function    = each.key
+    Severity    = "warning"
+  }
+}
+
+# Lambda 节流告警
+resource "aws_cloudwatch_metric_alarm" "lambda_throttles" {
+  alarm_name          = "ai-ppt-assistant-lambda-throttles-${var.environment}"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "1"
+  metric_name         = "Throttles"
+  namespace           = "AWS/Lambda"
+  period              = "60"
+  statistic           = "Sum"
+  threshold           = "5"
+  alarm_description   = "Lambda functions being throttled"
+  alarm_actions       = [aws_sns_topic.monitoring_alerts.arn]
+
+  tags = {
+    Service     = "ai-ppt-assistant"
+    Environment = var.environment
+    Severity    = "critical"
+  }
+}
+
+# DynamoDB 节流告警
+resource "aws_cloudwatch_metric_alarm" "dynamodb_throttles" {
+  alarm_name          = "ai-ppt-assistant-dynamodb-throttles-${var.environment}"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "UserErrors"
+  namespace           = "AWS/DynamoDB"
+  period              = "300"
+  statistic           = "Sum"
+  threshold           = "10"
+  alarm_description   = "DynamoDB throttling detected"
+  alarm_actions       = [aws_sns_topic.monitoring_alerts.arn]
+
+  dimensions = {
+    TableName = var.dynamodb_table_name
+  }
+
+  tags = {
+    Service     = "ai-ppt-assistant"
+    Environment = var.environment
+    Severity    = "warning"
+  }
+}
+
+# ========== CloudWatch Logs Insights Queries ==========
+
+# 保存常用查询
+resource "aws_cloudwatch_query_definition" "error_analysis" {
+  name = "AI-PPT-Assistant-Error-Analysis"
+
+  log_group_names = [
+    aws_cloudwatch_log_group.ai_ppt_assistant_main.name,
+    aws_cloudwatch_log_group.error_logs.name
+  ]
+
+  query_string = <<-EOT
+    fields @timestamp, @message, error_type, service, request_id
+    | filter level = "ERROR"
+    | stats count() as error_count by error_type, service
+    | sort error_count desc
+  EOT
+}
+
+resource "aws_cloudwatch_query_definition" "performance_analysis" {
+  name = "AI-PPT-Assistant-Performance-Analysis"
+
+  log_group_names = [
+    aws_cloudwatch_log_group.performance_logs.name
+  ]
+
+  query_string = <<-EOT
+    fields @timestamp, service, operation, duration_ms, request_id
+    | filter duration_ms > 5000
+    | stats avg(duration_ms) as avg_duration, max(duration_ms) as max_duration, count() as count by service, operation
+    | sort avg_duration desc
+  EOT
+}
+
+resource "aws_cloudwatch_query_definition" "request_tracing" {
+  name = "AI-PPT-Assistant-Request-Tracing"
+
+  log_group_names = [
+    aws_cloudwatch_log_group.ai_ppt_assistant_main.name
+  ]
+
+  query_string = <<-EOT
+    fields @timestamp, @message, service, operation, request_id, user_id
+    | filter request_id = "REQUEST_ID_PLACEHOLDER"
+    | sort @timestamp asc
+  EOT
+}
+
+# ========== CloudWatch Events Rules ==========
+
+# 定期健康检查
+resource "aws_cloudwatch_event_rule" "health_check" {
+  name                = "ai-ppt-assistant-health-check-${var.environment}"
+  description         = "Periodic health check for AI PPT Assistant"
+  schedule_expression = "rate(5 minutes)"
+
+  tags = {
+    Service     = "ai-ppt-assistant"
+    Environment = var.environment
+  }
+}
+
+# 定期指标聚合
+resource "aws_cloudwatch_event_rule" "metrics_aggregation" {
+  name                = "ai-ppt-assistant-metrics-aggregation-${var.environment}"
+  description         = "Aggregate metrics every hour"
+  schedule_expression = "rate(1 hour)"
+
+  tags = {
+    Service     = "ai-ppt-assistant"
+    Environment = var.environment
+  }
+}
+
+# ========== Outputs ==========
+
+output "log_group_names" {
+  value = {
+    main        = aws_cloudwatch_log_group.ai_ppt_assistant_main.name
+    errors      = aws_cloudwatch_log_group.error_logs.name
+    performance = aws_cloudwatch_log_group.performance_logs.name
+  }
+  description = "CloudWatch Log Group names"
+}
+
+output "dashboard_url" {
+  value       = "https://console.aws.amazon.com/cloudwatch/home?region=${var.aws_region}#dashboards:name=${aws_cloudwatch_dashboard.ai_ppt_assistant.dashboard_name}"
+  description = "CloudWatch Dashboard URL"
+}
+
+output "sns_topic_arn" {
+  value       = aws_sns_topic.monitoring_alerts.arn
+  description = "SNS topic ARN for monitoring alerts"
+}
+
+output "metrics_namespace" {
+  value       = local.metrics_namespace
+  description = "CloudWatch metrics namespace"
+}

@@ -1,0 +1,478 @@
+name: Image Service Integration Tests
+
+on:
+  push:
+    branches: [ main, dev ]
+    paths:
+      - 'lambdas/image_*.py'
+      - 'tests/test_image_*.py'
+      - '.github/workflows/image-service-tests.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'lambdas/image_*.py'
+      - 'tests/test_image_*.py'
+  schedule:
+    # 每天凌晨2点运行完整测试套件
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      test_level:
+        description: '测试级别'
+        required: true
+        default: 'basic'
+        type: choice
+        options:
+          - basic
+          - comprehensive
+          - stress
+          - performance
+
+env:
+  PYTHON_VERSION: '3.13'
+  AWS_REGION: 'us-east-1'
+  PYTHONPATH: ${{ github.workspace }}
+
+jobs:
+  # 基础测试作业
+  basic-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12', '3.13']
+
+    steps:
+    - name: Checkout代码
+      uses: actions/checkout@v4
+
+    - name: 设置Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: 缓存依赖
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('tests/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-${{ matrix.python-version }}-
+          ${{ runner.os }}-pip-
+
+    - name: 安装依赖
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r tests/requirements.txt
+        pip install pytest-cov pytest-xdist pytest-timeout
+
+    - name: 安装系统依赖
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libimage-dev libjpeg-dev libpng-dev
+
+    - name: 运行基础测试
+      run: |
+        pytest tests/test_image_processing_service.py \
+               tests/test_image_generator.py::TestImageGenerator \
+               -v \
+               --cov=lambdas \
+               --cov-report=xml \
+               --cov-report=html \
+               --junit-xml=test-results/junit.xml \
+               --timeout=300 \
+               -n auto
+
+    - name: 上传测试结果
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: basic-test-results-py${{ matrix.python-version }}
+        path: |
+          test-results/
+          htmlcov/
+          .coverage
+
+    - name: 上传覆盖率到Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: basic-tests
+        name: codecov-py${{ matrix.python-version }}
+
+  # 集成测试作业
+  integration-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: basic-tests
+
+    steps:
+    - name: Checkout代码
+      uses: actions/checkout@v4
+
+    - name: 设置Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: 安装依赖
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r tests/requirements.txt
+        pip install pytest-asyncio pytest-mock
+
+    - name: 配置AWS凭证（模拟）
+      run: |
+        mkdir -p ~/.aws
+        echo -e "[default]\naws_access_key_id = testing\naws_secret_access_key = testing" > ~/.aws/credentials
+        echo -e "[default]\nregion = us-east-1\noutput = json" > ~/.aws/config
+
+    - name: 运行集成测试
+      run: |
+        pytest tests/test_image_comprehensive_integration.py \
+               -v \
+               --cov=lambdas \
+               --cov-append \
+               --cov-report=xml \
+               --junit-xml=test-results/integration-junit.xml \
+               --timeout=600 \
+               -m "not (stress or performance)"
+
+    - name: 上传集成测试结果
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: integration-test-results
+        path: |
+          test-results/
+          .coverage
+
+  # 性能基准测试作业
+  performance-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    needs: integration-tests
+    if: github.event_name == 'schedule' || github.event.inputs.test_level == 'performance' || github.event.inputs.test_level == 'comprehensive'
+
+    steps:
+    - name: Checkout代码
+      uses: actions/checkout@v4
+
+    - name: 设置Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: 安装依赖
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r tests/requirements.txt
+        pip install pytest-benchmark psutil
+
+    - name: 运行性能基准测试
+      run: |
+        pytest tests/test_image_performance_benchmarks.py \
+               -v \
+               --benchmark-json=performance-results.json \
+               --junit-xml=test-results/performance-junit.xml \
+               --timeout=1800 \
+               -m "not (load or scalability)"
+
+    - name: 分析性能结果
+      run: |
+        python -c "
+        import json
+        with open('performance-results.json') as f:
+            data = json.load(f)
+
+        print('性能基准测试结果:')
+        for benchmark in data['benchmarks']:
+            name = benchmark['name']
+            stats = benchmark['stats']
+            print(f'{name}: 平均 {stats['mean']:.4f}s, 最小 {stats['min']:.4f}s, 最大 {stats['max']:.4f}s')
+        "
+
+    - name: 上传性能测试结果
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: performance-test-results
+        path: |
+          performance-results.json
+          test-results/
+
+  # 压力测试作业
+  stress-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    needs: integration-tests
+    if: github.event_name == 'schedule' || github.event.inputs.test_level == 'stress' || github.event.inputs.test_level == 'comprehensive'
+
+    steps:
+    - name: Checkout代码
+      uses: actions/checkout@v4
+
+    - name: 设置Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: 安装依赖
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r tests/requirements.txt
+        pip install pytest-xdist
+
+    - name: 运行压力测试
+      run: |
+        pytest tests/test_image_stress_concurrency.py \
+               -v \
+               --junit-xml=test-results/stress-junit.xml \
+               --timeout=3000 \
+               -m "stress" \
+               --maxfail=3
+
+    - name: 上传压力测试结果
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: stress-test-results
+        path: test-results/
+
+  # 端到端测试作业
+  e2e-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    needs: [integration-tests]
+    if: github.event_name == 'schedule' || github.event.inputs.test_level == 'comprehensive'
+
+    services:
+      # 模拟AWS LocalStack服务
+      localstack:
+        image: localstack/localstack:latest
+        ports:
+          - 4566:4566
+        env:
+          SERVICES: s3,lambda,bedrock
+          DEBUG: 1
+
+    steps:
+    - name: Checkout代码
+      uses: actions/checkout@v4
+
+    - name: 设置Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: 安装依赖
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r tests/requirements.txt
+        pip install awscli-local
+
+    - name: 等待LocalStack就绪
+      run: |
+        timeout 60 bash -c 'until curl -s http://localhost:4566/_localstack/health | grep -q "\"s3\": \"available\""; do sleep 2; done'
+
+    - name: 设置LocalStack环境
+      run: |
+        export AWS_ENDPOINT_URL=http://localhost:4566
+        export AWS_ACCESS_KEY_ID=testing
+        export AWS_SECRET_ACCESS_KEY=testing
+        export AWS_DEFAULT_REGION=us-east-1
+
+        # 创建测试S3桶
+        awslocal s3 mb s3://ai-ppt-presentations-test
+
+    - name: 运行端到端测试
+      env:
+        AWS_ENDPOINT_URL: http://localhost:4566
+        AWS_ACCESS_KEY_ID: testing
+        AWS_SECRET_ACCESS_KEY: testing
+        AWS_DEFAULT_REGION: us-east-1
+      run: |
+        pytest tests/test_image_integration.py \
+               -v \
+               --junit-xml=test-results/e2e-junit.xml \
+               --timeout=1200 \
+               -m "e2e"
+
+    - name: 上传端到端测试结果
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: e2e-test-results
+        path: test-results/
+
+  # 生成测试报告
+  generate-report:
+    runs-on: ubuntu-latest
+    needs: [basic-tests, integration-tests, performance-tests, stress-tests, e2e-tests]
+    if: always()
+
+    steps:
+    - name: Checkout代码
+      uses: actions/checkout@v4
+
+    - name: 下载所有测试结果
+      uses: actions/download-artifact@v3
+      with:
+        path: all-test-results/
+
+    - name: 设置Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: 生成综合测试报告
+      run: |
+        python - << 'EOF'
+        import os
+        import json
+        import xml.etree.ElementTree as ET
+        from datetime import datetime
+        import glob
+
+        def parse_junit_xml(file_path):
+            """解析JUnit XML文件"""
+            try:
+                tree = ET.parse(file_path)
+                root = tree.getroot()
+
+                return {
+                    'tests': int(root.get('tests', 0)),
+                    'failures': int(root.get('failures', 0)),
+                    'errors': int(root.get('errors', 0)),
+                    'time': float(root.get('time', 0)),
+                    'name': root.get('name', os.path.basename(file_path))
+                }
+            except Exception as e:
+                print(f"解析 {file_path} 失败: {e}")
+                return None
+
+        # 收集所有JUnit XML文件
+        junit_files = glob.glob('all-test-results/**/junit*.xml', recursive=True)
+
+        report = {
+            'generated_at': datetime.now().isoformat(),
+            'workflow_run': os.environ.get('GITHUB_RUN_NUMBER', 'local'),
+            'commit_sha': os.environ.get('GITHUB_SHA', 'unknown'),
+            'branch': os.environ.get('GITHUB_REF_NAME', 'unknown'),
+            'test_suites': [],
+            'summary': {
+                'total_tests': 0,
+                'total_failures': 0,
+                'total_errors': 0,
+                'total_time': 0,
+                'success_rate': 0
+            }
+        }
+
+        # 解析所有测试结果
+        for junit_file in junit_files:
+            result = parse_junit_xml(junit_file)
+            if result:
+                report['test_suites'].append(result)
+                report['summary']['total_tests'] += result['tests']
+                report['summary']['total_failures'] += result['failures']
+                report['summary']['total_errors'] += result['errors']
+                report['summary']['total_time'] += result['time']
+
+        # 计算成功率
+        total_issues = report['summary']['total_failures'] + report['summary']['total_errors']
+        if report['summary']['total_tests'] > 0:
+            report['summary']['success_rate'] = (
+                (report['summary']['total_tests'] - total_issues) /
+                report['summary']['total_tests']
+            ) * 100
+
+        # 保存报告
+        with open('comprehensive_test_report.json', 'w', encoding='utf-8') as f:
+            json.dump(report, f, indent=2, ensure_ascii=False)
+
+        # 打印摘要
+        print("=" * 60)
+        print("图片生成服务测试摘要报告")
+        print("=" * 60)
+        print(f"总测试数: {report['summary']['total_tests']}")
+        print(f"失败数: {report['summary']['total_failures']}")
+        print(f"错误数: {report['summary']['total_errors']}")
+        print(f"成功率: {report['summary']['success_rate']:.2f}%")
+        print(f"总耗时: {report['summary']['total_time']:.2f}秒")
+        print("=" * 60)
+
+        for suite in report['test_suites']:
+            suite_success_rate = ((suite['tests'] - suite['failures'] - suite['errors']) / suite['tests'] * 100) if suite['tests'] > 0 else 0
+            print(f"  {suite['name']}: {suite['tests']}个测试, 成功率 {suite_success_rate:.1f}%, 耗时 {suite['time']:.2f}s")
+        EOF
+
+    - name: 上传综合测试报告
+      uses: actions/upload-artifact@v3
+      with:
+        name: comprehensive-test-report
+        path: comprehensive_test_report.json
+
+    - name: 评论PR（如果是PR）
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const report = JSON.parse(fs.readFileSync('comprehensive_test_report.json', 'utf8'));
+
+          const body = `## 🧪 图片生成服务测试报告
+
+          **测试摘要:**
+          - 📊 总测试数: ${report.summary.total_tests}
+          - ✅ 成功率: ${report.summary.success_rate.toFixed(2)}%
+          - ❌ 失败数: ${report.summary.total_failures}
+          - 🚨 错误数: ${report.summary.total_errors}
+          - ⏱️ 总耗时: ${report.summary.total_time.toFixed(2)}秒
+
+          **详细结果:**
+          ${report.test_suites.map(suite => {
+            const successRate = suite.tests > 0 ? ((suite.tests - suite.failures - suite.errors) / suite.tests * 100).toFixed(1) : 0;
+            const status = successRate >= 95 ? '✅' : successRate >= 80 ? '⚠️' : '❌';
+            return \`\${status} \${suite.name}: \${suite.tests}个测试, 成功率 \${successRate}%\`;
+          }).join('\n')}
+
+          ${report.summary.success_rate >= 95 ? '🎉 所有测试通过!' : '⚠️ 部分测试失败，请检查详细结果'}`;
+
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: body
+          });
+
+  # 质量门禁检查
+  quality-gate:
+    runs-on: ubuntu-latest
+    needs: [basic-tests, integration-tests]
+    if: always()
+
+    steps:
+    - name: 检查测试结果
+      run: |
+        echo "检查质量门禁..."
+
+        # 检查基础测试是否成功
+        if [[ "${{ needs.basic-tests.result }}" != "success" ]]; then
+          echo "❌ 基础测试失败"
+          exit 1
+        fi
+
+        # 检查集成测试是否成功
+        if [[ "${{ needs.integration-tests.result }}" != "success" ]]; then
+          echo "❌ 集成测试失败"
+          exit 1
+        fi
+
+        echo "✅ 质量门禁通过"
+
+    - name: 通知测试状态
+      if: failure()
+      run: |
+        echo "::error::质量门禁失败 - 请检查测试结果"

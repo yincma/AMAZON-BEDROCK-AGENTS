@@ -1,45 +1,53 @@
-# Testing dependencies for AI PPT Assistant
-# Latest stable versions compatible with Python 3.13 and ARM64
+# 测试依赖包
+# 核心测试框架
+pytest>=7.0.0
+pytest-cov>=4.0.0
+pytest-mock>=3.10.0
+pytest-asyncio>=0.21.0
+pytest-xdist>=3.0.0  # 并行测试
+pytest-html>=3.1.0   # HTML报告
+pytest-json-report>=1.5.0  # JSON报告
 
-# Core testing framework (latest stable)
-pytest==8.3.3
-pytest-cov==5.0.0
-pytest-mock==3.14.0
-pytest-asyncio==0.24.0
+# AWS服务模拟
+moto[all]>=4.2.0
+boto3>=1.26.0
+botocore>=1.29.0
 
-# AWS service mocking and testing (latest stable)
-moto==5.0.15
-boto3==1.35.14
-botocore==1.35.14
+# HTTP测试
+requests>=2.28.0
+responses>=0.22.0
+httpx>=0.24.0
 
-# Coverage reporting (latest stable)
-coverage==7.6.1
+# 性能和内存监控
+psutil>=5.9.0
+memory-profiler>=0.60.0
 
-# Code quality tools (latest stable with ARM64 support)
-black==24.8.0  
-flake8==7.1.1  
-mypy==1.11.2
+# 数据处理和验证
+pydantic>=1.10.0
+jsonschema>=4.17.0
 
-# Test data generation (latest stable)
-faker==30.1.0
+# 时间和日期处理
+python-dateutil>=2.8.0
+freezegun>=1.2.0  # 时间模拟
 
-# Additional testing tools for integration tests
-pytest-html==4.1.1          # HTML test reports
-pytest-json-report==1.5.0   # JSON test reports  
-pytest-benchmark==4.0.0     # Performance benchmarking
-pytest-timeout==2.3.1       # Test timeout handling
-pytest-xdist==3.6.0         # Parallel test execution
-requests-mock==1.12.1       # HTTP request mocking
-freezegun==1.5.1            # Time mocking for tests
+# 文件处理
+python-pptx>=0.6.21  # PPT文件处理
+Pillow>=9.0.0  # 图像处理
 
-# Coverage analysis and reporting
-coverage[toml]==7.6.1        # Enhanced coverage with TOML support
+# 开发工具
+black>=22.0.0  # 代码格式化
+flake8>=5.0.0  # 代码检查
+mypy>=1.0.0    # 类型检查
 
-# Additional AWS and cloud testing
-localstack==3.7.2           # Local AWS services simulation (optional)
+# 测试数据生成
+factory-boy>=3.2.0
+faker>=18.0.0
 
-# XML parsing for test reports
-lxml==5.3.0                  # Fast XML processing
+# 并发测试
+pytest-concurrent>=0.1.0
 
-# Performance and monitoring
-psutil==6.0.0                # System and process utilities
+# 测试覆盖率增强
+coverage[toml]>=7.0.0
+
+# API测试
+tavern>=2.0.0  # API测试框架

@@ -1,0 +1,1368 @@
+{
+  "info": {
+    "name": "AI PPT Assistant API",
+    "description": "Complete Postman collection for the AI PPT Assistant API. This collection includes all endpoints with examples, environment variables, and automated tests.\n\n## Setup Instructions\n\n1. Import this collection into Postman\n2. Create an environment with the following variables:\n   - `base_url`: API base URL (e.g., https://api.ai-ppt-assistant.com/v1)\n   - `api_key`: Your API key\n   - `presentation_id`: Will be set automatically after generation\n   - `task_id`: Will be set automatically for async tasks\n\n## Authentication\n\nThis collection supports API Key authentication. Your API key should be set in the environment variable `api_key`.\n\n## Usage\n\n1. **Generate Presentation**: Start with the \"Generate Presentation\" request\n2. **Check Status**: Use \"Get Presentation Status\" to monitor progress\n3. **Download**: Use \"Download Presentation\" when status is \"completed\"\n4. **Customize**: Use slide and image endpoints for customization\n\n## Test Automation\n\nMost requests include automated tests that:\n- Validate response status and structure\n- Extract important values (IDs, ETags) for subsequent requests\n- Check for proper error handling",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "X-API-Key",
+        "type": "string"
+      },
+      {
+        "key": "value",
+        "value": "{{api_key}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://api.ai-ppt-assistant.com/v1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Generation",
+      "description": "Presentation generation endpoints",
+      "item": [
+        {
+          "name": "Generate Presentation - Basic",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 202\", function () {",
+                  "    pm.response.to.have.status(202);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has presentation_id\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('presentation_id');",
+                  "    pm.environment.set('presentation_id', jsonData.presentation_id);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has valid status\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.be.oneOf(['pending', 'processing']);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has status_url\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('status_url');",
+                  "});",
+                  "",
+                  "pm.test(\"Response structure is valid\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.all.keys('presentation_id', 'status', 'estimated_completion_time', 'status_url', 'message', 'request_id');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"topic\": \"Introduction to Machine Learning\",\n  \"page_count\": 8,\n  \"style\": \"professional\",\n  \"language\": \"en\",\n  \"audience\": \"technical\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/presentations/generate",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "presentations",
+                "generate"
+              ]
+            },
+            "description": "Generate a basic presentation with standard parameters"
+          }
+        },
+        {
+          "name": "Generate Presentation - Advanced",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 202\", function () {",
+                  "    pm.response.to.have.status(202);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has presentation_id\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('presentation_id');",
+                  "    pm.environment.set('advanced_presentation_id', jsonData.presentation_id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"topic\": \"Quarterly Business Review - Q4 2024\",\n  \"page_count\": 15,\n  \"style\": \"business\",\n  \"language\": \"en\",\n  \"audience\": \"executive\",\n  \"metadata\": {\n    \"company\": \"TechCorp Inc\",\n    \"quarter\": \"Q4\",\n    \"year\": 2024,\n    \"include_charts\": true,\n    \"include_financials\": true,\n    \"theme_color\": \"#1E3A8A\",\n    \"industry\": \"technology\",\n    \"complexity_level\": \"executive\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/presentations/generate",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "presentations",
+                "generate"
+              ]
+            },
+            "description": "Generate an advanced presentation with custom metadata and business styling"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Management",
+      "description": "Presentation management endpoints",
+      "item": [
+        {
+          "name": "Get Presentation Status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has valid status\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.be.oneOf(['pending', 'processing', 'content_generated', 'compiling', 'completed', 'failed']);",
+                  "});",
+                  "",
+                  "pm.test(\"Progress is valid number\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.progress).to.be.a('number');",
+                  "    pm.expect(jsonData.progress).to.be.at.least(0);",
+                  "    pm.expect(jsonData.progress).to.be.at.most(100);",
+                  "});",
+                  "",
+                  "pm.test(\"Has required fields\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('presentation_id');",
+                  "    pm.expect(jsonData).to.have.property('created_at');",
+                  "    pm.expect(jsonData).to.have.property('updated_at');",
+                  "});",
+                  "",
+                  "// Store ETag if present for optimistic concurrency control",
+                  "if (pm.response.headers.get('ETag')) {",
+                  "    pm.environment.set('etag', pm.response.headers.get('ETag'));",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Check if presentation_id is set",
+                  "if (!pm.environment.get('presentation_id')) {",
+                  "    console.log('Warning: presentation_id not set. Run \"Generate Presentation\" first.');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/presentations/{{presentation_id}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "presentations",
+                "{{presentation_id}}",
+                "status"
+              ]
+            },
+            "description": "Get the current status and progress of a presentation generation task"
+          }
+        },
+        {
+          "name": "Download Presentation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has download_url\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('download_url');",
+                  "    pm.expect(jsonData.download_url).to.be.a('string');",
+                  "});",
+                  "",
+                  "pm.test(\"Has expiration info\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('expires_in');",
+                  "    pm.expect(jsonData).to.have.property('expires_at');",
+                  "});",
+                  "",
+                  "pm.test(\"Has file metadata\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('file_size');",
+                  "    pm.expect(jsonData).to.have.property('filename');",
+                  "    pm.expect(jsonData).to.have.property('content_type');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/presentations/{{presentation_id}}/download?format=pptx",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "presentations",
+                "{{presentation_id}}",
+                "download"
+              ],
+              "query": [
+                {
+                  "key": "format",
+                  "value": "pptx",
+                  "description": "Download format (only pptx supported currently)"
+                }
+              ]
+            },
+            "description": "Get a secure download URL for the completed presentation"
+          }
+        },
+        {
+          "name": "Regenerate Presentation - All",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 202\", function () {",
+                  "    pm.response.to.have.status(202);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has task_id\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('task_id');",
+                  "    pm.environment.set('task_id', jsonData.task_id);",
+                  "});",
+                  "",
+                  "pm.test(\"Has status_url\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('status_url');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"scope\": \"all\",\n  \"options\": {\n    \"preserve_style\": true,\n    \"preserve_images\": false,\n    \"new_prompt\": \"Focus more on practical implementation examples\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/presentations/{{presentation_id}}/regenerate",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "presentations",
+                "{{presentation_id}}",
+                "regenerate"
+              ]
+            },
+            "description": "Regenerate the entire presentation with new content while preserving style"
+          }
+        },
+        {
+          "name": "Regenerate Presentation - Specific Slides",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 202\", function () {",
+                  "    pm.response.to.have.status(202);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has task_id\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('task_id');",
+                  "});",
+                  "",
+                  "pm.test(\"Has affected_slides array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('affected_slides');",
+                  "    pm.expect(jsonData.affected_slides).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"scope\": \"slides\",\n  \"slide_numbers\": [2, 4, 6, 8],\n  \"options\": {\n    \"preserve_style\": true,\n    \"preserve_images\": false,\n    \"new_prompt\": \"Add more technical details and examples\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/presentations/{{presentation_id}}/regenerate",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "presentations",
+                "{{presentation_id}}",
+                "regenerate"
+              ]
+            },
+            "description": "Regenerate specific slides (2, 4, 6, 8) with new content"
+          }
+        },
+        {
+          "name": "Delete Presentation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 204\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});",
+                  "",
+                  "pm.test(\"Has cleanup task ID header\", function () {",
+                  "    pm.expect(pm.response.headers.get('X-Cleanup-Task-Id')).to.not.be.null;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/presentations/{{presentation_id}}?force=false",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "presentations",
+                "{{presentation_id}}"
+              ],
+              "query": [
+                {
+                  "key": "force",
+                  "value": "false",
+                  "description": "Force deletion even if presentation is being processed"
+                }
+              ]
+            },
+            "description": "Delete a presentation and all associated resources"
+          }
+        },
+        {
+          "name": "Delete Presentation - Force",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 204\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/presentations/{{presentation_id}}?force=true",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "presentations",
+                "{{presentation_id}}"
+              ],
+              "query": [
+                {
+                  "key": "force",
+                  "value": "true"
+                }
+              ]
+            },
+            "description": "Force delete a presentation even if it's being processed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Slides",
+      "description": "Individual slide manipulation endpoints",
+      "item": [
+        {
+          "name": "Update Slide - Title and Content",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has new ETag\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('etag');",
+                  "    pm.environment.set('etag', jsonData.etag);",
+                  "});",
+                  "",
+                  "pm.test(\"Has updated timestamp\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('updated_at');",
+                  "});",
+                  "",
+                  "pm.test(\"Has preview URL\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('preview_url');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "If-Match",
+                "value": "{{etag}}",
+                "description": "ETag for optimistic concurrency control",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Slide Title\",\n  \"content\": \"This is the updated content for this slide. It includes:\\n• Key point 1\\n• Key point 2\\n• Key point 3\",\n  \"speaker_notes\": \"Remember to emphasize the key benefits when presenting this slide\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/presentations/{{presentation_id}}/slides/3",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "presentations",
+                "{{presentation_id}}",
+                "slides",
+                "3"
+              ]
+            },
+            "description": "Update the title, content, and speaker notes for slide 3"
+          }
+        },
+        {
+          "name": "Update Slide - Layout and Style",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has new ETag\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('etag');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"layout\": \"two_column\",\n  \"style_overrides\": {\n    \"background_color\": \"#F5F5F5\",\n    \"font_family\": \"Calibri\",\n    \"font_size\": 14,\n    \"text_color\": \"#333333\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/presentations/{{presentation_id}}/slides/5",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "presentations",
+                "{{presentation_id}}",
+                "slides",
+                "5"
+              ]
+            },
+            "description": "Update the layout and styling for slide 5"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Images",
+      "description": "Image generation and management endpoints",
+      "item": [
+        {
+          "name": "Regenerate Slide Image - Basic",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 202\", function () {",
+                  "    pm.response.to.have.status(202);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has task_id\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('task_id');",
+                  "    pm.environment.set('image_task_id', jsonData.task_id);",
+                  "});",
+                  "",
+                  "pm.test(\"Has status_url\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('status_url');",
+                  "});",
+                  "",
+                  "pm.test(\"Has estimated_time\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('estimated_time');",
+                  "    pm.expect(jsonData.estimated_time).to.be.a('number');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prompt\": \"A professional diagram showing machine learning workflow\",\n  \"style\": \"diagram\",\n  \"quality\": \"high\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/presentations/{{presentation_id}}/slides/4/image",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "presentations",
+                "{{presentation_id}}",
+                "slides",
+                "4",
+                "image"
+              ]
+            },
+            "description": "Regenerate the image for slide 4 with a custom prompt"
+          }
+        },
+        {
+          "name": "Regenerate Slide Image - Advanced",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 202\", function () {",
+                  "    pm.response.to.have.status(202);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has task_id\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('task_id');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prompt\": \"Modern office workspace with computers, natural lighting, and collaborative team environment\",\n  \"style\": \"realistic\",\n  \"dimensions\": {\n    \"width\": 1024,\n    \"height\": 768\n  },\n  \"seed\": 12345,\n  \"quality\": \"premium\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/presentations/{{presentation_id}}/slides/6/image",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "presentations",
+                "{{presentation_id}}",
+                "slides",
+                "6",
+                "image"
+              ]
+            },
+            "description": "Regenerate image with advanced options: custom dimensions, seed, and premium quality"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tasks",
+      "description": "Asynchronous task management endpoints",
+      "item": [
+        {
+          "name": "Get Task Status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has valid status\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.be.oneOf(['pending', 'processing', 'completed', 'failed']);",
+                  "});",
+                  "",
+                  "pm.test(\"Has task_id\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('task_id');",
+                  "});",
+                  "",
+                  "pm.test(\"Progress is valid\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('progress');",
+                  "    pm.expect(jsonData.progress).to.be.a('number');",
+                  "    pm.expect(jsonData.progress).to.be.at.least(0);",
+                  "    pm.expect(jsonData.progress).to.be.at.most(100);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Check if task_id is set",
+                  "if (!pm.environment.get('task_id') && !pm.environment.get('image_task_id')) {",
+                  "    console.log('Warning: task_id not set. Run a task-generating request first.');",
+                  "}",
+                  "",
+                  "// Use image_task_id if available and task_id is not set",
+                  "if (!pm.environment.get('task_id') && pm.environment.get('image_task_id')) {",
+                  "    pm.environment.set('task_id', pm.environment.get('image_task_id'));",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/tasks/{{task_id}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "tasks",
+                "{{task_id}}",
+                "status"
+              ]
+            },
+            "description": "Get the status of an asynchronous task (image generation, regeneration, etc.)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health",
+      "description": "System health and monitoring endpoints",
+      "item": [
+        {
+          "name": "Health Check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 or 503\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 503]);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has status field\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('status');",
+                  "    pm.expect(jsonData.status).to.be.oneOf(['healthy', 'degraded', 'unhealthy']);",
+                  "});",
+                  "",
+                  "pm.test(\"Has timestamp\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('timestamp');",
+                  "});",
+                  "",
+                  "pm.test(\"Has version info\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('version');",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    pm.test(\"Healthy response has services info\", function () {",
+                  "        var jsonData = pm.response.json();",
+                  "        pm.expect(jsonData).to.have.property('services');",
+                  "        pm.expect(jsonData.services).to.be.an('object');",
+                  "    });",
+                  "",
+                  "    pm.test(\"Has metrics info\", function () {",
+                  "        var jsonData = pm.response.json();",
+                  "        pm.expect(jsonData).to.have.property('metrics');",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "health"
+              ]
+            },
+            "description": "Check the health status of the API and its dependencies"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Error Examples",
+      "description": "Examples of error responses for testing error handling",
+      "item": [
+        {
+          "name": "Validation Error - Empty Topic",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test(\"Error code is VALIDATION_ERROR\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.error).to.eql('VALIDATION_ERROR');",
+                  "});",
+                  "",
+                  "pm.test(\"Has validation_errors array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('validation_errors');",
+                  "    pm.expect(jsonData.validation_errors).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test(\"Has request_id\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('request_id');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"topic\": \"\",\n  \"page_count\": 5\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/presentations/generate",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "presentations",
+                "generate"
+              ]
+            },
+            "description": "Example of validation error with empty topic"
+          }
+        },
+        {
+          "name": "Validation Error - Invalid Page Count",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test(\"Error code is VALIDATION_ERROR\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.error).to.eql('VALIDATION_ERROR');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"topic\": \"Valid Topic\",\n  \"page_count\": 25\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/presentations/generate",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "presentations",
+                "generate"
+              ]
+            },
+            "description": "Example of validation error with invalid page count (exceeds maximum of 20)"
+          }
+        },
+        {
+          "name": "Not Found Error",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 404\", function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "",
+                  "pm.test(\"Error code is NOT_FOUND\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.error).to.eql('NOT_FOUND');",
+                  "});",
+                  "",
+                  "pm.test(\"Has resource info\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('resource');",
+                  "    pm.expect(jsonData).to.have.property('resource_id');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/presentations/00000000-0000-0000-0000-000000000000/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "presentations",
+                "00000000-0000-0000-0000-000000000000",
+                "status"
+              ]
+            },
+            "description": "Example of not found error with non-existent presentation ID"
+          }
+        },
+        {
+          "name": "Invalid UUID Format",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test(\"Error code is VALIDATION_ERROR or INVALID_UUID_FORMAT\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.error).to.be.oneOf(['VALIDATION_ERROR', 'INVALID_UUID_FORMAT']);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/presentations/invalid-uuid/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "presentations",
+                "invalid-uuid",
+                "status"
+              ]
+            },
+            "description": "Example of invalid UUID format error"
+          }
+        },
+        {
+          "name": "Unauthorized - Missing API Key",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 401\", function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});",
+                  "",
+                  "pm.test(\"Error code is UNAUTHORIZED\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.error).to.eql('UNAUTHORIZED');",
+                  "});",
+                  "",
+                  "pm.test(\"Has WWW-Authenticate header\", function () {",
+                  "    pm.expect(pm.response.headers.get('WWW-Authenticate')).to.not.be.null;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "health"
+              ]
+            },
+            "description": "Example of unauthorized error with missing API key"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Workflows",
+      "description": "Complete workflow examples combining multiple endpoints",
+      "item": [
+        {
+          "name": "Complete Workflow",
+          "item": [
+            {
+              "name": "1. Generate Presentation",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Generation started successfully\", function () {",
+                      "    pm.response.to.have.status(202);",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.environment.set('workflow_presentation_id', jsonData.presentation_id);",
+                      "    console.log('Presentation ID:', jsonData.presentation_id);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"topic\": \"Digital Marketing Strategy 2024\",\n  \"page_count\": 10,\n  \"style\": \"business\",\n  \"audience\": \"executive\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/presentations/generate",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "presentations",
+                    "generate"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "2. Check Status (Repeat Until Complete)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status check successful\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "var jsonData = pm.response.json();",
+                      "console.log('Status:', jsonData.status, 'Progress:', jsonData.progress + '%');",
+                      "",
+                      "if (jsonData.status === 'completed') {",
+                      "    console.log('Presentation completed! Ready for download.');",
+                      "} else if (jsonData.status === 'failed') {",
+                      "    console.log('Generation failed:', jsonData.error?.message);",
+                      "} else {",
+                      "    console.log('Still processing... Check again in a few seconds.');",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/presentations/{{workflow_presentation_id}}/status",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "presentations",
+                    "{{workflow_presentation_id}}",
+                    "status"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "3. Update Slide Content",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Slide updated successfully\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.environment.set('workflow_etag', jsonData.etag);",
+                      "    console.log('Slide updated. New ETag:', jsonData.etag);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Executive Summary\",\n  \"content\": \"Key highlights from our digital marketing strategy:\\n\\n• 25% increase in online engagement\\n• 40% growth in lead generation\\n• $2M additional revenue projected\",\n  \"speaker_notes\": \"Emphasize the ROI and measurable outcomes\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/presentations/{{workflow_presentation_id}}/slides/2",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "presentations",
+                    "{{workflow_presentation_id}}",
+                    "slides",
+                    "2"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "4. Generate Custom Image",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Image generation started\", function () {",
+                      "    pm.response.to.have.status(202);",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.environment.set('workflow_image_task', jsonData.task_id);",
+                      "    console.log('Image generation started. Task ID:', jsonData.task_id);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"prompt\": \"Professional infographic showing digital marketing channels: social media, email, content marketing, and paid advertising\",\n  \"style\": \"infographic\",\n  \"quality\": \"high\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/presentations/{{workflow_presentation_id}}/slides/5/image",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "presentations",
+                    "{{workflow_presentation_id}}",
+                    "slides",
+                    "5",
+                    "image"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "5. Check Image Task Status",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Task status retrieved\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "var jsonData = pm.response.json();",
+                      "console.log('Image task status:', jsonData.status, 'Progress:', jsonData.progress + '%');",
+                      "",
+                      "if (jsonData.status === 'completed') {",
+                      "    console.log('Image generation completed!');",
+                      "    if (jsonData.result && jsonData.result.image_url) {",
+                      "        console.log('Image URL:', jsonData.result.image_url);",
+                      "    }",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/tasks/{{workflow_image_task}}/status",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "tasks",
+                    "{{workflow_image_task}}",
+                    "status"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "6. Get Download URL",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Download URL generated\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "    var jsonData = pm.response.json();",
+                      "    console.log('Download URL:', jsonData.download_url);",
+                      "    console.log('File size:', jsonData.file_size, 'bytes');",
+                      "    console.log('Expires in:', jsonData.expires_in, 'seconds');",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/presentations/{{workflow_presentation_id}}/download",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "presentations",
+                    "{{workflow_presentation_id}}",
+                    "download"
+                  ]
+                }
+              }
+            }
+          ],
+          "description": "Complete workflow: Generate → Monitor → Customize → Download"
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "id": "global-prerequest",
+        "exec": [
+          "// Global pre-request script",
+          "// Add timestamp to requests for debugging",
+          "pm.globals.set('timestamp', new Date().toISOString());",
+          "",
+          "// Check if API key is set",
+          "if (!pm.environment.get('api_key')) {",
+          "    console.warn('API key not set! Please set the api_key environment variable.');",
+          "}",
+          "",
+          "// Add request logging",
+          "console.log(`Making ${pm.request.method} request to: ${pm.request.url}`);"
+        ],
+        "type": "text/javascript"
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "id": "global-test",
+        "exec": [
+          "// Global test script",
+          "// Log response time",
+          "console.log(`Response time: ${pm.response.responseTime}ms`);",
+          "",
+          "// Test for common headers",
+          "if (pm.response.code < 300) {",
+          "    pm.test(\"Response time is acceptable\", function () {",
+          "        pm.expect(pm.response.responseTime).to.be.below(10000);",
+          "    });",
+          "}",
+          "",
+          "// Test for CORS headers if applicable",
+          "if (pm.request.method === 'OPTIONS' || pm.response.headers.get('Access-Control-Allow-Origin')) {",
+          "    pm.test(\"CORS headers present\", function () {",
+          "        pm.expect(pm.response.headers.get('Access-Control-Allow-Origin')).to.not.be.null;",
+          "    });",
+          "}",
+          "",
+          "// Store request details for debugging",
+          "pm.globals.set('last_request_id', pm.response.headers.get('X-Request-ID') || 'N/A');",
+          "pm.globals.set('last_response_code', pm.response.code);"
+        ],
+        "type": "text/javascript"
+      }
+    }
+  ]
+}

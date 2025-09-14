@@ -1,45 +1,76 @@
-# Terraform临时文件
-*.backup
-*.tfplan
-.terraform.lock.hcl.backup
-.terraform/
-terraform.tfstate
-terraform.tfstate.*
-
-# Python缓存
+# Python
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
+*$py.class
+*.so
 .Python
+*.egg-info/
+.coverage
+.pytest_cache/
+htmlcov/
+.tox/
+.hypothesis/
+*.cover
+.coverage.*
 
-# IDE文件
+# Virtual Environment
+venv/
+ENV/
+env/
+test_env/
+
+# IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
 
-# AWS credentials
-.aws/
-aws-credentials.json
+# OS
+.DS_Store
+Thumbs.db
 
-# Logs
+# AWS
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+
+# Build artifacts
+*.zip
+dist/
+build/
+lambda-packages/
+
+# Temporary files
+*.tmp
 *.log
-logs/
+*.bak
 
-# Environment files
+# Test outputs
+test-results/
+test_report.*
+
+# Node
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+
+# Documentation build
+docs/build/
+docs/_build/
+
+# Environment variables
 .env
 .env.local
-.env.prod
+.env.*.local
 
-# Node modules (if any)
-node_modules/
+# TDD State
+.tdd-state/
 
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
+# Context
+.context/
+
+# Spec workflow approvals (temporary)
+.spec-workflow/approvals/

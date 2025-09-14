@@ -18,93 +18,170 @@ AI Presentation Generation Assistant 是一个基于 Amazon Bedrock Agents 的�
 3. **质量保证**：通过标准化模板确保输出质量
 4. **可扩展性**：基于微服务架构，便于未来扩展其他文档类型
 
-## Requirements
+## Requirements (Phased Implementation)
 
-### Requirement 1: 主题式演示文稿生成
+### Phase 1 Requirements (MVP)
 
-**User Story:** 作为一个管理者，我想通过输入主题和参数快速生成演示文稿，以便为会议准备材料。
+#### Requirement 1.1: 基础PPT生成 [Priority: P0]
 
-#### Acceptance Criteria
+**User Story:** 作为用户，我想输入一个主题，系统生成包含文字的简单PPT。
 
-1. WHEN 用户输入主题、页数（5-30页）和目标受众 THEN 系统 SHALL 在60秒内生成完整的演示文稿大纲
-2. IF 用户选择了特定模板风格 THEN 系统 SHALL 应用相应的视觉样式和布局
-3. WHEN 生成完成 AND 用户确认 THEN 系统 SHALL 提供可下载的 PPTX 文件链接
-4. IF 生成过程中发生错误 THEN 系统 SHALL 提供明确的错误信息和重试选项
+**Acceptance Criteria:**
+1. WHEN 用户输入主题 THEN 系统 SHALL 生成5页固定内容的PPT
+2. WHEN 生成完成 THEN 系统 SHALL 提供下载链接
+3. IF 生成失败 THEN 系统 SHALL 返回错误信息
+4. 响应时间 SHALL 小于30秒
 
-### Requirement 2: 文档到演示文稿转换
+### Phase 2 Requirements (Enhanced)
 
-**User Story:** 作为一个销售人员，我想将长篇报告自动转换成演示文稿，以便快速制作销售材料。
+#### Requirement 2.1: 可变页数和模板 [Priority: P1]
 
-#### Acceptance Criteria
+**User Story:** 作为用户，我想选择页数和模板样式。
 
-1. WHEN 用户上传 Word/PDF 文档（最大 50MB）THEN 系统 SHALL 提取关键内容并生成摘要
-2. IF 文档包含图表或数据 THEN 系统 SHALL 智能识别并在演示文稿中保留重要可视化元素
-3. WHEN 转换完成 THEN 系统 SHALL 生成不超过原文档 20% 内容量的精简演示文稿
-4. IF 文档格式不支持 THEN 系统 SHALL 提供支持的格式列表和转换建议
+**Acceptance Criteria:**
+1. WHEN 用户指定页数（5-10页）THEN 系统 SHALL 生成相应页数
+2. IF 用户选择模板 THEN 系统 SHALL 应用对应样式
+3. 新增图片生成功能，每页配图
 
-### Requirement 3: 智能配图生成
+#### Requirement 2.2: 智能配图 [Priority: P1]
 
-**User Story:** 作为一个设计师，我想让系统自动为每页幻灯片配置合适的图片，以提升视觉效果。
+**User Story:** 作为用户，我想让PPT包含配图以提升视觉效果。
 
-#### Acceptance Criteria
+**Acceptance Criteria:**
+1. WHEN 生成内容 THEN 系统 SHALL 为每页生成或选择合适图片
+2. IF 图片生成失败 THEN 使用默认占位图
+3. 图片风格 SHALL 保持一致性
 
-1. WHEN 幻灯片内容确定 THEN 系统 SHALL 为每页生成或检索匹配的图片
-2. IF 使用图库检索 AND 未找到合适图片 THEN 系统 SHALL 使用 AI 生成原创图片
-3. WHEN 生成图片 THEN 系统 SHALL 确保图片风格与整体演示文稿一致
-4. IF 用户不满意图片 THEN 系统 SHALL 提供替换选项或重新生成功能
+#### Requirement 2.3: 演讲者备注 [Priority: P2]
 
-### Requirement 4: 演讲者备注生成
+**User Story:** 作为演讲者，我想获得每页的演讲提示。
 
-**User Story:** 作为一个演讲者，我想获得每页的演讲提示，以便更好地进行演示。
+**Acceptance Criteria:**
+1. WHEN 生成PPT THEN 系统 SHALL 同时生成演讲者备注
+2. 备注内容 SHALL 与幻灯片内容相关
+3. 备注长度适中（每页100-200字）
 
-#### Acceptance Criteria
+### Phase 3 Requirements (Advanced)
 
-1. WHEN 生成幻灯片内容 THEN 系统 SHALL 同时生成相应的演讲者备注
-2. IF 幻灯片包含数据或图表 THEN 备注 SHALL 包含解释要点和洞察
-3. WHEN 用户请求 THEN 系统 SHALL 提供不同详细程度的备注选项
-4. IF 演示时长指定 THEN 系统 SHALL 调整备注内容以匹配时间要求
+#### Requirement 3.1: 内容修改 [Priority: P2]
 
-### Requirement 5: 迭代修改支持
+**User Story:** 作为用户，我想修改生成的PPT中的特定页面。
 
-**User Story:** 作为一个用户，我想对生成的演示文稿进行局部修改，以满足特定需求。
+**Acceptance Criteria:**
+1. WHEN 用户请求修改 THEN 系统 SHALL 支持单页更新
+2. IF 修改图片 THEN 可重新生成
+3. 修改后 SHALL 保持整体一致性
 
-#### Acceptance Criteria
+#### Requirement 3.2: 性能优化 [Priority: P1]
 
-1. WHEN 用户请求修改特定页面 THEN 系统 SHALL 重新生成该页内容而不影响其他页面
-2. IF 用户要求精简内容 THEN 系统 SHALL 提炼关键要点并更新相应页面
-3. WHEN 修改完成 THEN 系统 SHALL 保持整体风格和逻辑的一致性
-4. IF 多次修改同一页面 THEN 系统 SHALL 保留修改历史供用户参考
+**User Story:** 作为用户，我希望更快地获得生成结果。
+
+**Acceptance Criteria:**
+1. 通过并行处理，生成时间 SHALL 减少50%
+2. 使用缓存机制，重复请求响应更快
+3. 10页PPT生成时间 SHALL 小于30秒
+
+### Phase 4 Requirements (Production)
+
+#### Requirement 4.1: 文档转换 [Priority: P3]
+
+**User Story:** 作为用户，我想将Word/PDF文档转换为PPT。
+
+**Acceptance Criteria:**
+1. WHEN 上传文档 THEN 系统 SHALL 提取关键内容
+2. 生成的PPT SHALL 不超过原文档20%内容量
+3. 保留重要的图表和数据
+
+#### Requirement 4.2: 批量操作 [Priority: P3]
+
+**User Story:** 作为企业用户，我想批量生成多个PPT。
+
+**Acceptance Criteria:**
+1. 支持批量请求（最多10个）
+2. 提供批量下载功能
+3. 批量操作进度可查询
 
 ## Non-Functional Requirements
 
-### Code Architecture and Modularity
+### Development Methodology
 
-- **Single Responsibility Principle**: 每个 Lambda 函数负责单一功能（大纲生成、内容扩展、图片处理等）
-- **Modular Design**: Agent 之间松耦合，通过标准接口通信
-- **Dependency Management**: 使用 Lambda Layers 管理共享依赖
-- **MVC Architecture**: 采用 Model-View-Controller 架构模式
-  - **Model**: 数据层，负责与 S3、DynamoDB 等存储服务交互
-  - **View**: 展示层，负责生成 PPTX 文件和用户界面响应
-  - **Controller**: 控制层，负责业务逻辑和 Agent 协调
+- **TDD (Test-Driven Development)**: 每个功能先写测试，再实现
+- **Phased Delivery**: 分4个阶段逐步交付功能
+- **KISS Principle**: 从最简单的实现开始，逐步增强
+- **YAGNI**: 只实现当前阶段需要的功能
 
-### Performance
-- 系统应保证合理的响应时间和资源利用效率
+### Phased Architecture
 
-### Security
-- 实施必要的安全措施保护用户数据
+#### Phase 1 (MVP - Week 1)
+- **1个Lambda函数**: 处理所有逻辑
+- **极简API**: 3个端点（生成/状态/下载）
+- **基础功能**: 仅文本PPT生成
 
-### Reliability
-- 确保系统稳定运行，提供可靠的服务
+#### Phase 2 (Enhanced - Week 2)
+- **3个Lambda函数**: 职责分离
+- **增强功能**: 添加图片和模板
+- **扩展API**: 5个端点
 
-### Usability
-- **简单直观**: 自然语言交互，无需技术背景
-- **多语言支持**: 初期支持中文和英文
-- **实时反馈**: 生成过程中提供进度更新
-- **错误提示**: 友好的错误信息和解决建议
-- **帮助文档**: 内置使用指南和最佳实践
+#### Phase 3 (Optimized - Week 3)
+- **Step Functions**: 并行处理
+- **性能优化**: 缓存和并发
+- **高级功能**: 内容修改
 
-### Scalability
-- **自动扩展**: Lambda 和 Bedrock 自动扩展应对负载
-- **成本优化**: 基于使用量计费，支持预留容量
-- **存储管理**: S3 智能分层存储，降低成本
-- **缓存策略**: CloudFront 缓存常用模板和资源
+#### Phase 4 (Production - Week 4)
+- **完整功能**: 所有特性
+- **生产就绪**: CI/CD、监控、文档
+- **安全加固**: IAM认证
+
+### Performance Requirements (Phased)
+
+#### Phase 1 Performance
+- 响应时间: < 30秒（5页文本PPT）
+- Lambda内存: 1024MB
+- 并发请求: 10个
+
+#### Phase 2 Performance
+- 响应时间: < 60秒（10页带图PPT）
+- Lambda内存: 2048MB
+- 并发请求: 20个
+
+#### Phase 3 Performance
+- 响应时间: < 30秒（10页带图PPT，通过并行处理）
+- 添加缓存机制
+- 并发请求: 50个
+
+#### Phase 4 Performance
+- 响应时间: < 20秒（优化后）
+- 自动扩展: 100+并发
+- SLA: 99.9%可用性
+
+### Security Requirements (Phased)
+
+#### Phase 1-2 Security
+- S3 bucket私有访问
+- 预签名URL（1小时有效）
+- 基础输入验证
+
+#### Phase 3 Security
+- API Key认证
+- 输入清理和验证
+- 基础日志审计
+
+#### Phase 4 Security
+- IAM认证替代API Key
+- 完整的审计日志
+- 数据加密（传输和存储）
+- 合规性检查
+
+### Testing Requirements
+
+- Phase 1: 测试覆盖率 > 80%
+- Phase 2: 测试覆盖率 > 85%
+- Phase 3: 测试覆盖率 > 90%
+- Phase 4: 测试覆盖率 > 95%
+
+### Documentation Requirements
+
+- Phase 1: 基础README和API示例
+- Phase 2: API文档和使用指南
+- Phase 3: 完整的技术文档
+- Phase 4: 生产部署指南和运维手册

@@ -1,0 +1,26 @@
+# Terraform files
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+terraform.tfvars
+*.tfplan
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Python files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# ZIP files for Lambda
+*.zip

@@ -1,0 +1,357 @@
+{
+  "Comment": "AI PPT Generation Workflow with Parallel Processing",
+  "StartAt": "InitializeTask",
+  "States": {
+    "InitializeTask": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::dynamodb:putItem",
+      "Parameters": {
+        "TableName.$": "$.dynamodb_table",
+        "Item": {
+          "task_id": {
+            "S.$": "$.task_id"
+          },
+          "created_at": {
+            "N.$": "$.timestamp"
+          },
+          "status": {
+            "S": "processing"
+          },
+          "user_id": {
+            "S.$": "$.user_id"
+          },
+          "title": {
+            "S.$": "$.title"
+          },
+          "num_slides": {
+            "N.$": "$.num_slides"
+          },
+          "progress": {
+            "N": "0"
+          },
+          "ttl": {
+            "N.$": "$.ttl"
+          }
+        }
+      },
+      "ResultPath": "$.task_init",
+      "Next": "GenerateOutline",
+      "Retry": [
+        {
+          "ErrorEquals": ["States.TaskFailed"],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 3,
+          "BackoffRate": 2.0
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "HandleError"
+        }
+      ]
+    },
+    "GenerateOutline": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName.$": "$.content_generator_function",
+        "Payload": {
+          "action": "generate_outline",
+          "task_id.$": "$.task_id",
+          "title.$": "$.title",
+          "num_slides.$": "$.num_slides",
+          "style.$": "$.style",
+          "language.$": "$.language"
+        }
+      },
+      "ResultPath": "$.outline",
+      "TimeoutSeconds": 30,
+      "Next": "ProcessSlides",
+      "Retry": [
+        {
+          "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException"],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 3,
+          "BackoffRate": 2.0
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "HandleError"
+        }
+      ]
+    },
+    "ProcessSlides": {
+      "Type": "Map",
+      "MaxConcurrency": 10,
+      "ItemsPath": "$.outline.Payload.slides",
+      "Parameters": {
+        "slide.$": "$$.Map.Item.Value",
+        "slide_index.$": "$$.Map.Item.Index",
+        "task_id.$": "$.task_id",
+        "style.$": "$.style",
+        "content_generator_function.$": "$.content_generator_function",
+        "image_generator_function.$": "$.image_generator_function",
+        "s3_bucket.$": "$.s3_bucket"
+      },
+      "Iterator": {
+        "StartAt": "ProcessSingleSlide",
+        "States": {
+          "ProcessSingleSlide": {
+            "Type": "Parallel",
+            "Branches": [
+              {
+                "StartAt": "GenerateContent",
+                "States": {
+                  "GenerateContent": {
+                    "Type": "Task",
+                    "Resource": "arn:aws:states:::lambda:invoke",
+                    "Parameters": {
+                      "FunctionName.$": "$.content_generator_function",
+                      "Payload": {
+                        "action": "generate_content",
+                        "task_id.$": "$.task_id",
+                        "slide_index.$": "$.slide_index",
+                        "slide_title.$": "$.slide.title",
+                        "slide_outline.$": "$.slide.outline",
+                        "style.$": "$.style"
+                      }
+                    },
+                    "TimeoutSeconds": 20,
+                    "ResultPath": "$.content",
+                    "Retry": [
+                      {
+                        "ErrorEquals": ["Lambda.TooManyRequestsException"],
+                        "IntervalSeconds": 5,
+                        "MaxAttempts": 5,
+                        "BackoffRate": 2.0
+                      },
+                      {
+                        "ErrorEquals": ["Lambda.ServiceException"],
+                        "IntervalSeconds": 2,
+                        "MaxAttempts": 3,
+                        "BackoffRate": 2.0
+                      }
+                    ],
+                    "End": true
+                  }
+                }
+              },
+              {
+                "StartAt": "CheckImageGeneration",
+                "States": {
+                  "CheckImageGeneration": {
+                    "Type": "Choice",
+                    "Choices": [
+                      {
+                        "Variable": "$.slide.needs_image",
+                        "BooleanEquals": true,
+                        "Next": "GenerateImage"
+                      }
+                    ],
+                    "Default": "SkipImage"
+                  },
+                  "GenerateImage": {
+                    "Type": "Task",
+                    "Resource": "arn:aws:states:::lambda:invoke",
+                    "Parameters": {
+                      "FunctionName.$": "$.image_generator_function",
+                      "Payload": {
+                        "action": "generate_image",
+                        "task_id.$": "$.task_id",
+                        "slide_index.$": "$.slide_index",
+                        "image_prompt.$": "$.slide.image_prompt",
+                        "style.$": "$.style",
+                        "s3_bucket.$": "$.s3_bucket"
+                      }
+                    },
+                    "TimeoutSeconds": 60,
+                    "ResultPath": "$.image",
+                    "Retry": [
+                      {
+                        "ErrorEquals": ["Lambda.TooManyRequestsException"],
+                        "IntervalSeconds": 10,
+                        "MaxAttempts": 3,
+                        "BackoffRate": 2.0
+                      },
+                      {
+                        "ErrorEquals": ["Lambda.ServiceException"],
+                        "IntervalSeconds": 5,
+                        "MaxAttempts": 2,
+                        "BackoffRate": 2.0
+                      }
+                    ],
+                    "Catch": [
+                      {
+                        "ErrorEquals": ["States.ALL"],
+                        "ResultPath": "$.image_error",
+                        "Next": "UseDefaultImage"
+                      }
+                    ],
+                    "End": true
+                  },
+                  "UseDefaultImage": {
+                    "Type": "Pass",
+                    "Parameters": {
+                      "image_url": "default_image.png",
+                      "error.$": "$.image_error"
+                    },
+                    "ResultPath": "$.image",
+                    "End": true
+                  },
+                  "SkipImage": {
+                    "Type": "Pass",
+                    "Parameters": {
+                      "image_url": null
+                    },
+                    "ResultPath": "$.image",
+                    "End": true
+                  }
+                }
+              }
+            ],
+            "ResultPath": "$.slide_results",
+            "Next": "UpdateProgress"
+          },
+          "UpdateProgress": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::dynamodb:updateItem",
+            "Parameters": {
+              "TableName.$": "$.dynamodb_table",
+              "Key": {
+                "task_id": {
+                  "S.$": "$.task_id"
+                },
+                "created_at": {
+                  "N.$": "$.timestamp"
+                }
+              },
+              "UpdateExpression": "SET progress = :progress, last_updated = :now",
+              "ExpressionAttributeValues": {
+                ":progress": {
+                  "N.$": "States.Format('{}', $.slide_index)"
+                },
+                ":now": {
+                  "N.$": "$$.Execution.StartTime"
+                }
+              }
+            },
+            "ResultPath": null,
+            "End": true
+          }
+        }
+      },
+      "ResultPath": "$.processed_slides",
+      "Next": "CompilePPT"
+    },
+    "CompilePPT": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName.$": "$.compile_ppt_function",
+        "Payload": {
+          "task_id.$": "$.task_id",
+          "title.$": "$.title",
+          "slides.$": "$.processed_slides",
+          "style.$": "$.style",
+          "s3_bucket.$": "$.s3_bucket"
+        }
+      },
+      "TimeoutSeconds": 60,
+      "ResultPath": "$.compilation_result",
+      "Next": "UpdateTaskComplete",
+      "Retry": [
+        {
+          "ErrorEquals": ["Lambda.ServiceException"],
+          "IntervalSeconds": 3,
+          "MaxAttempts": 3,
+          "BackoffRate": 2.0
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "HandleError"
+        }
+      ]
+    },
+    "UpdateTaskComplete": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::dynamodb:updateItem",
+      "Parameters": {
+        "TableName.$": "$.dynamodb_table",
+        "Key": {
+          "task_id": {
+            "S.$": "$.task_id"
+          },
+          "created_at": {
+            "N.$": "$.timestamp"
+          }
+        },
+        "UpdateExpression": "SET #status = :status, progress = :progress, ppt_url = :url, completed_at = :now",
+        "ExpressionAttributeNames": {
+          "#status": "status"
+        },
+        "ExpressionAttributeValues": {
+          ":status": {
+            "S": "completed"
+          },
+          ":progress": {
+            "N": "100"
+          },
+          ":url": {
+            "S.$": "$.compilation_result.Payload.ppt_url"
+          },
+          ":now": {
+            "N.$": "$$.Execution.StartTime"
+          }
+        }
+      },
+      "ResultPath": null,
+      "Next": "Success"
+    },
+    "Success": {
+      "Type": "Succeed",
+      "OutputPath": "$"
+    },
+    "HandleError": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::dynamodb:updateItem",
+      "Parameters": {
+        "TableName.$": "$.dynamodb_table",
+        "Key": {
+          "task_id": {
+            "S.$": "$.task_id"
+          },
+          "created_at": {
+            "N.$": "$.timestamp"
+          }
+        },
+        "UpdateExpression": "SET #status = :status, error_message = :error, failed_at = :now",
+        "ExpressionAttributeNames": {
+          "#status": "status"
+        },
+        "ExpressionAttributeValues": {
+          ":status": {
+            "S": "failed"
+          },
+          ":error": {
+            "S.$": "States.Format('Error: {}', $.Error)"
+          },
+          ":now": {
+            "N.$": "$$.Execution.StartTime"
+          }
+        }
+      },
+      "ResultPath": null,
+      "Next": "Fail"
+    },
+    "Fail": {
+      "Type": "Fail",
+      "Error": "WorkflowFailed",
+      "Cause": "PPT generation workflow failed"
+    }
+  }
+}

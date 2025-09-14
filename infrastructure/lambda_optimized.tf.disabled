@@ -1,0 +1,545 @@
+# Lambda函数性能优化配置
+# 包含预热、层优化、并发控制等
+
+# ==================== Lambda层配置 ====================
+
+# 创建共享依赖层（减少冷启动时间）
+resource "aws_lambda_layer_version" "ppt_dependencies" {
+  filename            = "${path.module}/layers/dependencies.zip"
+  layer_name          = "${var.project_name}-dependencies"
+  compatible_runtimes = ["python3.11", "python3.12"]
+  description         = "Shared dependencies for PPT generation"
+
+  # 层内容哈希，用于检测变化
+  source_code_hash = filebase64sha256("${path.module}/layers/dependencies.zip")
+}
+
+# Redis客户端层
+resource "aws_lambda_layer_version" "redis_layer" {
+  filename            = "${path.module}/layers/redis_layer.zip"
+  layer_name          = "${var.project_name}-redis"
+  compatible_runtimes = ["python3.11", "python3.12"]
+  description         = "Redis client and caching utilities"
+
+  source_code_hash = filebase64sha256("${path.module}/layers/redis_layer.zip")
+}
+
+# ==================== Lambda函数配置（优化版） ====================
+
+# 优化的PPT生成函数
+resource "aws_lambda_function" "generate_ppt_optimized" {
+  filename      = "${path.module}/../lambdas/generate_ppt_optimized.zip"
+  function_name = "${var.project_name}-generate-ppt-optimized"
+  role          = aws_iam_role.lambda_execution_role.arn
+  handler       = "generate_ppt_optimized.handler"
+  runtime       = "python3.11"
+
+  # 性能优化配置
+  memory_size                    = 3008  # 增加内存以提高CPU性能
+  timeout                       = 60     # 60秒超时
+  reserved_concurrent_executions = 50    # 预留并发
+
+  # 架构优化（ARM for better price/performance）
+  architectures = ["arm64"]
+
+  # 环境变量
+  environment {
+    variables = {
+      ENVIRONMENT         = var.environment
+      REDIS_ENDPOINT      = aws_elasticache_cluster.redis_cache.cache_nodes[0].address
+      REDIS_PORT         = aws_elasticache_cluster.redis_cache.port
+      S3_BUCKET          = aws_s3_bucket.presentations.id
+      DYNAMODB_TABLE     = aws_dynamodb_table.presentations.name
+      ENABLE_CDN         = var.enable_cdn ? "true" : "false"
+      MEMORY_CACHE_SIZE  = "256"
+      MAX_PARALLEL_TASKS = "10"
+      LOG_LEVEL          = var.environment == "production" ? "INFO" : "DEBUG"
+    }
+  }
+
+  # 层配置
+  layers = [
+    aws_lambda_layer_version.ppt_dependencies.arn,
+    aws_lambda_layer_version.redis_layer.arn
+  ]
+
+  # VPC配置（用于访问ElastiCache）
+  vpc_config {
+    subnet_ids         = data.aws_subnets.private.ids
+    security_group_ids = [aws_security_group.lambda_sg.id]
+  }
+
+  # 死信队列配置
+  dead_letter_config {
+    target_arn = aws_sqs_queue.dlq.arn
+  }
+
+  # 追踪配置
+  tracing_config {
+    mode = "Active"
+  }
+
+  # 快照优化（减少冷启动）
+  snap_start {
+    apply_on = "PublishedVersions"
+  }
+
+  tags = {
+    Name        = "${var.project_name}-generate-ppt-optimized"
+    Environment = var.environment
+    Project     = var.project_name
+    Type        = "optimized"
+  }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.lambda_execution,
+    aws_cloudwatch_log_group.lambda_logs
+  ]
+}
+
+# 发布Lambda版本（用于SnapStart）
+resource "aws_lambda_alias" "generate_ppt_optimized_live" {
+  name             = "live"
+  description      = "Live version with SnapStart"
+  function_name    = aws_lambda_function.generate_ppt_optimized.function_name
+  function_version = aws_lambda_function.generate_ppt_optimized.version
+}
+
+# ==================== Lambda预热配置 ====================
+
+# 预热Lambda函数（减少冷启动）
+resource "aws_lambda_function" "warmer" {
+  filename      = "${path.module}/../lambdas/warmer.zip"
+  function_name = "${var.project_name}-warmer"
+  role          = aws_iam_role.lambda_execution_role.arn
+  handler       = "warmer.handler"
+  runtime       = "python3.11"
+  memory_size   = 128
+  timeout       = 30
+
+  environment {
+    variables = {
+      TARGET_FUNCTIONS = jsonencode([
+        aws_lambda_function.generate_ppt_optimized.function_name
+      ])
+      WARM_COUNT = "5"  # 保持5个实例预热
+    }
+  }
+
+  tags = {
+    Name        = "${var.project_name}-warmer"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+# EventBridge规则用于定期预热
+resource "aws_cloudwatch_event_rule" "warmer_schedule" {
+  name                = "${var.project_name}-warmer-schedule"
+  description         = "Trigger Lambda warmer every 5 minutes"
+  schedule_expression = "rate(5 minutes)"
+
+  tags = {
+    Name        = "${var.project_name}-warmer-schedule"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+resource "aws_cloudwatch_event_target" "warmer_target" {
+  rule      = aws_cloudwatch_event_rule.warmer_schedule.name
+  target_id = "LambdaWarmerTarget"
+  arn       = aws_lambda_function.warmer.arn
+}
+
+resource "aws_lambda_permission" "allow_eventbridge_warmer" {
+  statement_id  = "AllowExecutionFromEventBridge"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.warmer.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.warmer_schedule.arn
+}
+
+# ==================== 并发和扩展配置 ====================
+
+# 预配置并发（用于关键函数）
+resource "aws_lambda_provisioned_concurrency_config" "generate_ppt_optimized" {
+  count = var.environment == "production" ? 1 : 0
+
+  function_name                     = aws_lambda_function.generate_ppt_optimized.function_name
+  provisioned_concurrent_executions = 10
+  qualifier                        = aws_lambda_alias.generate_ppt_optimized_live.name
+}
+
+# Lambda函数URL（直接访问，减少API Gateway延迟）
+resource "aws_lambda_function_url" "generate_ppt_optimized" {
+  function_name      = aws_lambda_function.generate_ppt_optimized.function_name
+  authorization_type = "AWS_IAM"
+
+  cors {
+    allow_credentials = true
+    allow_origins     = ["*"]
+    allow_methods     = ["GET", "POST", "OPTIONS"]
+    allow_headers     = ["Content-Type", "Authorization"]
+    expose_headers    = ["Content-Length", "Content-Type"]
+    max_age          = 3600
+  }
+}
+
+# ==================== 安全组配置 ====================
+
+resource "aws_security_group" "lambda_sg" {
+  name        = "${var.project_name}-lambda-sg"
+  description = "Security group for Lambda functions"
+  vpc_id      = data.aws_vpc.default.id
+
+  # 允许访问Redis
+  egress {
+    from_port   = 6379
+    to_port     = 6379
+    protocol    = "tcp"
+    cidr_blocks = [data.aws_vpc.default.cidr_block]
+    description = "Allow Redis access"
+  }
+
+  # 允许HTTPS出站（访问AWS服务）
+  egress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow HTTPS for AWS services"
+  }
+
+  # 允许DNS
+  egress {
+    from_port   = 53
+    to_port     = 53
+    protocol    = "udp"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow DNS"
+  }
+
+  tags = {
+    Name        = "${var.project_name}-lambda-sg"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+# ==================== CloudWatch日志配置 ====================
+
+# 注释掉以避免与monitoring.tf中的定义冲突
+# resource "aws_cloudwatch_log_group" "lambda_logs" {
+#   name              = "/aws/lambda/${var.project_name}"
+#   retention_in_days = var.environment == "production" ? 30 : 7
+#
+#   tags = {
+#     Name        = "${var.project_name}-lambda-logs"
+#     Environment = var.environment
+#     Project     = var.project_name
+#   }
+# }
+
+# ==================== 性能监控告警 ====================
+
+# Lambda函数响应时间告警
+resource "aws_cloudwatch_metric_alarm" "lambda_duration_alarm" {
+  alarm_name          = "${var.project_name}-lambda-duration-high"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "2"
+  metric_name        = "Duration"
+  namespace          = "AWS/Lambda"
+  period             = "300"
+  statistic          = "Average"
+  threshold          = "30000"  # 30秒
+  alarm_description  = "Lambda function duration is too high"
+  alarm_actions      = [aws_sns_topic.alerts.arn]
+
+  dimensions = {
+    FunctionName = aws_lambda_function.generate_ppt_optimized.function_name
+  }
+
+  tags = {
+    Name        = "${var.project_name}-lambda-duration-alarm"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+# Lambda并发执行告警
+resource "aws_cloudwatch_metric_alarm" "lambda_concurrent_executions" {
+  alarm_name          = "${var.project_name}-lambda-concurrent-high"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "1"
+  metric_name        = "ConcurrentExecutions"
+  namespace          = "AWS/Lambda"
+  period             = "60"
+  statistic          = "Maximum"
+  threshold          = "45"  # 接近预留并发限制
+  alarm_description  = "Lambda concurrent executions approaching limit"
+  alarm_actions      = [aws_sns_topic.alerts.arn]
+
+  dimensions = {
+    FunctionName = aws_lambda_function.generate_ppt_optimized.function_name
+  }
+
+  tags = {
+    Name        = "${var.project_name}-lambda-concurrent-alarm"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+# Lambda错误率告警
+resource "aws_cloudwatch_metric_alarm" "lambda_error_rate" {
+  alarm_name          = "${var.project_name}-lambda-error-rate-high"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "2"
+  threshold          = "0.05"  # 5%错误率
+  alarm_description  = "Lambda error rate is too high"
+  alarm_actions      = [aws_sns_topic.alerts.arn]
+
+  metric_query {
+    id          = "error_rate"
+    expression  = "errors / invocations"
+    label       = "Error Rate"
+    return_data = true
+  }
+
+  metric_query {
+    id = "errors"
+    metric {
+      metric_name = "Errors"
+      namespace   = "AWS/Lambda"
+      period      = "300"
+      stat        = "Sum"
+      dimensions = {
+        FunctionName = aws_lambda_function.generate_ppt_optimized.function_name
+      }
+    }
+  }
+
+  metric_query {
+    id = "invocations"
+    metric {
+      metric_name = "Invocations"
+      namespace   = "AWS/Lambda"
+      period      = "300"
+      stat        = "Sum"
+      dimensions = {
+        FunctionName = aws_lambda_function.generate_ppt_optimized.function_name
+      }
+    }
+  }
+
+  tags = {
+    Name        = "${var.project_name}-lambda-error-rate-alarm"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+# Lambda冷启动监控
+resource "aws_cloudwatch_metric_alarm" "lambda_cold_starts" {
+  alarm_name          = "${var.project_name}-lambda-cold-starts-high"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "2"
+  metric_name        = "InitDuration"
+  namespace          = "AWS/Lambda"
+  period             = "300"
+  statistic          = "Average"
+  threshold          = "3000"  # 3秒
+  alarm_description  = "Lambda cold start duration is too high"
+  alarm_actions      = [aws_sns_topic.alerts.arn]
+  treat_missing_data = "notBreaching"  # 没有冷启动时不触发
+
+  dimensions = {
+    FunctionName = aws_lambda_function.generate_ppt_optimized.function_name
+  }
+
+  tags = {
+    Name        = "${var.project_name}-lambda-cold-start-alarm"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+# ==================== DLQ和SQS配置 ====================
+
+resource "aws_sqs_queue" "dlq" {
+  name                      = "${var.project_name}-dlq"
+  delay_seconds            = 0
+  max_message_size         = 262144
+  message_retention_seconds = 1209600  # 14天
+  receive_wait_time_seconds = 0
+
+  tags = {
+    Name        = "${var.project_name}-dlq"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+# ==================== SNS通知主题 ====================
+
+resource "aws_sns_topic" "alerts" {
+  name = "${var.project_name}-alerts"
+
+  tags = {
+    Name        = "${var.project_name}-alerts"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+# ==================== IAM角色和策略 ====================
+
+resource "aws_iam_role" "lambda_execution_role" {
+  name = "${var.project_name}-lambda-execution-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        }
+      }
+    ]
+  })
+
+  tags = {
+    Name        = "${var.project_name}-lambda-execution-role"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+# Lambda执行策略
+resource "aws_iam_role_policy" "lambda_execution_policy" {
+  name = "${var.project_name}-lambda-execution-policy"
+  role = aws_iam_role.lambda_execution_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ]
+        Resource = "arn:aws:logs:*:*:*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject"
+        ]
+        Resource = "${aws_s3_bucket.presentations.arn}/*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "dynamodb:PutItem",
+          "dynamodb:GetItem",
+          "dynamodb:UpdateItem",
+          "dynamodb:Query",
+          "dynamodb:Scan"
+        ]
+        Resource = aws_dynamodb_table.presentations.arn
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "sqs:SendMessage",
+          "sqs:ReceiveMessage",
+          "sqs:DeleteMessage"
+        ]
+        Resource = aws_sqs_queue.dlq.arn
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "bedrock:InvokeModel",
+          "bedrock:InvokeModelWithResponseStream"
+        ]
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "xray:PutTraceSegments",
+          "xray:PutTelemetryRecords"
+        ]
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "lambda:InvokeFunction"
+        ]
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:GetSecretValue"
+        ]
+        Resource = "*"  # 简化：移除对未定义的aws_secretsmanager_secret的引用
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "ec2:CreateNetworkInterface",
+          "ec2:DescribeNetworkInterfaces",
+          "ec2:DeleteNetworkInterface",
+          "ec2:AssignPrivateIpAddresses",
+          "ec2:UnassignPrivateIpAddresses"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_execution" {
+  role       = aws_iam_role.lambda_execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+}
+
+# ==================== 数据源 ====================
+
+data "aws_subnets" "private" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.default.id]
+  }
+
+  tags = {
+    Type = "private"
+  }
+}
+
+# ==================== 输出 ====================
+
+output "optimized_lambda_function_name" {
+  description = "Name of the optimized Lambda function"
+  value       = aws_lambda_function.generate_ppt_optimized.function_name
+}
+
+output "optimized_lambda_function_url" {
+  description = "URL of the optimized Lambda function"
+  value       = aws_lambda_function_url.generate_ppt_optimized.function_url
+}
+
+output "lambda_security_group_id" {
+  description = "Security group ID for Lambda functions"
+  value       = aws_security_group.lambda_sg.id
+}

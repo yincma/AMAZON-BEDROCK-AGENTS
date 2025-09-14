@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-PPT Assistant - 性能监控仪表板</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .metric-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #667eea;
+            margin: 10px 0;
+        }
+
+        .metric-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .metric-change {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        .metric-change.positive {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .metric-change.negative {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 200px;
+            margin-top: 10px;
+        }
+
+        .wide-card {
+            grid-column: span 2;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.green {
+            background: #28a745;
+        }
+
+        .status-indicator.yellow {
+            background: #ffc107;
+        }
+
+        .status-indicator.red {
+            background: #dc3545;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(40, 167, 69, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+            }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .refresh-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .refresh-btn:hover {
+            background: #5a67d8;
+        }
+
+        .alert {
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .alert.warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎨 AI-PPT Assistant 性能监控仪表板</h1>
+            <div class="subtitle">
+                <span class="status-indicator green"></span>
+                系统状态: 正常运行 | 最后更新: <span id="lastUpdate"></span>
+                <button class="refresh-btn" onclick="refreshData()">刷新数据</button>
+            </div>
+        </header>
+
+        <div class="dashboard">
+            <!-- 关键指标卡片 -->
+            <div class="card">
+                <div class="card-title">
+                    平均响应时间
+                    <span style="font-size: 12px; color: #999;">实时</span>
+                </div>
+                <div class="metric-value" id="avgResponseTime">1.8s</div>
+                <div class="metric-label">过去5分钟平均</div>
+                <div class="metric-change positive">↓ 15% vs 昨天</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    请求成功率
+                    <span style="font-size: 12px; color: #999;">实时</span>
+                </div>
+                <div class="metric-value" id="successRate">99.5%</div>
+                <div class="metric-label">过去1小时</div>
+                <div class="metric-change positive">↑ 2% vs 昨天</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    缓存命中率
+                    <span style="font-size: 12px; color: #999;">实时</span>
+                </div>
+                <div class="metric-value" id="cacheHitRate">65%</div>
+                <div class="metric-label">多级缓存综合</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 65%"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    当前并发数
+                    <span style="font-size: 12px; color: #999;">实时</span>
+                </div>
+                <div class="metric-value" id="concurrency">42</div>
+                <div class="metric-label">活跃请求</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 21%"></div>
+                </div>
+            </div>
+
+            <!-- 响应时间趋势图 -->
+            <div class="card wide-card">
+                <div class="card-title">响应时间趋势（过去1小时）</div>
+                <div class="chart-container">
+                    <canvas id="responseTimeChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 请求量趋势图 -->
+            <div class="card wide-card">
+                <div class="card-title">请求量趋势（过去1小时）</div>
+                <div class="chart-container">
+                    <canvas id="requestVolumeChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 模型使用分布 -->
+            <div class="card">
+                <div class="card-title">模型使用分布</div>
+                <div class="chart-container">
+                    <canvas id="modelUsageChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 成本分析 -->
+            <div class="card">
+                <div class="card-title">成本分析（今日）</div>
+                <div class="table-container">
+                    <table>
+                        <tr>
+                            <td>API调用</td>
+                            <td style="text-align: right;">$24.50</td>
+                        </tr>
+                        <tr>
+                            <td>Lambda执行</td>
+                            <td style="text-align: right;">$8.30</td>
+                        </tr>
+                        <tr>
+                            <td>存储成本</td>
+                            <td style="text-align: right;">$2.15</td>
+                        </tr>
+                        <tr style="font-weight: bold;">
+                            <td>总计</td>
+                            <td style="text-align: right;">$34.95</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 告警状态 -->
+            <div class="card wide-card">
+                <div class="card-title">系统告警</div>
+                <div id="alerts">
+                    <div class="alert success">
+                        ✓ 所有系统正常运行
+                    </div>
+                </div>
+            </div>
+
+            <!-- 性能指标详情 -->
+            <div class="card wide-card">
+                <div class="card-title">性能指标详情</div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>指标</th>
+                                <th>当前值</th>
+                                <th>P50</th>
+                                <th>P95</th>
+                                <th>P99</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>响应时间</td>
+                                <td>1.8s</td>
+                                <td>1.5s</td>
+                                <td>2.9s</td>
+                                <td>4.5s</td>
+                            </tr>
+                            <tr>
+                                <td>吞吐量</td>
+                                <td>85 req/s</td>
+                                <td>75 req/s</td>
+                                <td>120 req/s</td>
+                                <td>150 req/s</td>
+                            </tr>
+                            <tr>
+                                <td>错误率</td>
+                                <td>0.5%</td>
+                                <td>0.3%</td>
+                                <td>0.8%</td>
+                                <td>1.2%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化图表
+        const responseTimeCtx = document.getElementById('responseTimeChart').getContext('2d');
+        const requestVolumeCtx = document.getElementById('requestVolumeChart').getContext('2d');
+        const modelUsageCtx = document.getElementById('modelUsageChart').getContext('2d');
+
+        // 生成模拟数据
+        const generateTimeLabels = () => {
+            const labels = [];
+            for (let i = 59; i >= 0; i--) {
+                const date = new Date();
+                date.setMinutes(date.getMinutes() - i);
+                labels.push(date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }));
+            }
+            return labels;
+        };
+
+        const generateRandomData = (length, min, max) => {
+            return Array.from({ length }, () => Math.random() * (max - min) + min);
+        };
+
+        // 响应时间图表
+        const responseTimeChart = new Chart(responseTimeCtx, {
+            type: 'line',
+            data: {
+                labels: generateTimeLabels(),
+                datasets: [
+                    {
+                        label: 'P50',
+                        data: generateRandomData(60, 1.2, 1.8),
+                        borderColor: '#28a745',
+                        tension: 0.4,
+                        fill: false
+                    },
+                    {
+                        label: 'P95',
+                        data: generateRandomData(60, 2.5, 3.5),
+                        borderColor: '#ffc107',
+                        tension: 0.4,
+                        fill: false
+                    },
+                    {
+                        label: 'P99',
+                        data: generateRandomData(60, 4, 5),
+                        borderColor: '#dc3545',
+                        tension: 0.4,
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '响应时间 (秒)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // 请求量图表
+        const requestVolumeChart = new Chart(requestVolumeCtx, {
+            type: 'bar',
+            data: {
+                labels: generateTimeLabels().filter((_, i) => i % 5 === 0),
+                datasets: [{
+                    label: '请求量',
+                    data: generateRandomData(12, 50, 150),
+                    backgroundColor: 'rgba(102, 126, 234, 0.5)',
+                    borderColor: 'rgba(102, 126, 234, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '请求数'
+                        }
+                    }
+                }
+            }
+        });
+
+        // 模型使用分布图表
+        const modelUsageChart = new Chart(modelUsageCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Nova Canvas', 'Stability AI', 'Placeholder'],
+                datasets: [{
+                    data: [65, 30, 5],
+                    backgroundColor: [
+                        'rgba(102, 126, 234, 0.8)',
+                        'rgba(118, 75, 162, 0.8)',
+                        'rgba(200, 200, 200, 0.8)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // 更新时间
+        function updateTime() {
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleString('zh-CN');
+        }
+
+        // 刷新数据
+        function refreshData() {
+            // 模拟数据更新
+            document.getElementById('avgResponseTime').textContent = (Math.random() * 2 + 1).toFixed(1) + 's';
+            document.getElementById('successRate').textContent = (Math.random() * 5 + 95).toFixed(1) + '%';
+            document.getElementById('cacheHitRate').textContent = (Math.random() * 20 + 60).toFixed(0) + '%';
+            document.getElementById('concurrency').textContent = Math.floor(Math.random() * 50 + 20);
+
+            // 更新进度条
+            const cacheRate = parseInt(document.getElementById('cacheHitRate').textContent);
+            document.querySelector('.progress-fill').style.width = cacheRate + '%';
+
+            updateTime();
+
+            // 显示刷新动画
+            const btn = document.querySelector('.refresh-btn');
+            btn.textContent = '刷新中...';
+            setTimeout(() => {
+                btn.textContent = '刷新数据';
+            }, 1000);
+        }
+
+        // 模拟实时更新
+        setInterval(() => {
+            // 更新图表数据
+            responseTimeChart.data.datasets[0].data.shift();
+            responseTimeChart.data.datasets[0].data.push(Math.random() * 0.6 + 1.2);
+
+            responseTimeChart.data.datasets[1].data.shift();
+            responseTimeChart.data.datasets[1].data.push(Math.random() * 1 + 2.5);
+
+            responseTimeChart.data.datasets[2].data.shift();
+            responseTimeChart.data.datasets[2].data.push(Math.random() * 1 + 4);
+
+            responseTimeChart.update('none');
+
+            // 更新请求量
+            if (Math.random() > 0.8) {
+                requestVolumeChart.data.datasets[0].data.shift();
+                requestVolumeChart.data.datasets[0].data.push(Math.floor(Math.random() * 100 + 50));
+                requestVolumeChart.update('none');
+            }
+        }, 5000);
+
+        // 初始化
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        // 模拟告警
+        setTimeout(() => {
+            if (Math.random() > 0.7) {
+                const alertsDiv = document.getElementById('alerts');
+                alertsDiv.innerHTML = `
+                    <div class="alert warning">
+                        ⚠️ 缓存命中率低于预期阈值 (当前: 58%)
+                    </div>
+                `;
+            }
+        }, 10000);
+    </script>
+</body>
+</html>

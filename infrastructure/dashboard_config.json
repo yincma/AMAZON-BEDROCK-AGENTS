@@ -1,0 +1,562 @@
+{
+  "dashboardName": "AI-PPT-Assistant-Image-Generation-Performance",
+  "dashboardBody": {
+    "start": "-PT6H",
+    "periodOverride": "inherit",
+    "widgets": [
+      {
+        "type": "metric",
+        "x": 0,
+        "y": 0,
+        "width": 12,
+        "height": 6,
+        "properties": {
+          "title": "Image Generation Overview",
+          "annotations": {
+            "alarms": [
+              "arn:aws:cloudwatch:${AWS_REGION}:${AWS_ACCOUNT_ID}:alarm:ai-ppt-assistant-high-error-rate"
+            ]
+          },
+          "view": "timeSeries",
+          "stacked": false,
+          "metrics": [
+            ["AI-PPT-Assistant/ImageGeneration", "ImageGenerationRequests", {"stat": "Sum", "label": "Total Requests"}],
+            [".", "ImageGenerationErrors", {"stat": "Sum", "label": "Errors", "color": "#d62728"}],
+            [".", "CacheHits", {"stat": "Sum", "label": "Cache Hits", "color": "#2ca02c"}]
+          ],
+          "period": 300,
+          "yAxis": {
+            "left": {
+              "min": 0,
+              "label": "Count"
+            }
+          },
+          "region": "${AWS_REGION}"
+        }
+      },
+      {
+        "type": "metric",
+        "x": 12,
+        "y": 0,
+        "width": 6,
+        "height": 6,
+        "properties": {
+          "title": "Success Rate",
+          "view": "singleValue",
+          "metrics": [
+            [
+              {
+                "expression": "(m1-m2)/m1*100",
+                "label": "Success Rate %",
+                "id": "e1",
+                "color": "#2ca02c"
+              }
+            ],
+            ["AI-PPT-Assistant/ImageGeneration", "ImageGenerationRequests", {"id": "m1", "visible": false}],
+            [".", "ImageGenerationErrors", {"id": "m2", "visible": false}]
+          ],
+          "period": 300,
+          "stat": "Average",
+          "region": "${AWS_REGION}",
+          "sparkline": true
+        }
+      },
+      {
+        "type": "metric",
+        "x": 18,
+        "y": 0,
+        "width": 6,
+        "height": 6,
+        "properties": {
+          "title": "Cache Hit Rate",
+          "view": "singleValue",
+          "metrics": [
+            ["AI-PPT-Assistant/ImageGeneration", "ImageCacheHitRate", {"stat": "Average", "color": "#3498db"}]
+          ],
+          "period": 300,
+          "region": "${AWS_REGION}",
+          "sparkline": true
+        }
+      },
+      {
+        "type": "metric",
+        "x": 0,
+        "y": 6,
+        "width": 12,
+        "height": 6,
+        "properties": {
+          "title": "Response Time Distribution (ms)",
+          "view": "timeSeries",
+          "stacked": false,
+          "metrics": [
+            ["AI-PPT-Assistant/ImageGeneration", "ImageGenerationAvgTime", {"stat": "p50", "label": "p50"}],
+            ["...", {"stat": "p90", "label": "p90"}],
+            ["...", {"stat": "p95", "label": "p95"}],
+            ["...", {"stat": "p99", "label": "p99"}],
+            ["...", {"stat": "Maximum", "label": "Max", "color": "#d62728"}]
+          ],
+          "period": 300,
+          "yAxis": {
+            "left": {
+              "min": 0,
+              "label": "Time (ms)"
+            }
+          },
+          "region": "${AWS_REGION}"
+        }
+      },
+      {
+        "type": "metric",
+        "x": 12,
+        "y": 6,
+        "width": 12,
+        "height": 6,
+        "properties": {
+          "title": "Throughput & Concurrency",
+          "view": "timeSeries",
+          "stacked": false,
+          "metrics": [
+            [
+              {
+                "expression": "RATE(m1)",
+                "label": "Requests/sec",
+                "id": "e1",
+                "yAxis": "left"
+              }
+            ],
+            ["AI-PPT-Assistant/ImageGeneration", "ImageGenerationRequests", {"id": "m1", "visible": false}],
+            ["AWS/Lambda", "ConcurrentExecutions", {
+              "stat": "Maximum",
+              "label": "Concurrent Executions",
+              "dimensions": {"FunctionName": "ai-ppt-assistant-image-generation"},
+              "yAxis": "right"
+            }]
+          ],
+          "period": 60,
+          "yAxis": {
+            "left": {
+              "min": 0,
+              "label": "Requests/sec"
+            },
+            "right": {
+              "min": 0,
+              "label": "Concurrent Executions"
+            }
+          },
+          "region": "${AWS_REGION}"
+        }
+      },
+      {
+        "type": "metric",
+        "x": 0,
+        "y": 12,
+        "width": 8,
+        "height": 6,
+        "properties": {
+          "title": "Model Performance Comparison",
+          "view": "barChart",
+          "metrics": [
+            ["AI-PPT-Assistant/ImageGeneration", "NovaModelAvgTime", {"stat": "Average", "label": "Nova Canvas"}],
+            [".", "StabilityModelAvgTime", {"stat": "Average", "label": "Stability AI"}],
+            [".", "PlaceholderTime", {"stat": "Average", "label": "Placeholder"}]
+          ],
+          "period": 3600,
+          "yAxis": {
+            "left": {
+              "min": 0,
+              "label": "Avg Time (ms)"
+            }
+          },
+          "region": "${AWS_REGION}"
+        }
+      },
+      {
+        "type": "metric",
+        "x": 8,
+        "y": 12,
+        "width": 8,
+        "height": 6,
+        "properties": {
+          "title": "Model Usage Distribution",
+          "view": "pie",
+          "metrics": [
+            ["AI-PPT-Assistant/ImageGeneration", "NovaModelUsage", {"stat": "Sum", "label": "Nova Canvas"}],
+            [".", "StabilityModelUsage", {"stat": "Sum", "label": "Stability AI"}],
+            [".", "PlaceholderUsage", {"stat": "Sum", "label": "Placeholder"}]
+          ],
+          "period": 3600,
+          "region": "${AWS_REGION}"
+        }
+      },
+      {
+        "type": "metric",
+        "x": 16,
+        "y": 12,
+        "width": 8,
+        "height": 6,
+        "properties": {
+          "title": "Cost Analysis ($/hour)",
+          "view": "timeSeries",
+          "stacked": true,
+          "metrics": [
+            ["AI-PPT-Assistant/ImageGeneration", "NovaModelCost", {"stat": "Sum", "label": "Nova Cost"}],
+            [".", "StabilityModelCost", {"stat": "Sum", "label": "Stability Cost"}],
+            [".", "S3StorageCost", {"stat": "Sum", "label": "S3 Cost"}],
+            [".", "LambdaExecutionCost", {"stat": "Sum", "label": "Lambda Cost"}]
+          ],
+          "period": 3600,
+          "yAxis": {
+            "left": {
+              "min": 0,
+              "label": "Cost ($)"
+            }
+          },
+          "region": "${AWS_REGION}"
+        }
+      },
+      {
+        "type": "metric",
+        "x": 0,
+        "y": 18,
+        "width": 12,
+        "height": 6,
+        "properties": {
+          "title": "Lambda Performance Metrics",
+          "view": "timeSeries",
+          "stacked": false,
+          "metrics": [
+            ["AWS/Lambda", "Duration", {
+              "stat": "Average",
+              "label": "Duration",
+              "dimensions": {"FunctionName": "ai-ppt-assistant-image-generation"}
+            }],
+            [".", "Errors", {
+              "stat": "Sum",
+              "label": "Errors",
+              "dimensions": {"FunctionName": "ai-ppt-assistant-image-generation"},
+              "color": "#d62728"
+            }],
+            [".", "Throttles", {
+              "stat": "Sum",
+              "label": "Throttles",
+              "dimensions": {"FunctionName": "ai-ppt-assistant-image-generation"},
+              "color": "#ff9800"
+            }]
+          ],
+          "period": 300,
+          "yAxis": {
+            "left": {
+              "min": 0
+            }
+          },
+          "region": "${AWS_REGION}"
+        }
+      },
+      {
+        "type": "metric",
+        "x": 12,
+        "y": 18,
+        "width": 12,
+        "height": 6,
+        "properties": {
+          "title": "Cache Performance Metrics",
+          "view": "timeSeries",
+          "stacked": false,
+          "metrics": [
+            ["AI-PPT-Assistant/ImageGeneration", "L1CacheHits", {"stat": "Sum", "label": "L1 Cache (Memory)"}],
+            [".", "L2CacheHits", {"stat": "Sum", "label": "L2 Cache (Redis)"}],
+            [".", "L3CacheHits", {"stat": "Sum", "label": "L3 Cache (S3)"}],
+            [".", "CacheMisses", {"stat": "Sum", "label": "Cache Misses", "color": "#d62728"}]
+          ],
+          "period": 300,
+          "yAxis": {
+            "left": {
+              "min": 0,
+              "label": "Count"
+            }
+          },
+          "region": "${AWS_REGION}"
+        }
+      },
+      {
+        "type": "log",
+        "x": 0,
+        "y": 24,
+        "width": 12,
+        "height": 6,
+        "properties": {
+          "title": "Recent Errors",
+          "query": "SOURCE '/aws/lambda/ai-ppt-assistant-image-generation'\n| fields @timestamp, @message\n| filter @message like /ERROR/\n| sort @timestamp desc\n| limit 20",
+          "region": "${AWS_REGION}",
+          "queryLanguage": "kusto"
+        }
+      },
+      {
+        "type": "log",
+        "x": 12,
+        "y": 24,
+        "width": 12,
+        "height": 6,
+        "properties": {
+          "title": "Slow Requests (>5s)",
+          "query": "SOURCE '/aws/lambda/ai-ppt-assistant-image-generation'\n| fields @timestamp, generation_time, model_used, from_cache\n| filter generation_time > 5000\n| sort generation_time desc\n| limit 20",
+          "region": "${AWS_REGION}",
+          "queryLanguage": "kusto"
+        }
+      },
+      {
+        "type": "metric",
+        "x": 0,
+        "y": 30,
+        "width": 6,
+        "height": 4,
+        "properties": {
+          "title": "API Gateway Latency",
+          "view": "singleValue",
+          "metrics": [
+            ["AWS/ApiGateway", "Latency", {
+              "stat": "Average",
+              "dimensions": {
+                "ApiName": "ai-ppt-assistant-api",
+                "Resource": "/image/generate",
+                "Method": "POST"
+              }
+            }]
+          ],
+          "period": 300,
+          "region": "${AWS_REGION}"
+        }
+      },
+      {
+        "type": "metric",
+        "x": 6,
+        "y": 30,
+        "width": 6,
+        "height": 4,
+        "properties": {
+          "title": "API Gateway 4XX Errors",
+          "view": "singleValue",
+          "metrics": [
+            ["AWS/ApiGateway", "4XXError", {
+              "stat": "Sum",
+              "dimensions": {
+                "ApiName": "ai-ppt-assistant-api",
+                "Resource": "/image/generate",
+                "Method": "POST"
+              },
+              "color": "#ff9800"
+            }]
+          ],
+          "period": 300,
+          "region": "${AWS_REGION}"
+        }
+      },
+      {
+        "type": "metric",
+        "x": 12,
+        "y": 30,
+        "width": 6,
+        "height": 4,
+        "properties": {
+          "title": "API Gateway 5XX Errors",
+          "view": "singleValue",
+          "metrics": [
+            ["AWS/ApiGateway", "5XXError", {
+              "stat": "Sum",
+              "dimensions": {
+                "ApiName": "ai-ppt-assistant-api",
+                "Resource": "/image/generate",
+                "Method": "POST"
+              },
+              "color": "#d62728"
+            }]
+          ],
+          "period": 300,
+          "region": "${AWS_REGION}"
+        }
+      },
+      {
+        "type": "metric",
+        "x": 18,
+        "y": 30,
+        "width": 6,
+        "height": 4,
+        "properties": {
+          "title": "S3 Storage Used",
+          "view": "singleValue",
+          "metrics": [
+            ["AWS/S3", "BucketSizeBytes", {
+              "stat": "Average",
+              "dimensions": {
+                "BucketName": "ai-ppt-assistant-images",
+                "StorageType": "StandardStorage"
+              }
+            }]
+          ],
+          "period": 86400,
+          "region": "${AWS_REGION}"
+        }
+      }
+    ]
+  },
+  "grafanaDashboard": {
+    "dashboard": {
+      "title": "AI-PPT Assistant - Image Generation Performance",
+      "tags": ["ai-ppt", "performance", "monitoring"],
+      "timezone": "browser",
+      "refresh": "10s",
+      "panels": [
+        {
+          "id": 1,
+          "title": "Request Rate",
+          "type": "graph",
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+          "targets": [
+            {
+              "expression": "rate(image_generation_requests_total[5m])",
+              "legendFormat": "Requests/sec"
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "title": "Error Rate",
+          "type": "graph",
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+          "targets": [
+            {
+              "expression": "rate(image_generation_errors_total[5m]) / rate(image_generation_requests_total[5m]) * 100",
+              "legendFormat": "Error %"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "title": "Response Time Percentiles",
+          "type": "graph",
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+          "targets": [
+            {
+              "expression": "histogram_quantile(0.5, rate(image_generation_duration_seconds_bucket[5m]))",
+              "legendFormat": "p50"
+            },
+            {
+              "expression": "histogram_quantile(0.9, rate(image_generation_duration_seconds_bucket[5m]))",
+              "legendFormat": "p90"
+            },
+            {
+              "expression": "histogram_quantile(0.95, rate(image_generation_duration_seconds_bucket[5m]))",
+              "legendFormat": "p95"
+            },
+            {
+              "expression": "histogram_quantile(0.99, rate(image_generation_duration_seconds_bucket[5m]))",
+              "legendFormat": "p99"
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "title": "Cache Hit Rate",
+          "type": "stat",
+          "gridPos": {"h": 4, "w": 6, "x": 12, "y": 8},
+          "targets": [
+            {
+              "expression": "sum(rate(cache_hits_total[5m])) / sum(rate(image_generation_requests_total[5m])) * 100",
+              "legendFormat": "Cache Hit %"
+            }
+          ]
+        },
+        {
+          "id": 5,
+          "title": "Model Usage",
+          "type": "piechart",
+          "gridPos": {"h": 8, "w": 6, "x": 18, "y": 8},
+          "targets": [
+            {
+              "expression": "sum(increase(model_usage_total[1h])) by (model)",
+              "legendFormat": "{{model}}"
+            }
+          ]
+        },
+        {
+          "id": 6,
+          "title": "Cost per Hour",
+          "type": "stat",
+          "gridPos": {"h": 4, "w": 6, "x": 12, "y": 12},
+          "targets": [
+            {
+              "expression": "sum(rate(generation_cost_dollars[1h])) * 3600",
+              "legendFormat": "$/hour"
+            }
+          ]
+        },
+        {
+          "id": 7,
+          "title": "Lambda Cold Starts",
+          "type": "graph",
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+          "targets": [
+            {
+              "expression": "rate(lambda_cold_starts_total[5m])",
+              "legendFormat": "Cold Starts/min"
+            }
+          ]
+        },
+        {
+          "id": 8,
+          "title": "Concurrent Executions",
+          "type": "graph",
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16},
+          "targets": [
+            {
+              "expression": "lambda_concurrent_executions",
+              "legendFormat": "Concurrent Executions"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "alertRules": [
+    {
+      "name": "High Error Rate",
+      "expression": "rate(image_generation_errors_total[5m]) / rate(image_generation_requests_total[5m]) > 0.05",
+      "duration": "5m",
+      "severity": "critical",
+      "annotations": {
+        "summary": "High error rate detected in image generation service",
+        "description": "Error rate is {{ $value | humanizePercentage }} over the last 5 minutes"
+      }
+    },
+    {
+      "name": "High Response Time",
+      "expression": "histogram_quantile(0.95, rate(image_generation_duration_seconds_bucket[5m])) > 5",
+      "duration": "10m",
+      "severity": "warning",
+      "annotations": {
+        "summary": "High response time in image generation",
+        "description": "P95 response time is {{ $value | humanizeDuration }} over the last 5 minutes"
+      }
+    },
+    {
+      "name": "Low Cache Hit Rate",
+      "expression": "sum(rate(cache_hits_total[30m])) / sum(rate(image_generation_requests_total[30m])) < 0.3",
+      "duration": "30m",
+      "severity": "info",
+      "annotations": {
+        "summary": "Cache hit rate is below threshold",
+        "description": "Cache hit rate is {{ $value | humanizePercentage }} over the last 30 minutes"
+      }
+    },
+    {
+      "name": "High Cost Rate",
+      "expression": "sum(rate(generation_cost_dollars[1h])) * 3600 > 100",
+      "duration": "1h",
+      "severity": "warning",
+      "annotations": {
+        "summary": "High cost rate detected",
+        "description": "Cost rate is ${{ $value | humanize }} per hour"
+      }
+    }
+  ]
+}

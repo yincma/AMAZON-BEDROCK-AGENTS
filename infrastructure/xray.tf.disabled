@@ -1,0 +1,452 @@
+# ==========================================
+# AI PPT Assistant Phase 3 - X-Ray Distributed Tracing
+# ==========================================
+# X-Ray 分布式追踪配置
+# - 服务映射
+# - 请求追踪
+# - 性能分析
+# - 错误调试
+# ==========================================
+
+# ========== X-Ray Service Map ==========
+
+# X-Ray 采样规则
+resource "aws_xray_sampling_rule" "ai_ppt_assistant_sampling" {
+  rule_name      = "ai-ppt-assistant-sampling-${var.environment}"
+  priority       = 1000
+  version        = 1
+  reservoir_size = 1
+  fixed_rate     = 0.1  # 10% 默认采样率
+  url_path       = "*"
+  host           = "*"
+  http_method    = "*"
+  service_type   = "*"
+  service_name   = "ai-ppt-assistant-*"
+  resource_arn   = "*"
+
+  attributes = {
+    "environment" = var.environment
+  }
+
+  tags = {
+    Service     = "ai-ppt-assistant"
+    Environment = var.environment
+  }
+}
+
+# 错误采样规则（100%采样）
+resource "aws_xray_sampling_rule" "error_sampling" {
+  rule_name      = "ai-ppt-assistant-errors-${var.environment}"
+  priority       = 100
+  version        = 1
+  reservoir_size = 10
+  fixed_rate     = 1.0  # 100% 错误采样
+  url_path       = "*"
+  host           = "*"
+  http_method    = "*"
+  service_type   = "*"
+  service_name   = "ai-ppt-assistant-*"
+  resource_arn   = "*"
+
+  attributes = {
+    "error" = "true"
+  }
+
+  tags = {
+    Service     = "ai-ppt-assistant"
+    Environment = var.environment
+    Type        = "error-sampling"
+  }
+}
+
+# 慢请求采样规则（50%采样）
+resource "aws_xray_sampling_rule" "slow_request_sampling" {
+  rule_name      = "ai-ppt-assistant-slow-${var.environment}"
+  priority       = 500
+  version        = 1
+  reservoir_size = 5
+  fixed_rate     = 0.5  # 50% 慢请求采样
+  url_path       = "*"
+  host           = "*"
+  http_method    = "*"
+  service_type   = "*"
+  service_name   = "ai-ppt-assistant-*"
+  resource_arn   = "*"
+
+  tags = {
+    Service     = "ai-ppt-assistant"
+    Environment = var.environment
+    Type        = "slow-request-sampling"
+  }
+}
+
+# 关键路径采样规则（80%采样）
+resource "aws_xray_sampling_rule" "critical_path_sampling" {
+  rule_name      = "ai-ppt-assistant-critical-${var.environment}"
+  priority       = 200
+  version        = 1
+  reservoir_size = 10
+  fixed_rate     = 0.8  # 80% 关键路径采样
+  url_path       = "/api/v1/presentations/generate"
+  host           = "*"
+  http_method    = "POST"
+  service_type   = "*"
+  service_name   = "ai-ppt-assistant-*"
+  resource_arn   = "*"
+
+  tags = {
+    Service     = "ai-ppt-assistant"
+    Environment = var.environment
+    Type        = "critical-path-sampling"
+  }
+}
+
+# ========== X-Ray Group ==========
+
+resource "aws_xray_group" "ai_ppt_assistant" {
+  group_name        = "ai-ppt-assistant-${var.environment}"
+  filter_expression = "service(\"ai-ppt-assistant-*\")"
+
+  tags = {
+    Service     = "ai-ppt-assistant"
+    Environment = var.environment
+  }
+}
+
+# ========== X-Ray Encryption ==========
+
+resource "aws_xray_encryption_config" "ai_ppt_assistant" {
+  type = "KMS"
+  key_id = aws_kms_key.xray_encryption.arn
+}
+
+resource "aws_kms_key" "xray_encryption" {
+  description             = "KMS key for X-Ray encryption - ${var.environment}"
+  deletion_window_in_days = 10
+  enable_key_rotation    = true
+
+  tags = {
+    Service     = "ai-ppt-assistant"
+    Environment = var.environment
+    Purpose     = "xray-encryption"
+  }
+}
+
+resource "aws_kms_alias" "xray_encryption" {
+  name          = "alias/ai-ppt-assistant-xray-${var.environment}"
+  target_key_id = aws_kms_key.xray_encryption.key_id
+}
+
+# ========== Lambda X-Ray Configuration ==========
+
+# Lambda execution role X-Ray permissions
+resource "aws_iam_role_policy" "lambda_xray_policy" {
+  name = "ai-ppt-assistant-lambda-xray-policy-${var.environment}"
+  role = aws_iam_role.lambda_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "xray:PutTraceSegments",
+          "xray:PutTelemetryRecords"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+# ========== API Gateway X-Ray Configuration ==========
+
+# API Gateway execution role X-Ray permissions
+# 注释掉，因为api_gateway_cloudwatch角色未定义
+# resource "aws_iam_role_policy" "api_gateway_xray_policy" {
+#   name = "ai-ppt-assistant-api-gateway-xray-policy-${var.environment}"
+#   role = aws_iam_role.api_gateway_cloudwatch.id
+#
+#   policy = jsonencode({
+#     Version = "2012-10-17"
+#     Statement = [
+#       {
+#         Effect = "Allow"
+#         Action = [
+#           "xray:PutTraceSegments",
+#           "xray:PutTelemetryRecords"
+#         ]
+#         Resource = "*"
+#       }
+#     ]
+#   })
+# }
+
+# ========== CloudWatch Integration ==========
+
+# X-Ray Service Map Dashboard Widget
+resource "aws_cloudwatch_dashboard" "xray_service_map" {
+  dashboard_name = "ai-ppt-assistant-xray-${var.environment}"
+
+  dashboard_body = jsonencode({
+    widgets = [
+      {
+        type = "custom"
+        x    = 0
+        y    = 0
+        width = 24
+        height = 12
+        properties = {
+          endpoint = "https://console.aws.amazon.com/xray/home?region=${var.aws_region}#/service-map"
+          title    = "X-Ray Service Map"
+          updateOn = {
+            refresh = true
+            resize  = false
+            timeRange = false
+          }
+        }
+      },
+      {
+        type = "metric"
+        x    = 0
+        y    = 12
+        width = 12
+        height = 6
+        properties = {
+          metrics = [
+            ["AWS/X-Ray", "TracesReceived", { stat = "Sum" }],
+            [".", "TracesProcessed", { stat = "Sum" }],
+            [".", "LatencyHigh", { stat = "Average" }],
+            [".", "ErrorRate", { stat = "Average" }]
+          ]
+          view    = "timeSeries"
+          stacked = false
+          region  = var.aws_region
+          title   = "X-Ray Metrics"
+          period  = 300
+        }
+      },
+      {
+        type = "metric"
+        x    = 12
+        y    = 12
+        width = 12
+        height = 6
+        properties = {
+          metrics = [
+            ["AWS/X-Ray", "TracesReceived", { stat = "SampleCount" }],
+            [".", "TracesProcessed", { stat = "SampleCount" }]
+          ]
+          view    = "singleValue"
+          region  = var.aws_region
+          title   = "Trace Count"
+          period  = 300
+        }
+      }
+    ]
+  })
+}
+
+# ========== X-Ray Insights ==========
+
+# Anomaly detector for X-Ray metrics
+# 注释掉，因为aws_cloudwatch_anomaly_detector资源类型不支持
+# resource "aws_cloudwatch_anomaly_detector" "xray_traces" {
+#   metric_name = "TracesReceived"
+#   namespace   = "AWS/X-Ray"
+#   stat        = "Average"
+#
+#   dimensions = {
+#     Service = "ai-ppt-assistant"
+#   }
+# }
+
+# ========== EventBridge Rules for X-Ray ==========
+
+# Rule to capture X-Ray insights
+resource "aws_cloudwatch_event_rule" "xray_insights" {
+  name        = "ai-ppt-assistant-xray-insights-${var.environment}"
+  description = "Capture X-Ray insights and anomalies"
+
+  event_pattern = jsonencode({
+    source      = ["aws.xray"]
+    detail-type = ["AWS X-Ray Insight Update"]
+    detail = {
+      insightType = ["ANOMALOUS_SERVICE", "FAULT_ROOT_CAUSE"]
+    }
+  })
+
+  tags = {
+    Service     = "ai-ppt-assistant"
+    Environment = var.environment
+  }
+}
+
+resource "aws_cloudwatch_event_target" "xray_insights_sns" {
+  rule      = aws_cloudwatch_event_rule.xray_insights.name
+  target_id = "SendToSNS"
+  arn       = aws_sns_topic.monitoring_alerts.arn
+}
+
+# ========== X-Ray Trace Processing Lambda ==========
+
+resource "aws_lambda_function" "trace_processor" {
+  filename         = "${path.module}/../lambdas/trace_processor.zip"
+  function_name    = "ai-ppt-assistant-trace-processor-${var.environment}"
+  role            = aws_iam_role.trace_processor_execution.arn
+  handler         = "trace_processor.handler"
+  runtime         = "python3.12"
+  timeout         = 60
+  memory_size     = 512
+
+  environment {
+    variables = {
+      ENVIRONMENT = var.environment
+      SERVICE_NAME = "ai-ppt-assistant"
+      METRICS_NAMESPACE = "AI-PPT-Assistant/${var.environment}"
+    }
+  }
+
+  tracing_config {
+    mode = "Active"
+  }
+
+  tags = {
+    Service     = "ai-ppt-assistant"
+    Environment = var.environment
+    Function    = "trace-processor"
+  }
+}
+
+resource "aws_iam_role" "trace_processor_execution" {
+  name = "ai-ppt-assistant-trace-processor-role-${var.environment}"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        }
+      }
+    ]
+  })
+
+  tags = {
+    Service     = "ai-ppt-assistant"
+    Environment = var.environment
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "trace_processor_basic" {
+  role       = aws_iam_role.trace_processor_execution.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+resource "aws_iam_role_policy" "trace_processor_xray" {
+  name = "trace-processor-xray-policy"
+  role = aws_iam_role.trace_processor_execution.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "xray:GetTraceGraph",
+          "xray:GetTraceSummaries",
+          "xray:BatchGetTraces",
+          "xray:GetServiceGraph",
+          "xray:GetTimeSeriesServiceStatistics",
+          "xray:GetSamplingRules",
+          "xray:GetSamplingTargets",
+          "xray:GetSamplingStatisticSummaries"
+        ]
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "cloudwatch:PutMetricData"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+# ========== Scheduled X-Ray Analysis ==========
+
+resource "aws_cloudwatch_event_rule" "xray_analysis" {
+  name                = "ai-ppt-assistant-xray-analysis-${var.environment}"
+  description         = "Periodic X-Ray trace analysis"
+  schedule_expression = "rate(5 minutes)"
+
+  tags = {
+    Service     = "ai-ppt-assistant"
+    Environment = var.environment
+  }
+}
+
+resource "aws_cloudwatch_event_target" "xray_analysis_lambda" {
+  rule      = aws_cloudwatch_event_rule.xray_analysis.name
+  target_id = "TraceProcessorLambda"
+  arn       = aws_lambda_function.trace_processor.arn
+}
+
+resource "aws_lambda_permission" "allow_eventbridge_xray" {
+  statement_id  = "AllowExecutionFromEventBridge"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.trace_processor.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.xray_analysis.arn
+}
+
+# ========== X-Ray Configuration for Each Lambda ==========
+
+# Dynamic configuration for all Lambda functions
+locals {
+  lambda_functions = [
+    "generate-ppt",
+    "compile-ppt",
+    "download-ppt",
+    "status-check",
+    "api-handler",
+    "notes-generator",
+    "image-generator"
+  ]
+}
+
+# ========== Outputs ==========
+
+output "xray_service_map_url" {
+  value       = "https://console.aws.amazon.com/xray/home?region=${var.aws_region}#/service-map"
+  description = "X-Ray Service Map URL"
+}
+
+output "xray_traces_url" {
+  value       = "https://console.aws.amazon.com/xray/home?region=${var.aws_region}#/traces"
+  description = "X-Ray Traces URL"
+}
+
+output "xray_group_arn" {
+  value       = aws_xray_group.ai_ppt_assistant.arn
+  description = "X-Ray Group ARN"
+}
+
+output "xray_sampling_rules" {
+  value = {
+    default  = aws_xray_sampling_rule.ai_ppt_assistant_sampling.arn
+    errors   = aws_xray_sampling_rule.error_sampling.arn
+    slow     = aws_xray_sampling_rule.slow_request_sampling.arn
+    critical = aws_xray_sampling_rule.critical_path_sampling.arn
+  }
+  description = "X-Ray Sampling Rules ARNs"
+}
+
+output "trace_processor_function_name" {
+  value       = aws_lambda_function.trace_processor.function_name
+  description = "Trace processor Lambda function name"
+}

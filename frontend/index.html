@@ -1,13 +1,196 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React + TS</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI PPT 生成助手</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        .spinner-container {
+            display: none;
+        }
+        .progress-container {
+            display: none;
+        }
+        .history-item {
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .history-item:hover {
+            background-color: #f8f9fa;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-primary">
+        <div class="container">
+            <span class="navbar-brand mb-0 h1">
+                <i class="bi bi-file-earmark-slides"></i> AI PPT 生成助手
+            </span>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <!-- 主要内容区 -->
+            <div class="col-lg-8">
+                <!-- 配置面板 -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="bi bi-gear"></i> API 配置
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <input type="text" class="form-control" id="apiEndpoint"
+                                       placeholder="API Gateway URL"
+                                       value="https://your-api-gateway.execute-api.us-east-1.amazonaws.com/prod">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="password" class="form-control" id="apiKey"
+                                       placeholder="API Key">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 生成表单 -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="bi bi-magic"></i> 生成新的演示文稿
+                    </div>
+                    <div class="card-body">
+                        <form id="generateForm">
+                            <div class="mb-3">
+                                <label for="topic" class="form-label">演示主题 *</label>
+                                <input type="text" class="form-control" id="topic" required
+                                       placeholder="例如：人工智能在医疗领域的应用">
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="pageCount" class="form-label">页数</label>
+                                    <input type="number" class="form-control" id="pageCount"
+                                           min="5" max="30" value="10">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="audience" class="form-label">目标受众</label>
+                                    <select class="form-select" id="audience">
+                                        <option value="general">普通观众</option>
+                                        <option value="technical">技术人员</option>
+                                        <option value="executive">高层管理</option>
+                                        <option value="academic">学术研究</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-play-circle"></i> 开始生成
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- 进度显示 -->
+                <div class="card progress-container mb-4 fade-in">
+                    <div class="card-header">
+                        <i class="bi bi-hourglass-split"></i> 生成进度
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span id="statusText">准备中...</span>
+                                <span id="progressPercent">0%</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                     id="progressBar" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div id="statusDetails" class="text-muted small"></div>
+                    </div>
+                </div>
+
+                <!-- 结果显示 -->
+                <div class="card d-none" id="resultCard">
+                    <div class="card-header bg-success text-white">
+                        <i class="bi bi-check-circle"></i> 生成完成！
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title" id="resultTitle"></h5>
+                        <p class="card-text">
+                            <small class="text-muted">
+                                生成时间：<span id="generationTime"></span> |
+                                文件大小：<span id="fileSize">计算中...</span>
+                            </small>
+                        </p>
+                        <button class="btn btn-success" id="downloadBtn">
+                            <i class="bi bi-download"></i> 下载 PPT
+                        </button>
+                        <button class="btn btn-outline-primary" id="newBtn">
+                            <i class="bi bi-plus-circle"></i> 生成新的
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 错误提示 -->
+                <div class="alert alert-danger d-none fade-in" id="errorAlert">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <span id="errorMessage"></span>
+                </div>
+            </div>
+
+            <!-- 侧边栏 -->
+            <div class="col-lg-4">
+                <!-- 历史记录 -->
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span><i class="bi bi-clock-history"></i> 历史记录</span>
+                        <button class="btn btn-sm btn-outline-danger" id="clearHistory">
+                            清除
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group" id="historyList">
+                            <div class="text-muted text-center py-3">暂无历史记录</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 使用提示 -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <i class="bi bi-lightbulb"></i> 使用提示
+                    </div>
+                    <div class="card-body">
+                        <ul class="small mb-0">
+                            <li>主题描述越详细，生成效果越好</li>
+                            <li>建议页数控制在 10-15 页</li>
+                            <li>生成过程约需 2-3 分钟</li>
+                            <li>支持中英文内容生成</li>
+                            <li>生成的 PPT 可直接编辑</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- API 配置 -->
+    <script src="js/config.js"></script>
+    <!-- 应用脚本 -->
+    <script src="js/app.js"></script>
+    <script src="js/status.js"></script>
+    <script src="js/download.js"></script>
+</body>
 </html>

@@ -2,33 +2,58 @@
 
 ## Overview
 
-AI PPT Assistant 是一个基于 Amazon Bedrock Agents 的多代理协作系统，采用 MVC 架构模式设计。系统通过编排多个专业化的 AI Agent 和 Lambda 函数（Python 3.13），实现从内容生成到文件创建的完整演示文稿制作流程。核心设计理念是将 AI 推理能力与实际执行能力分离，让 Agent 负责智能决策，Lambda 负责具体操作。
+AI PPT Assistant 是一个基于 Amazon Bedrock 的演示文稿生成系统，采用**分阶段渐进式架构**和**TDD开发模式**。系统从最简单的文本生成开始，逐步增加功能，每个阶段都是可运行的产品。
 
-## Steering Document Alignment
+## Development Principles
 
-### Technical Standards (tech.md)
-- 采用 Serverless 架构，利用 AWS 托管服务
-- 遵循 RESTful API 设计原则
-- 实施 Infrastructure as Code (IaC) 使用 Terraform
-- 应用 MVC 架构模式分离关注点
+- **TDD (Test-Driven Development)**: 每个功能先写测试，再实现
+- **KISS**: 保持简单，避免过度设计
+- **YAGNI**: 只实现当前需要的功能
+- **Incremental Delivery**: 每个阶段都是可交付的产品
 
-### Project Structure (structure.md)
+## Phased Architecture Evolution
+
+### Phase 1: MVP Architecture (Week 1)
 ```
-/ai-ppt-assistant/
-├── /agents/               # Bedrock Agent 配置
-│   ├── orchestrator.json
-│   ├── content.json
-│   └── visual.json
-├── /lambdas/              # Lambda 函数代码 (Python 3.13)
-│   ├── /controllers/      # 控制器层
-│   ├── /models/          # 数据模型层
-│   ├── /views/           # 视图生成层
-│   └── /utils/           # 工具函数
-└── /infrastructure/       # Terraform 基础设施代码
-    ├── main.tf
-    ├── variables.tf
-    └── outputs.tf
+User → API Gateway → Lambda (generate_ppt) → S3
+                         ↓
+                     Bedrock Claude
 ```
+- **1个Lambda函数**: 处理所有逻辑
+- **1个S3桶**: 存储生成的内容和PPT
+- **极简API**: 3个端点（生成/状态/下载）
+
+### Phase 2: Enhanced Architecture (Week 2)
+```
+User → API Gateway → Lambda (api_handler)
+                         ↓
+                   ┌─────┼─────┐
+            content_gen  image_gen  ppt_compiler
+                   ↓        ↓           ↓
+               Bedrock    Nova         S3
+```
+- **3个Lambda函数**: 职责分离
+- **添加图片生成**: Amazon Nova集成
+- **模板支持**: 2-3个简单模板
+
+### Phase 3: Optimized Architecture (Week 3)
+```
+User → API Gateway → Step Functions
+                         ↓
+              [并行处理工作流]
+                         ↓
+                   Lambda函数组
+                         ↓
+                    S3 + Cache
+```
+- **Step Functions编排**: 并行处理
+- **缓存层**: 提升性能
+- **监控告警**: CloudWatch集成
+
+### Phase 4: Production Architecture (Week 4)
+- **CI/CD流水线**: 自动化部署
+- **多环境支持**: dev/staging/prod
+- **安全加固**: IAM认证替代API Key
 
 ## Code Reuse Analysis
 
@@ -41,187 +66,200 @@ AI PPT Assistant 是一个基于 Amazon Bedrock Agents 的多代理协作系统�
 ### Integration Points
 - **Amazon Bedrock**: Claude 4.0 用于文本生成
 - **Amazon Nova**: AI 图像生成
-- **S3**: 文件存储和检索
-- **DynamoDB**: 会话状态和历史记录
+- **S3**: 文件存储、状态管理和检索
+- **API Gateway**: RESTful API 接口
 
-## Architecture
+## Project Structure (Phased)
 
-系统采用简化的多层架构设计，去除了不必要的复杂性：
+### Phase 1: MVP Structure
+```
+/ai-ppt-assistant/
+├── /tests/                # TDD测试优先
+│   ├── conftest.py
+│   ├── test_infrastructure.py
+│   └── test_generate_ppt.py
+├── /lambdas/
+│   └── generate_ppt.py    # 单一Lambda函数
+└── /infrastructure/
+    └── main.tf            # 最小化配置
+```
 
-### Modular Design Principles
-- **Single File Responsibility**: 每个 Lambda 函数负责单一业务功能
-- **Component Isolation**: Agent 之间通过标准 JSON 接口通信
-- **Service Layer Separation**: 严格的 MVC 分层
-- **Utility Modularity**: 共享工具通过 Lambda Layers 管理
+### Phase 2: Enhanced Structure
+```
+/ai-ppt-assistant/
+├── /tests/                # 更多测试
+│   ├── test_content_generator.py
+│   ├── test_image_generator.py
+│   └── test_ppt_compiler.py
+├── /lambdas/
+│   ├── api_handler.py     # API处理
+│   ├── content_generator.py
+│   ├── image_generator.py
+│   └── ppt_compiler.py
+└── /infrastructure/
+    └── modules/           # 模块化
+```
 
-```mermaid
-graph TD
-    User[用户请求] --> AG[API Gateway]
-    AG --> OA[Orchestrator Agent]
-    
-    OA --> CA[Content Agent]
-    OA --> VA[Visual Agent]
-    OA --> FA[File Compiler Agent]
-    
-    CA --> LC1[Lambda: create_outline]
-    CA --> LC2[Lambda: generate_content]
-    
-    VA --> LV1[Lambda: find_image]
-    VA --> LV2[Lambda: generate_image]
-    
-    FA --> LF[Lambda: compile_pptx]
-    
-    LC1 --> Bedrock[Amazon Bedrock Claude 4.0]
-    LC2 --> Bedrock
-    LV2 --> Nova[Amazon Nova]
-    
-    LF --> S3[S3 Storage]
-    
-    subgraph MVC架构
-        LF --> Model[Model Layer]
-        Model --> View[View Layer]
-        View --> Controller[Controller Layer]
-    end
+### Phase 3-4: Production Structure
+```
+/ai-ppt-assistant/
+├── /tests/                # 完整测试套件
+├── /lambdas/              # 全部功能
+├── /infrastructure/       # 完整IaC
+├── /.github/workflows/    # CI/CD
+└── /docs/                 # 文档
 ```
 
 ## Components and Interfaces
 
-### Orchestrator Agent
-- **Purpose:** 总体流程编排和任务分配
-- **Interfaces:** 
-  ```json
-  {
-    "input": {
-      "request_type": "generate|convert",
-      "topic": "string",
-      "page_count": "number",
-      "audience": "string"
-    },
-    "output": {
-      "status": "success|failure",
-      "presentation_url": "string"
-    }
-  }
-  ```
-- **Dependencies:** Content Agent, Visual Agent, File Compiler Agent
-- **Reuses:** Bedrock Agent Framework
-
-### Content Agent
-- **Purpose:** 文本内容生成和优化
-- **Interfaces:**
-  ```json
-  {
-    "actions": [
-      "create_presentation_outline",
-      "generate_slide_content",
-      "generate_speaker_notes"
-    ]
-  }
-  ```
-- **Dependencies:** Lambda functions, Claude 4.0
-- **Reuses:** Bedrock LLM capabilities
-
-### Visual Agent
-- **Purpose:** 图像生成和选择
-- **Interfaces:**
-  ```json
-  {
-    "actions": [
-      "find_relevant_image",
-      "generate_custom_image"
-    ]
-  }
-  ```
-- **Dependencies:** Lambda functions, Amazon Nova
-- **Reuses:** Bedrock image generation
-
-### Lambda: create_outline (Python 3.13)
-- **Purpose:** 生成演示文稿大纲
+### Lambda: presentation_handler
+- **Purpose:** API入口，协调整个生成流程
 - **Interfaces:**
   ```python
   def handler(event, context):
-      # Input: topic, page_count, audience
-      # Output: {"slides": [{"title": "", "key_points": []}]}
+      # Input: API Gateway event
+      # Output: {"presentation_id": "uuid", "status": "processing"}
+      # 1. 验证请求
+      # 2. 生成 presentation_id
+      # 3. 调用其他 Lambda 函数
+      # 4. 返回响应
   ```
-- **Dependencies:** Bedrock Runtime
-- **Reuses:** Claude 4.0 prompt templates
+- **Dependencies:** S3, 其他 Lambda 函数
 
-### Lambda: compile_pptx (MVC Implementation)
-- **Purpose:** 组装最终 PowerPoint 文件
+### Lambda: content_generator
+- **Purpose:** 生成大纲和幻灯片内容
+- **Interfaces:**
+  ```python
+  def handler(event, context):
+      # Input: {"topic": "str", "page_count": int, "presentation_id": "str"}
+      # Output: S3 路径 /presentations/{id}/outline.json
+      # 使用 Bedrock Claude 生成内容
+      # 保存到 S3
+  ```
+- **Dependencies:** Bedrock Claude 4.0, S3
+
+### Lambda: visual_processor
+- **Purpose:** 处理图片生成和搜索
+- **Interfaces:**
+  ```python
+  def handler(event, context):
+      # Input: {"slides": [...], "presentation_id": "str"}
+      # Output: S3 路径 /presentations/{id}/images/
+      # 为每个幻灯片生成或查找图片
+  ```
+- **Dependencies:** Amazon Nova, S3
+
+### Lambda: file_compiler
+- **Purpose:** 编译最终的 PPTX 文件
 - **Runtime:** Python 3.13
-- **MVC Structure:**
-  - **Model**: 数据获取和处理
-  - **View**: PPTX 文件生成
-  - **Controller**: 业务逻辑协调
 - **Interfaces:**
   ```python
-  # Controller
   def handler(event, context):
-      controller = PresentationController()
-      return controller.create_presentation(event)
-  
-  # Model
-  class PresentationModel:
-      def get_template(template_id)
-      def save_to_s3(file_data)
-  
-  # View  
-  class PresentationView:
-      def render_pptx(slides_data, template)
+      # Input: {"presentation_id": "str"}
+      # Output: S3 路径 /presentations/{id}/output/presentation.pptx
+      # 1. 从 S3 读取内容和图片
+      # 2. 使用 python-pptx 生成文件
+      # 3. 上传到 S3
+      # 4. 生成预签名下载 URL
   ```
+- **Dependencies:** python-pptx, S3
 
-## Data Models
+## Data Models (Phased)
 
-### Presentation Request Model
+### Phase 1: MVP Data Model
 ```python
+# 极简请求模型
+{
+    "topic": "string",
+    "page_count": 5,  # 固定5页
+    "presentation_id": "uuid"
+}
+
+# 极简内容模型
+{
+    "slides": [
+        {
+            "title": "string",
+            "points": ["point1", "point2", "point3"]
+        }
+    ]
+}
+
+# S3存储：单一JSON文件
+/presentations/{id}/content.json
+/presentations/{id}/presentation.pptx
+```
+
+### Phase 2: Enhanced Data Model
+```python
+# 增加模板和图片
+{
+    "topic": "string",
+    "page_count": "5-10",
+    "template": "default|modern|classic",
+    "with_images": true
+}
+
+# 增加图片和备注
+{
+    "slides": [
+        {
+            "title": "string",
+            "points": ["..."],
+            "image_url": "s3://...",
+            "speaker_notes": "..."
+        }
+    ]
+}
+```
+
+### Phase 3: Production Data Model
+```python
+# 完整请求模型
 {
     "request_id": "uuid",
     "user_id": "string",
-    "request_type": "generate|convert",
     "parameters": {
         "topic": "string",
-        "page_count": "integer(5-30)",
+        "page_count": "5-30",
         "audience": "string",
-        "template_id": "string(optional)"
+        "template_id": "string",
+        "language": "zh|en"
     },
     "status": "pending|processing|completed|failed",
-    "created_at": "timestamp",
-    "updated_at": "timestamp"
+    "metadata": {
+        "created_at": "iso8601",
+        "updated_at": "iso8601",
+        "version": "1.0"
+    }
 }
 ```
 
-### Slide Content Model
-```python
-{
-    "slide_id": "integer",
-    "title": "string",
-    "content": {
-        "key_points": ["string"],
-        "detailed_text": "string(optional)"
-    },
-    "image": {
-        "url": "string",
-        "alt_text": "string",
-        "source": "generated|library"
-    },
-    "speaker_notes": "string",
-    "layout": "title|content|image_left|image_right"
-}
+### S3 Storage Evolution
+
+#### Phase 1: 最简存储
+```
+/presentations/{id}/
+  ├── content.json       # 所有内容
+  └── presentation.pptx  # 最终文件
 ```
 
-### Session State Model (DynamoDB)
-```python
-{
-    "session_id": "uuid",
-    "user_id": "string", 
-    "current_state": "object",
-    "history": [{
-        "action": "string",
-        "timestamp": "iso8601",
-        "result": "object"
-    }],
-    "ttl": "timestamp"  # 30 days
-}
+#### Phase 2: 分离存储
+```
+/presentations/{id}/
+  ├── content.json       # 文本内容
+  ├── images/           # 图片文件夹
+  └── presentation.pptx
+```
+
+#### Phase 3: 完整存储
+```
+/presentations/{id}/
+  ├── metadata.json     # 元数据
+  ├── content/         # 内容文件夹
+  ├── images/          # 图片文件夹
+  ├── versions/        # 版本管理
+  └── output/          # 输出文件
 ```
 
 ## Error Handling
@@ -253,49 +291,72 @@ graph TD
    - **User Impact:** 明确指出哪个参数有问题
    - **Prevention:** 前端预验证
 
-## API Design
+## API Design (Phased)
 
-### REST Endpoints (Simplified - No Authentication)
+### Phase 1: MVP API (3 endpoints)
 
 ```yaml
-POST /presentations/generate
-  Headers:
-    - X-API-Key: string (简单的 API 密钥验证)
+POST /generate
   Request:
     - topic: string
-    - page_count: number
-    - audience: string
-    - template_id?: string
   Response:
     - presentation_id: string
-    - status: string
+    - message: "Processing"
+
+GET /status/{id}
+  Response:
+    - status: pending|processing|completed
+    - progress: number (0-100)
+
+GET /download/{id}
+  Response:
+    - download_url: string (S3 presigned URL, 1小时有效)
+```
+
+### Phase 2: Enhanced API (+2 endpoints)
+
+```yaml
+POST /generate (enhanced)
+  Request:
+    - topic: string
+    - page_count?: number (5-10)
+    - template?: string (default|modern|classic)
+  Response:
+    - presentation_id: string
     - estimated_time: number
 
-GET /presentations/{id}/status
-  Headers:
-    - X-API-Key: string
+GET /presentations/{id}/preview
   Response:
-    - status: pending|processing|completed|failed
-    - progress: number (0-100)
-    - message: string
+    - slides: array (缩略图预览)
+```
 
-GET /presentations/{id}/download
-  Headers:
-    - X-API-Key: string
-  Response:
-    - download_url: string (S3 presigned URL)
-    - expires_at: timestamp
+### Phase 3: Advanced API (+3 endpoints)
 
-PATCH /presentations/{id}/slides/{slideId}
-  Headers:
-    - X-API-Key: string
+```yaml
+PATCH /presentations/{id}/slides/{n}
   Request:
     - content?: object
-    - image?: object
+    - regenerate_image?: boolean
   Response:
     - slide: object
     - status: string
+
+POST /presentations/{id}/regenerate
+  Request:
+    - slides?: array (指定页面)
+  Response:
+    - status: string
+
+DELETE /presentations/{id}
+  Response:
+    - message: "Deleted"
 ```
+
+### Phase 4: Production API (完整版)
+- 添加认证: API Key → IAM
+- 添加限流: Rate limiting
+- 添加版本: /v1/presentations
+- 添加批量操作: Batch API
 
 ## Security Considerations (Simplified)
 
@@ -317,9 +378,9 @@ PATCH /presentations/{id}/slides/{slideId}
 
 ## Performance Optimization
 
-### Caching Strategy
-- Lambda 函数预热 (Reserved Concurrency)
-- DynamoDB DAX 用于频繁访问的数据
+### Performance Strategy
+- Lambda 内存配置：2048MB 保证性能
+- S3 Transfer Acceleration 加速大文件上传
 
 ### Parallel Processing
 - 多页幻灯片内容并行生成
@@ -327,8 +388,8 @@ PATCH /presentations/{id}/slides/{slideId}
 - 使用 Step Functions 编排复杂流程
 
 ### Resource Management
-- Lambda 内存配置：1024MB (内容生成), 2048MB (文件编译)
-- 超时设置：30秒 (API), 5分钟 (后台处理)
+- Lambda 内存配置：统一 2048MB
+- 超时设置：30秒 (API handler), 5分钟 (生成函数)
 - S3 生命周期策略：30天后转 IA 存储
 - Python Runtime: 3.13 (最新版本，性能优化)
 
@@ -341,46 +402,113 @@ provider "aws" {
   region = "us-east-1"
 }
 
-module "bedrock_agents" {
-  source = "./modules/bedrock"
-  model_id = "anthropic.claude-4-0"
+# 简化的 Lambda 函数定义
+resource "aws_lambda_function" "presentation_handler" {
+  function_name = "presentation-handler"
+  runtime       = "python3.13"
+  handler       = "presentation_handler.handler"
+  memory_size   = 2048
+  timeout       = 30
 }
 
-module "lambda_functions" {
-  source = "./modules/lambda"
-  runtime = "python3.13"
-  architecture = "arm64"  # Graviton2 for cost optimization
+resource "aws_lambda_function" "content_generator" {
+  function_name = "content-generator"
+  runtime       = "python3.13"
+  handler       = "content_generator.handler"
+  memory_size   = 2048
+  timeout       = 300
 }
 
-module "api_gateway" {
-  source = "./modules/api"
-  auth_type = "API_KEY"
+resource "aws_s3_bucket" "presentations" {
+  bucket = "ai-ppt-presentations"
+
+  lifecycle_rule {
+    enabled = true
+    transition {
+      days          = 30
+      storage_class = "STANDARD_IA"
+    }
+  }
 }
 ```
 
-## Testing Strategy
+## TDD Testing Strategy
 
-### Unit Testing
-- **Approach:** 每个 Lambda 函数 100% 测试覆盖
-- **Key Components:** 
-  - Prompt 模板验证
-  - 数据模型序列化/反序列化
-  - MVC 各层独立测试
-- **Tools:** pytest, moto (AWS service mocking)
+### Test-First Development Process
+```
+1. Write Test (RED) → 2. Write Code (GREEN) → 3. Refactor (REFACTOR)
+```
 
-### Integration Testing
-- **Approach:** Agent 间通信测试
-- **Key Flows:**
-  - 完整的演示文稿生成流程
-  - 错误恢复机制
-  - 并发请求处理
-- **Tools:** Bedrock Agent Testing Framework
+### Phase 1: MVP Testing
+```python
+# tests/test_mvp.py
+def test_generate_simple_ppt():
+    """测试基础PPT生成"""
+    # Given: 一个主题
+    # When: 调用生成API
+    # Then: 返回5页内容的PPT
 
-### End-to-End Testing
-- **Approach:** 模拟真实用户场景
-- **User Scenarios:**
-  - 生成 10 页技术演示文稿
-  - 转换 20 页 PDF 报告
-  - 修改特定幻灯片内容
-  - 并发 10 个用户请求
-- **Metrics:** 响应时间 <60秒, 成功率 >95%
+def test_s3_storage():
+    """测试S3存储"""
+    # Given: PPT内容
+    # When: 保存到S3
+    # Then: 可以下载
+
+def test_api_endpoints():
+    """测试3个基础API"""
+    # POST /generate
+    # GET /status/{id}
+    # GET /download/{id}
+```
+
+### Phase 2: Enhanced Testing
+```python
+# tests/test_enhanced.py
+def test_with_images():
+    """测试图片生成"""
+    # 验证每页都有图片
+
+def test_templates():
+    """测试模板应用"""
+    # 验证3种模板
+
+def test_speaker_notes():
+    """测试演讲备注"""
+    # 验证备注生成
+```
+
+### Phase 3: Advanced Testing
+```python
+# tests/test_performance.py
+def test_parallel_processing():
+    """测试并行处理"""
+    # 验证性能提升
+
+def test_content_modification():
+    """测试内容修改"""
+    # 验证单页更新
+
+def test_caching():
+    """测试缓存机制"""
+    # 验证响应加速
+```
+
+### Testing Tools & Coverage
+- **Phase 1**: pytest + moto (目标覆盖率 80%)
+- **Phase 2**: + LocalStack (目标覆盖率 85%)
+- **Phase 3**: + 性能测试 (目标覆盖率 90%)
+- **Phase 4**: + 安全测试 (目标覆盖率 95%)
+
+### Continuous Testing
+```yaml
+# .github/workflows/test.yml
+on: [push, pull_request]
+jobs:
+  test:
+    steps:
+      - Run unit tests
+      - Check coverage
+      - Run integration tests
+      - Deploy to staging
+      - Run E2E tests
+```
