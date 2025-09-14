@@ -10,7 +10,7 @@
 
 **Cloud-native presentation generation system powered by Amazon Bedrock**
 
-English | [简体中文](./README_CN.md) | [Quick Start](#quick-start) | [Documentation](#documentation) | [Demo](#live-demo)
+English | [简体中文](./README_CN.md) 
 
 </div>
 

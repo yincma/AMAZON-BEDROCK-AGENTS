@@ -10,7 +10,7 @@
 
 **基于 Amazon Bedrock 的智能演示文稿生成系统**
 
-[English](./README.md) | 简体中文 | [快速开始](#快速开始) | [文档](#文档) | [演示](#在线演示)
+[English](./README.md) | 简体中文 
 
 </div>
 
