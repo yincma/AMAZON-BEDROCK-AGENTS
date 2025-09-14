@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PPT生成测试 - 详细日志分析</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .log-container {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 5px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 12px;
+        }
+        .log-entry {
+            margin: 2px 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .log-info { color: #3794ff; }
+        .log-success { color: #4ec9b0; }
+        .log-warning { color: #ce9178; }
+        .log-error { color: #f48771; }
+        .log-debug { color: #b5cea8; }
+        .btn {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn:hover {
+            opacity: 0.9;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .status-running { background: #ffc107; color: #000; }
+        .status-success { background: #28a745; color: white; }
+        .status-error { background: #dc3545; color: white; }
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .metric-card {
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        .metric-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        #networkTraffic {
+            margin-top: 20px;
+        }
+        .request-item {
+            padding: 10px;
+            margin: 5px 0;
+            border-left: 3px solid #007bff;
+            background: #f8f9fa;
+        }
+        .request-success {
+            border-left-color: #28a745;
+        }
+        .request-error {
+            border-left-color: #dc3545;
+            background: #fff5f5;
+        }
+        .request-header {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .request-details {
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 PPT生成测试 - 详细日志分析</h1>
+
+        <!-- 测试控制 -->
+        <div class="test-section">
+            <h2>测试控制</h2>
+            <div>
+                <label>主题: <input type="text" id="topic" value="人工智能的发展趋势" style="width: 300px;"></label>
+                <label>页数: <input type="number" id="pageCount" value="5" min="1" max="20" style="width: 60px;"></label>
+            </div>
+            <div style="margin-top: 10px;">
+                <button class="btn btn-primary" onclick="startFullTest()">🚀 开始完整测试</button>
+                <button class="btn btn-success" onclick="testOptionsRequest()">🔧 测试OPTIONS请求</button>
+                <button class="btn btn-danger" onclick="clearLogs()">🗑️ 清除日志</button>
+                <span id="testStatus" class="status-badge"></span>
+            </div>
+        </div>
+
+        <!-- 实时指标 -->
+        <div class="test-section">
+            <h2>实时指标</h2>
+            <div class="metrics">
+                <div class="metric-card">
+                    <div class="metric-value" id="totalRequests">0</div>
+                    <div class="metric-label">总请求数</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="successRequests">0</div>
+                    <div class="metric-label">成功请求</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="failedRequests">0</div>
+                    <div class="metric-label">失败请求</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="avgResponseTime">0ms</div>
+                    <div class="metric-label">平均响应时间</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="lastError">无</div>
+                    <div class="metric-label">最后错误</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 网络流量监控 -->
+        <div class="test-section">
+            <h2>网络流量监控</h2>
+            <div id="networkTraffic"></div>
+        </div>
+
+        <!-- 详细日志 -->
+        <div class="test-section">
+            <h2>详细日志</h2>
+            <div class="log-container" id="logContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        // 配置
+        const API_CONFIG = {
+            endpoint: 'https://fe2kf91287.execute-api.us-east-1.amazonaws.com/dev',
+            timeout: 30000
+        };
+
+        // 统计数据
+        let stats = {
+            totalRequests: 0,
+            successRequests: 0,
+            failedRequests: 0,
+            responseTimes: [],
+            lastError: '无'
+        };
+
+        // 日志工具
+        const Logger = {
+            container: document.getElementById('logContainer'),
+
+            log(message, type = 'info') {
+                const timestamp = new Date().toISOString();
+                const entry = document.createElement('div');
+                entry.className = `log-entry log-${type}`;
+                entry.textContent = `[${timestamp}] ${message}`;
+                this.container.appendChild(entry);
+                this.container.scrollTop = this.container.scrollHeight;
+
+                // 同时输出到控制台
+                console.log(`[${type.toUpperCase()}] ${message}`);
+            },
+
+            info(message) { this.log(message, 'info'); },
+            success(message) { this.log(message, 'success'); },
+            warning(message) { this.log(message, 'warning'); },
+            error(message) { this.log(message, 'error'); },
+            debug(message) { this.log(message, 'debug'); }
+        };
+
+        // 更新统计
+        function updateStats() {
+            document.getElementById('totalRequests').textContent = stats.totalRequests;
+            document.getElementById('successRequests').textContent = stats.successRequests;
+            document.getElementById('failedRequests').textContent = stats.failedRequests;
+
+            if (stats.responseTimes.length > 0) {
+                const avg = stats.responseTimes.reduce((a, b) => a + b, 0) / stats.responseTimes.length;
+                document.getElementById('avgResponseTime').textContent = `${Math.round(avg)}ms`;
+            }
+
+            document.getElementById('lastError').textContent = stats.lastError;
+        }
+
+        // 添加网络请求记录
+        function addNetworkRecord(method, url, status, duration, error = null) {
+            const container = document.getElementById('networkTraffic');
+            const item = document.createElement('div');
+            item.className = `request-item ${error ? 'request-error' : 'request-success'}`;
+
+            const header = document.createElement('div');
+            header.className = 'request-header';
+            header.textContent = `${method} ${url.replace(API_CONFIG.endpoint, '')} - ${status || 'FAILED'}`;
+
+            const details = document.createElement('div');
+            details.className = 'request-details';
+            details.innerHTML = `
+                Duration: ${duration}ms<br>
+                Time: ${new Date().toLocaleTimeString()}<br>
+                ${error ? `Error: ${error}` : 'Success'}
+            `;
+
+            item.appendChild(header);
+            item.appendChild(details);
+            container.insertBefore(item, container.firstChild);
+
+            // 只保留最近20条记录
+            while (container.children.length > 20) {
+                container.removeChild(container.lastChild);
+            }
+        }
+
+        // 测试OPTIONS请求
+        async function testOptionsRequest() {
+            Logger.info('=== 开始OPTIONS预检请求测试 ===');
+            setTestStatus('running', '测试OPTIONS请求...');
+
+            const startTime = Date.now();
+            stats.totalRequests++;
+
+            try {
+                const response = await fetch(`${API_CONFIG.endpoint}/generate`, {
+                    method: 'OPTIONS',
+                    headers: {
+                        'Origin': window.location.origin,
+                        'Access-Control-Request-Method': 'POST',
+                        'Access-Control-Request-Headers': 'Content-Type'
+                    }
+                });
+
+                const duration = Date.now() - startTime;
+                stats.responseTimes.push(duration);
+
+                Logger.info(`OPTIONS响应状态: ${response.status}`);
+                Logger.debug(`响应时间: ${duration}ms`);
+
+                // 检查CORS头
+                const corsHeaders = {
+                    'Access-Control-Allow-Origin': response.headers.get('Access-Control-Allow-Origin'),
+                    'Access-Control-Allow-Methods': response.headers.get('Access-Control-Allow-Methods'),
+                    'Access-Control-Allow-Headers': response.headers.get('Access-Control-Allow-Headers'),
+                    'Access-Control-Max-Age': response.headers.get('Access-Control-Max-Age')
+                };
+
+                Logger.info('CORS响应头:');
+                for (const [key, value] of Object.entries(corsHeaders)) {
+                    if (value) {
+                        Logger.success(`  ${key}: ${value}`);
+                    } else {
+                        Logger.warning(`  ${key}: 未设置`);
+                    }
+                }
+
+                if (response.ok) {
+                    stats.successRequests++;
+                    Logger.success('OPTIONS请求成功!');
+                    addNetworkRecord('OPTIONS', `${API_CONFIG.endpoint}/generate`, response.status, duration);
+                } else {
+                    stats.failedRequests++;
+                    stats.lastError = `OPTIONS失败: ${response.status}`;
+                    Logger.error(`OPTIONS请求失败: ${response.status}`);
+                    addNetworkRecord('OPTIONS', `${API_CONFIG.endpoint}/generate`, response.status, duration, stats.lastError);
+                }
+
+            } catch (error) {
+                stats.failedRequests++;
+                stats.lastError = error.message;
+                Logger.error(`OPTIONS请求异常: ${error.message}`);
+                Logger.error(`错误堆栈: ${error.stack}`);
+                addNetworkRecord('OPTIONS', `${API_CONFIG.endpoint}/generate`, 0, Date.now() - startTime, error.message);
+            }
+
+            updateStats();
+            setTestStatus('', '');
+        }
+
+        // 测试PPT生成
+        async function testGenerateRequest() {
+            Logger.info('=== 开始PPT生成请求测试 ===');
+            setTestStatus('running', '生成PPT中...');
+
+            const topic = document.getElementById('topic').value;
+            const pageCount = parseInt(document.getElementById('pageCount').value);
+
+            const requestBody = {
+                topic: topic,
+                page_count: pageCount,
+                style: 'professional'
+            };
+
+            Logger.info(`请求参数: ${JSON.stringify(requestBody, null, 2)}`);
+
+            const startTime = Date.now();
+            stats.totalRequests++;
+
+            try {
+                Logger.debug('发送POST请求...');
+                const response = await fetch(`${API_CONFIG.endpoint}/generate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody),
+                    mode: 'cors'
+                });
+
+                const duration = Date.now() - startTime;
+                stats.responseTimes.push(duration);
+
+                Logger.info(`响应状态: ${response.status}`);
+                Logger.debug(`响应时间: ${duration}ms`);
+
+                // 检查响应头
+                Logger.debug('响应头:');
+                for (const [key, value] of response.headers.entries()) {
+                    Logger.debug(`  ${key}: ${value}`);
+                }
+
+                if (response.ok) {
+                    const data = await response.json();
+                    Logger.success('PPT生成请求成功!');
+                    Logger.info(`响应数据: ${JSON.stringify(data, null, 2)}`);
+                    stats.successRequests++;
+                    addNetworkRecord('POST', `${API_CONFIG.endpoint}/generate`, response.status, duration);
+
+                    // 如果是异步模式，返回了presentation_id
+                    if (data.presentation_id && data.status === 'processing') {
+                        Logger.info('检测到异步模式，开始轮询状态...');
+                        await pollStatus(data.presentation_id);
+                    }
+                } else {
+                    const errorText = await response.text();
+                    stats.failedRequests++;
+                    stats.lastError = `生成失败: ${response.status}`;
+                    Logger.error(`PPT生成失败: ${response.status}`);
+                    Logger.error(`错误响应: ${errorText}`);
+                    addNetworkRecord('POST', `${API_CONFIG.endpoint}/generate`, response.status, duration, errorText);
+                }
+
+            } catch (error) {
+                stats.failedRequests++;
+                stats.lastError = error.message;
+                Logger.error(`生成请求异常: ${error.message}`);
+                Logger.error(`错误类型: ${error.name}`);
+                Logger.error(`错误堆栈: ${error.stack}`);
+
+                // 详细的CORS错误分析
+                if (error.message.includes('CORS') || error.message.includes('Failed to fetch')) {
+                    Logger.error('🚨 CORS错误检测!');
+                    Logger.error('可能的原因:');
+                    Logger.error('1. API Gateway未正确配置CORS');
+                    Logger.error('2. Lambda函数未返回CORS头');
+                    Logger.error('3. 请求超时或网络错误');
+                }
+
+                addNetworkRecord('POST', `${API_CONFIG.endpoint}/generate`, 0, Date.now() - startTime, error.message);
+            }
+
+            updateStats();
+            setTestStatus('', '');
+        }
+
+        // 轮询状态
+        async function pollStatus(presentationId, maxAttempts = 30) {
+            Logger.info(`开始轮询状态: ${presentationId}`);
+            let attempts = 0;
+
+            while (attempts < maxAttempts) {
+                attempts++;
+                Logger.debug(`轮询尝试 ${attempts}/${maxAttempts}`);
+
+                const startTime = Date.now();
+                stats.totalRequests++;
+
+                try {
+                    const response = await fetch(`${API_CONFIG.endpoint}/status/${presentationId}`, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    const duration = Date.now() - startTime;
+                    stats.responseTimes.push(duration);
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        Logger.info(`状态: ${data.status}, 进度: ${data.progress}%`);
+                        stats.successRequests++;
+                        addNetworkRecord('GET', `${API_CONFIG.endpoint}/status/${presentationId}`, response.status, duration);
+
+                        if (data.status === 'completed') {
+                            Logger.success('PPT生成完成!');
+                            Logger.info(`下载链接: ${data.download_url}`);
+                            break;
+                        } else if (data.status === 'failed') {
+                            Logger.error('PPT生成失败!');
+                            Logger.error(`错误信息: ${data.error}`);
+                            break;
+                        }
+                    } else {
+                        stats.failedRequests++;
+                        Logger.error(`状态查询失败: ${response.status}`);
+                        addNetworkRecord('GET', `${API_CONFIG.endpoint}/status/${presentationId}`, response.status, duration, `Status ${response.status}`);
+                    }
+                } catch (error) {
+                    stats.failedRequests++;
+                    Logger.error(`状态查询异常: ${error.message}`);
+                    addNetworkRecord('GET', `${API_CONFIG.endpoint}/status/${presentationId}`, 0, Date.now() - startTime, error.message);
+                }
+
+                // 等待2秒后重试
+                await new Promise(resolve => setTimeout(resolve, 2000));
+            }
+
+            updateStats();
+        }
+
+        // 完整测试
+        async function startFullTest() {
+            clearLogs();
+            Logger.info('🚀 开始完整测试流程');
+            Logger.info(`API端点: ${API_CONFIG.endpoint}`);
+            Logger.info(`当前源: ${window.location.origin}`);
+
+            // 先测试OPTIONS
+            await testOptionsRequest();
+
+            // 等待1秒
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            // 测试生成请求
+            await testGenerateRequest();
+
+            Logger.info('✅ 测试流程完成');
+            Logger.info(`总结: 总请求${stats.totalRequests}, 成功${stats.successRequests}, 失败${stats.failedRequests}`);
+        }
+
+        // 清除日志
+        function clearLogs() {
+            document.getElementById('logContainer').innerHTML = '';
+            document.getElementById('networkTraffic').innerHTML = '';
+            stats = {
+                totalRequests: 0,
+                successRequests: 0,
+                failedRequests: 0,
+                responseTimes: [],
+                lastError: '无'
+            };
+            updateStats();
+            Logger.info('日志已清除');
+        }
+
+        // 设置测试状态
+        function setTestStatus(status, text) {
+            const badge = document.getElementById('testStatus');
+            if (status) {
+                badge.className = `status-badge status-${status}`;
+                badge.textContent = text;
+            } else {
+                badge.className = 'status-badge';
+                badge.textContent = '';
+            }
+        }
+
+        // 页面加载完成后初始化
+        window.addEventListener('load', () => {
+            Logger.info('测试页面已加载');
+            Logger.info(`浏览器: ${navigator.userAgent}`);
+            updateStats();
+        });
+
+        // 捕获全局错误
+        window.addEventListener('error', (event) => {
+            Logger.error(`全局错误: ${event.message}`);
+            Logger.error(`文件: ${event.filename}, 行: ${event.lineno}, 列: ${event.colno}`);
+        });
+
+        // 捕获未处理的Promise rejection
+        window.addEventListener('unhandledrejection', (event) => {
+            Logger.error(`未处理的Promise rejection: ${event.reason}`);
+        });
+    </script>
+</body>
+</html>

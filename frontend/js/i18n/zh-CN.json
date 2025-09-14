@@ -28,7 +28,8 @@
     "audience_executive": "高层管理",
     "audience_academic": "学术研究",
     "generate_button": "开始生成",
-    "generating": "生成中..."
+    "generating": "生成中...",
+    "cancel_button": "取消"
   },
   "progress": {
     "title": "生成进度",
@@ -85,7 +86,9 @@
     "download_failed": "下载失败",
     "invalid_response": "服务器响应无效",
     "retry_later": "请稍后重试",
-    "language_switch_failed": "语言切换失败"
+    "language_switch_failed": "语言切换失败",
+    "not_found": "资源未找到",
+    "check_endpoint": "请检查API端点配置"
   },
   "messages": {
     "config_saved": "配置已保存",

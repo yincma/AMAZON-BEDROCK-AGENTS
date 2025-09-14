@@ -224,32 +224,36 @@ class StatusPoller {
         this.consecutiveErrors = 0;
         this.lastProgress = 0;
 
-        // 更新进度到100%
+        // 更新进度到100%，但显示"正在准备下载"
         this.generator.updateProgress(100, this.t('progress.completed', '生成完成！'), this.t('progress.preparing_download', '正在准备下载...'));
 
         // 更新历史记录状态
         this.updateHistoryStatus(presentationId, 'completed');
 
-        // 显示结果卡片 - 使用API返回的数据
-        const presentation = {
-            id: presentationId,
-            topic: data?.topic || '演示文稿',
-            pageCount: data?.page_count || 10,
-            timestamp: data?.created_at || new Date().toISOString(),
-            status: 'completed'
-        };
+        // 添加50秒缓冲时间，确保S3文件完全可用
+        console.log('等待S3文件完全可用（约50秒）...');
+        setTimeout(() => {
+            // 显示结果卡片 - 使用API返回的数据
+            const presentation = {
+                id: presentationId,
+                topic: data?.topic || '演示文稿',
+                pageCount: data?.page_count || 10,
+                timestamp: data?.created_at || new Date().toISOString(),
+                status: 'completed'
+            };
 
-        this.generator.showResult(presentation);
+            this.generator.showResult(presentation);
 
-        // 播放完成提示音（如果浏览器支持）
-        this.playNotificationSound();
+            // 播放完成提示音（如果浏览器支持）
+            this.playNotificationSound();
 
-        // 优化：使用 requestAnimationFrame 提升动画流畅度
-        requestAnimationFrame(() => {
-            setTimeout(() => {
-                this.generator.hideProgress();
-            }, 3000);
-        });
+            // 优化：使用 requestAnimationFrame 提升动画流畅度
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    this.generator.hideProgress();
+                }, 3000);
+            });
+        }, 50000); // 等待50秒，确保S3文件完全可用
     }
 
     handleFailure(message) {

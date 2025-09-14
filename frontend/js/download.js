@@ -55,8 +55,14 @@ class DownloadManager {
                     return;
                 }
 
-                // 获取文件信息（可选）
-                await this.updateFileSize(data.download_url);
+                // 使用API返回的文件大小信息，避免CORS问题
+                if (data.file_size) {
+                    const sizeText = this.formatFileSize(data.file_size);
+                    const fileSizeElement = document.getElementById('fileSize');
+                    if (fileSizeElement) {
+                        fileSizeElement.textContent = sizeText;
+                    }
+                }
 
                 // 触发下载
                 this.triggerDownload(data.download_url, presentationId);

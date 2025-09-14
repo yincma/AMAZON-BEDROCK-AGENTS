@@ -28,7 +28,8 @@
     "audience_executive": "Executive Management",
     "audience_academic": "Academic Research",
     "generate_button": "Start Generation",
-    "generating": "Generating..."
+    "generating": "Generating...",
+    "cancel_button": "Cancel"
   },
   "progress": {
     "title": "Generation Progress",
@@ -85,7 +86,9 @@
     "download_failed": "Download failed",
     "invalid_response": "Invalid server response",
     "retry_later": "Please retry later",
-    "language_switch_failed": "Language switch failed"
+    "language_switch_failed": "Language switch failed",
+    "not_found": "Resource not found",
+    "check_endpoint": "Please check API endpoint configuration"
   },
   "messages": {
     "config_saved": "Configuration saved",

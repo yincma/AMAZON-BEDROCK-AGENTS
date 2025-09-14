@@ -397,6 +397,24 @@ resource "aws_iam_role_policy_attachment" "lambda_main_basic_execution" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
+# 自动构建Lambda部署包
+resource "null_resource" "build_lambda_package" {
+  triggers = {
+    # 当Lambda代码或依赖发生变化时重新构建
+    lambda_code_hash = filemd5("../lambdas/generate_ppt_complete.py")
+    build_script_hash = filemd5("../scripts/build_lambda.sh")
+    # 添加其他关键文件的hash以触发重建
+    image_generator_hash = filemd5("../lambdas/image_generator.py")
+    # 使用timestamp确保每次都重新构建（可选，开发阶段使用）
+    # always_rebuild = timestamp()
+  }
+
+  provisioner "local-exec" {
+    command = "cd ${path.module}/.. && bash scripts/build_lambda.sh"
+    interpreter = ["bash", "-c"]
+  }
+}
+
 # Lambda函数间调用权限
 resource "aws_iam_role_policy" "lambda_invoke_policy" {
   name = "lambda-invoke-policy"
@@ -472,6 +490,13 @@ resource "aws_lambda_function" "generate_ppt" {
   runtime         = "python3.11"
   memory_size     = 3008  # 增加内存到3GB，获得2个vCPU，提升计算性能
   timeout         = 300   # 保持5分钟超时
+
+  # 当ZIP文件内容变化时自动更新Lambda
+  # 注意：这个hash在null_resource构建后会变化，所以只在文件存在时计算
+  source_code_hash = fileexists("../lambda-packages/generate_ppt_complete.zip") ? filebase64sha256("../lambda-packages/generate_ppt_complete.zip") : null
+
+  # 确保在构建脚本完成后才部署Lambda
+  depends_on = [null_resource.build_lambda_package]
 
   # 预留并发执行数
   # 注释掉以避免账户并发限制问题

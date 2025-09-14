@@ -79,9 +79,8 @@ def lambda_handler(event, context):
         page_count = body.get('page_count') or body.get('slides_count', 5)
         style = body.get('style', 'professional')
 
-        # 如果是异步调用且已传递ID，使用传递的ID；否则生成新ID
-        presentation_id = event.get('presentation_id') or str(uuid.uuid4())
-        logger.info(f"生成presentation_id: {presentation_id}, 是否异步调用: {is_async_invocation}")
+        presentation_id = str(uuid.uuid4())
+        logger.info(f"生成presentation_id: {presentation_id}")
 
         # 2. 初始化管理器
         status_manager = StatusManager(bucket_name)
